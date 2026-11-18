@@ -1998,6 +1998,123 @@ body.printing .wm { display: none !important; }
 /* the ผังเตียง tab = the logo (owner 22:26): squares follow the tab colour · the dot is the brand colour */
 .tabbar svg.tabmj .mjdot { fill: var(--primary); stroke: none; }
 :root[data-size="l"] .tabbar svg.tabmj .mjdot, :root[data-size="m"] .tabbar svg.tabmj .mjdot { fill: var(--hdr-acc); }   /* dark rail: mint, like the app icon */
+/* ---------- 1.10.0 (39 · r25): ข้อความ consult (consultmsg.html) · คลัง + เคส D/C (casev.html) ---------- */
+.fact.s-consult:has(#d-cmsg) { grid-template-columns: 92px minmax(0, 1fr) auto auto; }   /* 1.10.0: chips · แก้ · 📨 ส่ง on one row */
+.fact .fact-act[hidden] { display: none; }
+.fact .cmsg-open { margin: -4px 0; white-space: nowrap; }   /* 44 px tap area without making the row taller than 1.9.1 */
+/* consult message sheet (mockup r2): steps · small pills · sticky copy bar · done view */
+#sheet .cm-sub { margin: -6px 0 10px; font-size: 13.5px; color: var(--muted); }
+.cm-body { display: flex; flex-direction: column; gap: 18px; padding-bottom: 6px; }
+.cm-step { display: flex; flex-direction: column; gap: 8px; }
+.cm-lab { font-size: 12.5px; font-weight: 800; color: var(--muted); letter-spacing: .02em; }
+.cm-kind { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.cm-kind button { min-height: 62px; border-radius: 14px; border: 1.5px solid var(--line2); background: var(--surface); color: var(--text); font: inherit; text-align: left; padding: 8px 14px; }
+.cm-kind button b { display: block; font-size: 16px; font-weight: 800; }
+.cm-kind button span { display: block; font-size: 12.5px; opacity: .85; }
+.cm-kind button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.cm-units { display: flex; flex-wrap: wrap; gap: 6px; }
+.cm-pill { height: 36px; padding: 0 14px; border-radius: 18px; border: 2px solid transparent; font: inherit; font-size: 14.5px; font-weight: 700;
+  display: inline-flex; align-items: center; gap: 4px; background: hsl(var(--h) var(--s, 60%) 92%); color: hsl(var(--h) var(--s, 55%) 24%); }
+.cm-pill.alt { background: var(--surface); box-shadow: inset 0 0 0 1.5px hsl(var(--h) var(--s2, 40%) 62%); color: hsl(var(--h) var(--s2, 50%) 28%); }
+.cm-pill[aria-pressed="true"], .cm-pill.alt[aria-pressed="true"] { background: hsl(var(--h) var(--sd, 55%) 32%); color: #fff; box-shadow: none; }
+.cm-pill.onbed::after { content: ''; width: 6px; height: 6px; border-radius: 3px; background: currentColor; margin-left: 2px; }   /* • = this bed has the chip */
+.cm-pill.cm-add { background: var(--surface); border: 1.5px dashed var(--faint); color: var(--text); }
+.cm-pill.cm-add i { font-style: normal; font-weight: 800; }
+.cm-otherbox { display: flex; flex-direction: column; gap: 4px; }
+.cm-other, .cm-why { height: 48px; font-size: 16px; }
+.cm-hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+.cm-hint.err { color: var(--danger); font-weight: 700; }
+.cm-switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 48px; padding: 6px 12px; margin-bottom: 8px;
+  border-radius: 12px; border: 1px solid var(--line); background: var(--surface2); font: inherit; color: var(--text); text-align: left; }
+.cm-switch[hidden] { display: none; }
+.cm-sw-t { display: flex; flex-direction: column; }
+.cm-sw-t b { font-size: 15px; } .cm-sw-t span { font-size: 12.5px; color: var(--muted); }
+.cm-sw { flex: none; width: 46px; height: 28px; border-radius: 14px; background: var(--line2); position: relative; transition: background var(--t-fast); }
+.cm-sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 11px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: left var(--t-fast); }
+.cm-switch[aria-pressed="true"] .cm-sw { background: var(--primary); }
+.cm-switch[aria-pressed="true"] .cm-sw::after { left: 21px; }
+.cm-foot { margin: 14px -14px 0; padding: 10px 14px calc(14px + var(--safe-b, 0px)); position: sticky; bottom: calc(-14px - var(--safe-b, 0px)); z-index: 2;
+  background: var(--surface); border-top: 1px solid var(--line); }   /* flush with the sheet's bottom edge: nothing scrolls under it */
+#sheet:has(.cm-foot) { scroll-padding-bottom: 190px; }   /* a focused box is never left under the sticky bar */
+.cm-fhint { margin: 0 0 6px; text-align: center; font-size: 12.5px; color: var(--muted); }
+.cm-copy { width: 100%; height: 54px; font-size: 17px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.cm-copy svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.cm-copy:disabled { background: var(--sunken); color: var(--faint); }
+.cm-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.cm-two .btn { height: 52px; }
+.cm-ok { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--primary-soft); }
+.cm-ok i { flex: none; width: 36px; height: 36px; border-radius: 18px; background: var(--primary); color: var(--on-primary); font-style: normal; font-weight: 800; font-size: 19px; display: flex; align-items: center; justify-content: center; }
+.cm-ok span { display: flex; flex-direction: column; } .cm-ok b { font-size: 17px; color: var(--primary); } .cm-ok span span { font-size: 13.5px; color: var(--text); }
+.cm-sent { white-space: pre-wrap; font-size: 14.5px; line-height: 1.5; padding: 12px 14px; border-radius: 12px; background: var(--surface2); border: 1px solid var(--line); user-select: text; -webkit-user-select: text; }
+.cm-chiprow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 4px 6px 12px; border-radius: 12px; border: 1px solid var(--line); font-size: 14.5px; }
+.cm-chiprow > span { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cm-chiprow.off { padding: 10px 12px; border-style: dashed; color: var(--muted); }
+.arch-x { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.aico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.asum { padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+.asum-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.asum-t { display: flex; flex-direction: column; min-width: 0; }
+.asum-t b { font-size: 15.5px; font-weight: 800; } .asum-t span { font-size: 12.5px; color: var(--muted); }
+.adate { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px; border-radius: 20px; border: 1.5px solid var(--line2);
+  background: var(--surface); color: var(--primary); font: inherit; font-size: 14px; font-weight: 800; white-space: nowrap; }
+.adate.ro { color: var(--muted); border-color: var(--line); font-weight: 700; }
+.aset { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--surface2); }
+.aset .in { height: 44px; } .aset .btn { height: 46px; }
+.apresets { display: flex; gap: 8px; flex-wrap: wrap; }
+.apreset { min-height: 36px; padding: 0 12px; border-radius: 18px; border: 1.5px solid var(--line2); background: var(--surface); color: var(--text); font: inherit; font-size: 14px; font-weight: 700; }
+.apreset.on { border: 2px solid var(--primary); background: var(--primary-soft); color: var(--primary); }
+.atiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.atile { border-radius: 10px; padding: 8px 4px; text-align: center; background: var(--surface2); }
+.atile b { display: block; font-size: 26px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.atile span { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.atile.tA { background: #EAF0FD; background: color-mix(in srgb, var(--teamA) 12%, var(--surface)); } .atile.tA b, .atile.tA span { color: #2148B0; color: color-mix(in srgb, var(--teamA) 82%, var(--text)); }
+.atile.tB { background: #FCEEE6; background: color-mix(in srgb, var(--teamB) 12%, var(--surface)); } .atile.tB b, .atile.tB span { color: #A9461A; color: color-mix(in srgb, var(--teamB) 82%, var(--text)); }
+.afilter { display: flex; align-items: center; gap: 8px; }
+.afseg { flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.afseg button { min-width: 0; padding: 0 4px; }
+.asearch { flex: none; width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid var(--line2); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; }
+.asearch .aico { width: 20px; height: 20px; }
+#arch-q { margin-bottom: 10px; }
+#arch-q[hidden] { display: none; }
+.cwcard { margin-top: 14px; padding: 12px 14px; }
+.acard { padding: 0; overflow: hidden; }
+.acard .aopen { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px 10px; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.acard .aopen .teamchip { margin-top: 0; flex: none; }
+.acard .atext { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.acard .atext .pname { font-size: 17px; }
+.acard .atext .pmeta { margin: 0; }
+.acard .atext .adc { color: var(--text); font-weight: 600; }
+.acard .achev { flex: none; font-size: 24px; font-weight: 700; color: var(--faint); line-height: 1; }
+@media (hover: hover) and (pointer: fine) { .acard .aopen:hover .pname { color: var(--primary); } }
+.acard .abarrow { display: flex; gap: 0; margin: 0; border-top: 1px solid var(--line); }
+.acard .abarrow .btn.abar { flex: 1; min-height: 44px; margin: 0; border-radius: 0; background: none; color: var(--primary); font-size: 14.5px; font-weight: 700; box-shadow: none; }
+.acard .abarrow .btn.abar + .btn.abar { border-left: 1px solid var(--line); }
+.acard .abarrow .btn.abar.dtext { color: var(--danger); }
+.acard .trow.conf { margin: 0; padding: 10px 14px; border-top: 1px solid var(--line); }
+.cv-badge { display: inline-block; padding: 3px 9px; border-radius: 8px; background: var(--dc-ink); color: #fff; font-weight: 800; font-size: 13.5px; }
+.casev { position: fixed; inset: 0; z-index: 32; display: flex; flex-direction: column; background: var(--bg); }
+.casev[hidden] { display: none; }
+.casev .cv-top { flex: none; display: flex; align-items: center; gap: 4px; min-height: 52px; padding: calc(4px + var(--safe-t, 0px)) 12px 4px; background: var(--dc-ink); color: #fff; }
+.casev .cv-top b { font-size: 18px; font-weight: 800; }
+.cv-back { border: 0; background: none; color: #fff; font: inherit; font-size: 15.5px; font-weight: 800; min-height: 44px; padding: 0 6px; }
+.casev .cv-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 12px calc(24px + var(--safe-b, 0px)); }
+.casev .cv-body > * { max-width: 760px; margin-left: auto; margin-right: auto; }
+.cv-dc { padding: 12px 14px; margin-bottom: 10px; border-radius: 14px; background: var(--sunken); border: 1px solid var(--line2); }
+.cv-dc1 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 16px; }
+.cv-dc2 { margin-top: 6px; font-size: 14px; color: var(--text); font-variant-numeric: tabular-nums; }
+.cv-dc3 { margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+.cv-who .cv-name { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cv-who .cv-name .teamchip { margin-top: 0; }
+.cv-who .facts { margin-top: 8px; }
+.casev .dcard { margin-bottom: 10px; }
+.casev .cv-sec h3, .casev .cv-tasks h3 { margin: 0 0 6px; font-size: 13px; font-weight: 800; color: var(--muted); text-transform: none; }
+.cv-task { display: flex; gap: 8px; padding: 4px 0; font-size: 15px; line-height: 1.4; }
+.cv-task.done { color: var(--muted); }
+.cv-ck { flex: none; width: 18px; }
+:root { --dc-ink: #4A5654; }
+:root[data-theme="dark"] { --dc-ink: #3A4644; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --dc-ink: #3A4644; } }
+html.casev-on body { overflow: hidden; }
 </style>
 
 </head>
@@ -2071,7 +2188,7 @@ body.printing .wm { display: none !important; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.9.1", pages: true,
+  return { app_version: "1.10.0", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -2527,6 +2644,7 @@ var App = {
     var st = App.state;
     st.boot = null; st.base = null; st.snap = null; st.stamp = ''; st.syncAt = 0; st.seq++;
     Ops.reset(); Detail.close(true); if (window.Sheet) Sheet.close(true);
+    if (window.CaseView) CaseView.close();                               // 1.10.0 (casev.html)
   },
 
   showMain: function () {
@@ -2645,7 +2763,7 @@ var App = {
   setTab: function (tab) {
     if (tab === App.state.tab) { U.scrollTop(0); return; }
     if (App.state.tab === 'tasks') Tasks.st.justDone = {};              // ticked rows leave the board (02 §3.4)
-    if (App.state.tab === 'more') More.sub = '';                         // archive / Log close when leaving the tab
+    if (App.state.tab === 'more') { More.sub = ''; if (window.CaseView) CaseView.close(); }   // archive / Log (+ 1.10.0 case view) close when leaving the tab
     if (tab !== 'map') { BedMap.st.moving = ''; BedMap.st.picking = false; BedMap.favFrozen = null; }   // 1.8.5: leaving the map ends star mode
     App.state.tab = tab; U.$('hdr').removeAttribute('data-built'); App.render(); U.scrollTop(0);
   },
@@ -5554,7 +5672,9 @@ var Detail = {
       ['allergy', 'acp', 'baseline', 'psychosocial', 'coverage'].forEach(function (f) { facts.appendChild(Hist.line(f, f !== 'coverage')); });
     }
     facts.appendChild(U.el('div', { cls: 'fact s-consult' }, [U.el('span', { cls: 'flabel', text: D.CONSULT }), U.el('div', { id: 'd-cons', cls: 'fval' }),
-      v ? U.el('span') : U.el('button', { type: 'button', cls: 'lnk fact-act', id: 'd-cedit', text: D.CEDIT, onclick: function () { var p = Detail.patient(); if (p) ConsultEdit.open(p); } })]));
+      v ? U.el('span') : U.el('button', { type: 'button', cls: 'lnk fact-act', id: 'd-cedit', text: D.CEDIT, onclick: function () { var p = Detail.patient(); if (p) ConsultEdit.open(p); } }),
+      v ? null : U.el('button', { type: 'button', cls: 'lnk fact-act cmsg-open', id: 'd-cmsg', text: STR.CMSG.BTN, 'aria-label': STR.CMSG.BTN_L, title: STR.CMSG.BTN_L,   // 1.10.0: ข้อความ consult (consultmsg.html)
+        onclick: function () { var p = Detail.patient(); if (p) ConsultMsg.open(p); } })].filter(Boolean)));
     headCard.appendChild(facts);
     if (!v) headCard.appendChild(Hist.addRow('d-hadd', ['allergy', 'acp', 'baseline', 'psychosocial']));
     var tasks = U.el('div', { cls: 'card dcard tsec' }, [U.el('h3', { text: D.TASKS })]);
@@ -7549,7 +7669,7 @@ STR.MORE = {
   DIAG_FIRST: 'ครั้งแรกหลังเปิดแอป', DIAG_NEXT: 'ครั้งถัดไป', DIAG_NONE: 'ยังไม่มีการเรียก server',
   DIAG_LIST: 'ล่าสุด 20 ครั้ง (ใหม่อยู่บน)', DIAG_ROW: '{name} · {rt} · server {ms} ms · {src}',
   DIAG_NOTE: 'src: rev-cache = ไม่เปลี่ยน ไม่เปิดไฟล์ · snap-cache = ใช้ผังที่จำไว้ · sheets-api / spreadsheetapp = อ่านชีตใหม่',
-  ARCHIVE: 'คลังคนไข้ (14 วัน)', ARCHIVE_HINT: 'กู้คืน · แก้เหตุผลจำหน่าย', LOG: 'Log การใช้งาน', LOG_HINT: '100 รายการล่าสุด (owner)',
+  ARCHIVE: 'คลังคนไข้ (10 วัน)', ARCHIVE_HINT: 'ดูประวัติ · สรุปจำหน่าย · กู้คืน', LOG: 'Log การใช้งาน', LOG_HINT: '100 รายการล่าสุด (owner)',
   WARD_SET: 'ตั้งค่าวอร์ด', WARD_NOTE: 'owner เท่านั้น · ใช้กับทุกคนในวอร์ด', HEAVY: 'แผนกลับ "เยอะ" เมื่อถึง (คน/วัน)', LESS: 'ลดลง', MORE_N: 'เพิ่มขึ้น',
   PAPER: 'หัวกระดาษ', PAPER_NOTE: 'ขึ้นทุกหน้าของ PDF · ใช้ทั้งวอร์ด · owner และ editor แก้ได้', PAPER_EDIT: 'ตั้งค่า', LEFT: 'ซ้าย', RIGHT: 'ขวา',
   PHONE: 'เบอร์วอร์ด', TEAM: 'ทีม / ชื่อน้อง', PNOTE: 'โน้ตหัวกระดาษ', ZONES: 'โซน', NONE_SET: '—', NO_ZONES: 'ไม่แบ่งโซน (พิมพ์ฉบับเต็มเป็นตารางเดียว)',
@@ -7562,7 +7682,7 @@ STR.MORE = {
   DAILY: 'งานรายวันล่าสุด: {at} · {result}', DAILY_NONE: 'งานรายวัน (ตี 3) ยังไม่เคยทำงาน — ดูอีกครั้งพรุ่งนี้เช้า', BACK: '‹ เพิ่มเติม'
 };
 STR.ARCH = {
-  TITLE: 'คลังคนไข้', SUB: '{n} คน · ลบอัตโนมัติเมื่อครบ 14 วัน', SEARCH: 'ค้นชื่อหรือ HN', EMPTY: 'ไม่มีคนไข้ในคลัง',
+  TITLE: 'คลังคนไข้', SUB: '{n} คน · เก็บประวัติ {k} วันหลัง D/C', SEARCH: 'ค้นชื่อหรือ HN', EMPTY: 'ไม่มีคนไข้ในคลัง',
   NONE: 'ไม่พบชื่อหรือ HN นี้', LOADING: 'กำลังโหลดคลัง…', LOAD_FAIL: 'โหลดคลังไม่สำเร็จ แตะเพื่อลองใหม่',
   META: 'HN {hn} · เตียงเดิม {b} · สาย {t}', HOME: 'D/C กลับบ้าน', XFER: 'ย้ายวอร์ด: {d}', AT: '{r} · {d}',
   RESTORE: 'กู้คืน', REASON: 'แก้เหตุผล', DEL: 'ลบถาวร', DEL_Q: 'ลบ {n} ถาวร? ย้อนไม่ได้', DEL_NO: 'ไม่ลบ', DEL_YES: 'ลบถาวร',
@@ -7593,7 +7713,7 @@ var More = {
     if (More.sub) {
       var title = More.sub === 'archive' ? STR.ARCH.TITLE : More.sub === 'team' ? STR.TEAM.TITLE : More.sub === 'admin' ? STR.ADMIN.TITLE
         : More.sub === 'services' ? STR.SVCV.TITLE : STR.LOGV.TITLE;
-      var sub = More.sub === 'archive' && ArchiveView.rows ? U.fill(STR.ARCH.SUB, { n: ArchiveView.rows.length }) : (w ? w.ward_name : '');
+      var sub = More.sub === 'archive' && ArchiveView.rows ? U.fill(STR.ARCH.SUB, { n: ArchiveView.rows.length, k: (App.state.snap && App.state.snap.ward && App.state.snap.ward.keep_days) || 10 }) : (w ? w.ward_name : '');
       h.appendChild(U.el('div', { cls: 'hrow' }, [
         (More.sub === 'services' && ServicesView.backLabel())            // 1.8.3: came from a bed's consult list → back to that bed
           ? U.el('button', { type: 'button', cls: 'lnk', id: 'sv-backbed', text: ServicesView.backLabel(), onclick: ServicesView.backToBed })
@@ -7822,11 +7942,12 @@ var ArchiveView = {
     var A = ArchiveView, S = STR.ARCH;
     if (!A.box || !sec.contains(A.box)) {                              // build once per visit: keeps the search box focused
       sec.textContent = '';
-      var search = U.el('input', { cls: 'in', type: 'search', placeholder: S.SEARCH, autocomplete: 'off', 'aria-label': S.SEARCH });
+      var search = U.el('input', { cls: 'in', type: 'search', id: 'arch-q', placeholder: S.SEARCH, autocomplete: 'off', 'aria-label': S.SEARCH, hidden: A.q ? null : 'hidden' });
       search.value = A.q;
       search.addEventListener('input', function () { A.q = search.value; A.paint(); });
       A.list = U.el('div', { cls: 'alist' });
-      A.box = U.el('div', {}, [search, A.list]);
+      // 1.10.0 (mockup r2): สรุป 4 ช่อง · สาย + 🔍 (ช่องค้นซ่อนจนแตะ) · การ์ด · ชื่อวอร์ด consult (Chief) — casev.html
+      A.box = U.el('div', {}, [ArchiveX.build(), search, A.list, ArchiveX.prefs()].filter(Boolean));
       sec.appendChild(A.box);
     }
     A.paint();
@@ -7835,23 +7956,31 @@ var ArchiveView = {
   paint: function () {
     var A = ArchiveView, S = STR.ARCH, list = A.list;
     if (!list) return;
+    ArchiveX.paint();                                                  // 1.10.0: summary + สาย counts follow the list (casev.html)
     list.textContent = '';
     if (A.err) return list.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: S.LOAD_FAIL, onclick: function () { A.load(); App.render(); } }));
     if (!A.rows) return list.appendChild(U.el('p', { cls: 'note center', text: S.LOADING }));
     if (!A.rows.length) return list.appendChild(BedMap.emptyState(S.EMPTY, ''));
     var q = A.q.trim().toLowerCase();
-    var rows = A.rows.filter(function (r) { return !q || r.name.toLowerCase().indexOf(q) >= 0 || r.hn.indexOf(q) >= 0; });
-    if (!rows.length) return list.appendChild(U.el('p', { cls: 'note center', text: S.NONE }));
+    var rows = ArchiveX.filter(A.rows).filter(function (r) { return !q || r.name.toLowerCase().indexOf(q) >= 0 || r.hn.indexOf(q) >= 0; });
+    if (!rows.length) return list.appendChild(U.el('p', { cls: 'note center', text: q ? S.NONE : STR.CASEV.NONE_TEAM }));
     rows.forEach(function (r) { list.appendChild(A.row(r)); });
   },
 
   row: function (r) {
     var A = ArchiveView, S = STR.ARCH, owner = App.role() === 'owner', busy = A.busy === r.patient_id;
     var reason = r.discharge_type === 'transfer_ward' ? U.fill(S.XFER, { d: r.discharge_destination }) : S.HOME;
+    // 1.10.0 (mockup r2): สาย badge · ชื่อ · HN + เตียงเดิม · D/C วันที่ + เหตุผล · the whole top = ดูประวัติ (CaseView, casev.html) ·
+    // actions = one quiet bar under the card (same labels / same classes .btn as before: the tests and the habits keep working)
+    var tm = String(r.team || '').toUpperCase(), d = new Date(r.discharged_at), dm = isNaN(d) ? '' : U.dateTh(r.discharged_at).replace(/\s*\d+$/, '');
     var card = U.el('div', { cls: 'card acard' + (busy ? ' saving' : '') }, [
-      U.el('div', { cls: 'pname sm', text: r.name }),
-      U.el('div', { cls: 'pmeta', text: U.fill(S.META, { hn: r.hn, b: r.last_bed_no, t: r.team }) }),
-      U.el('div', { cls: 'pmeta', text: U.fill(S.AT, { r: reason, d: More.when(r.discharged_at) }) })
+      U.el('button', { type: 'button', cls: 'aopen', 'aria-label': STR.CASEV.OPEN + ' ' + r.name, onclick: function () { CaseView.open(r); } }, [
+        tm === 'A' || tm === 'B' ? U.el('span', { cls: 'teamchip t' + tm, text: tm }) : U.el('span', { cls: 'teamchip', text: '–' }),
+        U.el('span', { cls: 'atext' }, [
+          U.el('span', { cls: 'pname sm', text: r.name }),
+          U.el('span', { cls: 'pmeta', text: U.fill(STR.CASEV.CARD_META, { hn: r.hn, b: r.last_bed_no || '—' }) }),
+          U.el('span', { cls: 'pmeta adc', text: U.fill(STR.CASEV.CARD_DC, { d: dm, r: r.discharge_type === 'transfer_ward' ? U.fill(STR.CASEV.DC_XFER, { d: r.discharge_destination }) : STR.CASEV.DC_HOME }) })]),
+        U.el('span', { cls: 'achev', 'aria-hidden': 'true', text: '›' })])
     ]);
     if (A.confirmDel === r.patient_id) {
       card.appendChild(U.el('div', { cls: 'trow conf' }, [U.el('div', { cls: 'ttext', text: U.fill(S.DEL_Q, { n: r.name }) }),
@@ -7859,13 +7988,13 @@ var ArchiveView = {
         U.el('button', { type: 'button', cls: 'btn dng sm', text: S.DEL_YES, onclick: function () { A.del(r); } })]));
       return card;
     }
-    var btns = [U.el('button', { type: 'button', cls: 'btn sm', text: busy ? S.SAVING : S.RESTORE, disabled: A.busy ? 'disabled' : null,
+    var btns = [U.el('button', { type: 'button', cls: 'btn sm abar', text: busy ? S.SAVING : S.RESTORE, disabled: A.busy ? 'disabled' : null,
                   onclick: function () { A.restore(r, ''); } }),
-                U.el('button', { type: 'button', cls: 'btn sec sm', text: S.REASON, disabled: A.busy ? 'disabled' : null,
+                U.el('button', { type: 'button', cls: 'btn sec sm abar', text: S.REASON, disabled: A.busy ? 'disabled' : null,
                   onclick: function () { A.reasonSheet(r); } })];
-    if (owner) btns.push(U.el('button', { type: 'button', cls: 'btn sec sm dtext', text: S.DEL, disabled: A.busy ? 'disabled' : null,
+    if (owner) btns.push(U.el('button', { type: 'button', cls: 'btn sec sm dtext abar', text: S.DEL, disabled: A.busy ? 'disabled' : null,
                   onclick: function () { A.confirmDel = r.patient_id; A.paint(); } }));
-    card.appendChild(U.el('div', { cls: 'abtns' }, btns));
+    card.appendChild(U.el('div', { cls: 'abtns abarrow' }, btns));
     return card;
   },
 
@@ -8176,6 +8305,466 @@ var ServicesView = {
 
   palette: function () { var b = App.state.boot; return (b && b.service_palette) || [168, 240, 300, 20, 70, 200, 255, 345]; }
 };
+</script>
+
+  <!-- consultmsg.html — 1.10.0 (39 · r25 · mockup r2 owner 18/11 14:12): ข้อความ consult ลงไลน์รวมของภาค เรียงตามที่ทำจริง:
+       1 แบบ  New (ปรึกษาครั้งแรก) | Renotify (เคสที่ปรึกษาไว้แล้ว)
+       2 หน่วย  ทั้ง New และ Renotify = รายการเดียวกัน: หน่วยของเตียงนี้ก่อน (•) + หน่วยอื่น + "พิมพ์หน่วยอื่น" (owner 14:50)
+       3 ปรึกษาเรื่อง (1 ช่อง)
+       [สวิตช์] เพิ่มชิปให้เตียงนี้ (เปิดไว้ · เมื่อเตียงยังไม่มีชิปหน่วยนั้น ทั้ง New และ Renotify) → ปุ่ม "คัดลอกข้อความ" ติดล่าง
+     หลังคัดลอก: ข้อความที่คัดลอกไปทั้งหมด + "เพิ่มชิป … แล้ว [เลิกทำ]" + แก้ แล้วคัดลอกใหม่ / เสร็จ.
+     ข้อความสร้างในเครื่อง ไม่ส่ง server (ส่งเฉพาะตอนเพิ่ม/เลิกชิป = api_setConsult / api_addService เดิม) · ไม่มีปุ่มแชร์ (owner: ผู้ใช้วางไลน์เอง)
+       New|Renotify  หน่วย  ชื่อวอร์ด(Meta.consult_ward · ว่าง = ชื่อวอร์ด)  B<เตียง>
+       ชื่อ เพศ อายุ ปี · HN · Known case = หัวข้อ # ของ U/D · Problem List = หัวข้อ # ที่ยังไม่จบ · Consult <เรื่อง>   (Q5 ไม่มีคำลงท้าย · Q6 หัวข้อ # เท่านั้น) -->
+<script>
+STR.CMSG = {
+  BTN: '📨 ส่ง', BTN_L: 'ข้อความ consult', TITLE: 'Consult · เตียง {b}', SUB: '{who}', SUB_CHIPS: ' · ชิปตอนนี้ {l}',
+  KIND: '1 · แบบ', NEW: 'New', NEW_D: 'ปรึกษาครั้งแรก', RENO: 'Renotify', RENO_D: 'เคสที่ปรึกษาไว้แล้ว',
+  UNIT: '2 · หน่วย', UNIT_MINE: '2 · หน่วย (• = เตียงนี้มีชิปแล้ว)',
+  OTHER: 'พิมพ์หน่วยอื่น', OTHER_L: 'ชื่อหน่วย', OTHER_PH: 'เช่น Rehab, Pain, Toxicology',
+  OTHER_HINT: 'เพิ่มชิปด้วย = เพิ่มเข้ารายการหน่วยของวอร์ด ครั้งต่อไปแตะเลือกได้เลย', OTHER_BAD: 'ไม่เกิน 20 ตัว และไม่มีเครื่องหมาย < > ,',
+  WHY: '3 · ปรึกษาเรื่อง', WHY_PH: 'เช่น ร่วมประเมินเรื่อง status myoclonus',
+  CHIP_ON: 'เพิ่มชิป {u} ให้เตียงนี้', CHIP_SUB: 'ทำพร้อมกดคัดลอก · เลิกทำได้',
+  PICK: 'เลือกหน่วยก่อน', LINES: 'ข้อความ {n} บรรทัด · เห็นทั้งหมดหลังคัดลอก', COPY: 'คัดลอกข้อความ', COPY_FAIL: 'คัดลอกไม่ได้ ลองอีกครั้ง',
+  DONE_T: 'คัดลอกแล้ว', DONE_S: 'เปิดไลน์กลุ่มของภาค แล้ววางได้เลย', DONE_L: 'ข้อความที่คัดลอกไป',
+  CHIP_DONE: 'เพิ่มชิปให้เตียง {b} แล้ว', CHIP_DONE_NEW: 'เพิ่มหน่วยใหม่ + ชิปเตียง {b} แล้ว', UNDO: 'เลิกทำ', CHIP_UNDONE: 'ไม่ได้เพิ่มชิป {u}',
+  AGAIN: 'แก้ แล้วคัดลอกใหม่', FINISH: 'เสร็จ', SEX: { M: 'ชาย', F: 'หญิง' },
+  KNOWN: 'Known case', PROBS: 'Problem List', CONSULT: 'Consult '
+};
+
+var ConsultMsg = {
+  st: null,
+
+  /** Plain text of a heading: no **bold** __u__ ==hl== marks · arrows kept as typed. */
+  plain: function (s) { return String(s || '').replace(/(\*\*|__|==)(?=\S)([\s\S]*?\S)\1/g, '$2').trim(); },
+
+  /** '# …' lines of a history box. noSolved: skip the problems marked improved / solved. */
+  heads: function (text, noSolved) {
+    return Rich.lines(text).filter(function (o) { return o.kind === 'head' && !(noSolved && o.solved); })
+      .map(function (o) { return '# ' + ConsultMsg.plain(o.body); });
+  },
+
+  wardName: function (snap) { var w = (snap && snap.ward) || {}; return String(w.consult_ward || w.ward_name || '').trim(); },
+
+  /** the unit as typed / picked: {key (service or ''), name} or null */
+  unit: function (st) {
+    if (st.other) { var n = st.otherText.replace(/\s+/g, ' ').trim(); return n ? { key: '', name: n } : null; }
+    if (!st.unitKey) return null;
+    return { key: st.unitKey, name: Svc.get(App.state.snap, st.unitKey).name };
+  },
+  otherOk: function (n) { return n.length <= 20 && !/[<>,]/.test(n); },
+
+  head: function (st) {
+    var u = ConsultMsg.unit(st);
+    return [st.kind === 'reno' ? STR.CMSG.RENO : STR.CMSG.NEW, u ? u.name : '', st.ward, st.bed ? 'B' + st.bed : ''].filter(Boolean).join(' ');
+  },
+  last: function (st) { return (STR.CMSG.CONSULT + st.why.replace(/\s+/g, ' ').trim()).trim(); },
+
+  /** The whole message (the department's form). */
+  text: function (p, st) {
+    var C = STR.CMSG, who = [p.name, C.SEX[p.sex] || '', p.age == null || p.age === '' ? '' : p.age + ' ปี'].filter(Boolean).join(' ');
+    var out = [ConsultMsg.head(st), who];
+    if (p.hn) out.push('HN ' + p.hn);
+    var known = ConsultMsg.heads(p.summary, true), probs = ConsultMsg.heads(p.dx, true);
+    if (known.length) { out.push('', C.KNOWN); out = out.concat(known); }
+    if (probs.length) { out.push('', C.PROBS); out = out.concat(probs); }
+    out.push('', ConsultMsg.last(st));
+    return out.join('\n');
+  },
+
+  mine: function (pid) { var s = App.state.snap; return s ? s.consults.filter(function (c) { return c.patient_id === pid; }).map(function (c) { return c.service; }) : []; },
+
+  open: function (p) {
+    var s = App.state.snap; if (!s || !p) return;
+    var C = STR.CMSG, mine = ConsultMsg.mine(p.patient_id);
+    ConsultMsg.st = { pid: p.patient_id, bed: p.bed_no, ward: ConsultMsg.wardName(s), kind: 'new', unitKey: '', other: false, otherText: '',
+                      why: '', addChip: true, all: false, copied: false, sent: '', added: null, undone: false };
+    var who = [p.name, (p.sex || '') + (p.age == null ? '' : p.age)].filter(Boolean).join(' · ');
+    var sub = U.el('p', { cls: 'cm-sub', id: 'cm-sub', text: who + (mine.length ? U.fill(C.SUB_CHIPS, { l: mine.map(function (k) { return Svc.get(s, k).name; }).join(', ') }) : '') });
+    Sheet.open(U.fill(C.TITLE, { b: p.bed_no }), [sub, U.el('div', { id: 'cm-body', cls: 'cm-body' }), U.el('div', { id: 'cm-foot', cls: 'cm-foot' })],
+               { kind: 'cmsg', focus: '.cm-kind button', onRefresh: ConsultMsg.onSnap });
+    ConsultMsg.paint();
+  },
+
+  patient: function () { var s = App.state.snap, st = ConsultMsg.st; return s && st ? Guess.pt(s, st.pid) : null; },
+
+  paint: function () {
+    var st = ConsultMsg.st; if (!st || !U.$('cm-body')) return;
+    if (!ConsultMsg.patient()) return Sheet.close();                     // discharged meanwhile
+    if (st.copied) ConsultMsg.paintDone(); else ConsultMsg.paintForm();
+  },
+
+  label: function (text, forId) { return U.el(forId ? 'label' : 'span', { cls: 'cm-lab', 'for': forId || null, text: text }); },
+
+  paintForm: function () {
+    var st = ConsultMsg.st, C = STR.CMSG, s = App.state.snap, body = U.$('cm-body'), mine = ConsultMsg.mine(st.pid);
+    body.textContent = '';
+    // 1 · แบบ
+    var kinds = U.el('div', { cls: 'cm-kind', role: 'group', 'aria-label': C.KIND }, [['new', C.NEW, C.NEW_D], ['reno', C.RENO, C.RENO_D]].map(function (k) {
+      return U.el('button', { type: 'button', 'data-v': k[0], 'aria-pressed': String(st.kind === k[0]), onclick: function () { ConsultMsg.setKind(k[0]); } },
+        [U.el('b', { text: k[1] }), U.el('span', { text: k[2] })]);
+    }));
+    body.appendChild(U.el('div', { cls: 'cm-step' }, [ConsultMsg.label(C.KIND), kinds]));
+    // 2 · หน่วย
+    // owner 14:50: New and Renotify = the same list (a ward may renotify a unit the bed has no chip for) — the bed's units first (•),
+    // then every other shown unit, then "+ พิมพ์หน่วยอื่น"
+    var all = Svc.list(s), lab = mine.length ? C.UNIT_MINE : C.UNIT;
+    var list = mine.map(function (k) { return Svc.get(s, k); }).concat(all.filter(function (u) { return mine.indexOf(u.service) < 0; }));
+    var pills = U.el('div', { cls: 'cm-units', id: 'cm-units' });
+    list.forEach(function (u) {
+      var on = !st.other && st.unitKey === u.service;
+      pills.appendChild(Svc.tint(U.el('button', { type: 'button', cls: 'cm-pill' + (mine.indexOf(u.service) >= 0 ? ' onbed' : ''), 'data-k': u.service, 'aria-pressed': String(on), text: (on ? '✓ ' : '') + u.name,
+        onclick: function () { st.unitKey = u.service; st.other = false; st.addChip = true; ConsultMsg.paint(); } }), u));   // a new unit = switch back on
+    });
+    if (!st.other) pills.appendChild(U.el('button', { type: 'button', cls: 'cm-pill cm-add', id: 'cm-other-open', onclick: function () {
+      st.other = true; st.unitKey = ''; st.addChip = true; ConsultMsg.paint(); var i = U.$('cm-other'); if (i) i.focus(); } }, [U.el('i', { 'aria-hidden': 'true', text: '+' }), C.OTHER]));
+    var step2 = U.el('div', { cls: 'cm-step' }, [ConsultMsg.label(lab), pills]);
+    if (st.other) {
+      var oi = U.el('input', { cls: 'in cm-other', id: 'cm-other', maxlength: '20', autocomplete: 'off', placeholder: C.OTHER_PH, enterkeyhint: 'next' });
+      oi.value = st.otherText;
+      oi.addEventListener('input', function () { st.otherText = oi.value; ConsultMsg.live(); });
+      oi.addEventListener('focus', function () { setTimeout(function () { try { oi.scrollIntoView({ block: 'nearest' }); } catch (e) { /* old browser */ } }, 250); });
+      oi.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); var w = U.$('cm-why'); if (w) w.focus(); } });
+      step2.appendChild(U.el('div', { cls: 'cm-otherbox' }, [ConsultMsg.label(C.OTHER_L, 'cm-other'), oi,
+        U.el('p', { cls: 'cm-hint', id: 'cm-other-hint', text: C.OTHER_HINT })]));
+    }
+    body.appendChild(step2);
+    // 3 · ปรึกษาเรื่อง
+    var why = U.el('input', { cls: 'in cm-why', id: 'cm-why', maxlength: '200', autocomplete: 'off', placeholder: C.WHY_PH, enterkeyhint: 'done' });
+    why.value = st.why;
+    why.addEventListener('input', function () { st.why = why.value; ConsultMsg.live(); });
+    why.addEventListener('focus', function () { setTimeout(function () { try { why.scrollIntoView({ block: 'nearest' }); } catch (e) { /* old browser */ } }, 250); });
+    why.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); why.blur(); } });
+    body.appendChild(U.el('div', { cls: 'cm-step' }, [ConsultMsg.label(C.WHY, 'cm-why'), why]));
+    // the switch sits in the sticky bar, right above the copy button: always on screen however long the unit list is
+    var sw = U.el('button', { type: 'button', cls: 'cm-switch', id: 'cm-chip', 'aria-pressed': String(st.addChip), hidden: 'hidden',
+      onclick: function () { st.addChip = !st.addChip; ConsultMsg.live(); } },
+      [U.el('span', { cls: 'cm-sw-t' }, [U.el('b', { id: 'cm-chip-t' }), U.el('span', { text: C.CHIP_SUB })]), U.el('i', { cls: 'cm-sw', 'aria-hidden': 'true' })]);
+    var foot = U.$('cm-foot'); foot.textContent = '';
+    foot.appendChild(sw);
+    foot.appendChild(U.el('p', { cls: 'cm-fhint', id: 'cm-fhint' }));
+    foot.appendChild(U.el('button', { type: 'button', cls: 'btn cm-copy', id: 'cm-copy', onclick: ConsultMsg.copy }, [ConsultMsg.icon(), C.COPY]));
+    ConsultMsg.live();
+  },
+
+  icon: function () {
+    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML = '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>';
+    return svg;
+  },
+
+  /** Will the copy also add a chip to this bed? New or Renotify (owner 14:50) · a unit the bed has not got · not a bed being admitted. */
+  chipAsk: function () {
+    var st = ConsultMsg.st, u = ConsultMsg.unit(st);
+    if (!u || Guess.isTemp(st.pid)) return false;
+    if (st.other && !ConsultMsg.otherOk(u.name)) return false;
+    var same = st.other ? Svc.find(App.state.snap, u.name) : null, key = st.other ? (same && same.service) : u.key;
+    return !key || ConsultMsg.mine(st.pid).indexOf(key) < 0;
+  },
+
+  /** Typing / the switch: update only the parts that change (rebuilding would drop the keyboard). */
+  live: function () {
+    var st = ConsultMsg.st, C = STR.CMSG, p = ConsultMsg.patient(); if (!st || !p) return;
+    var u = ConsultMsg.unit(st), bad = st.other && u && !ConsultMsg.otherOk(u.name), ok = !!u && !bad;
+    var sw = U.$('cm-chip'), ask = ConsultMsg.chipAsk();
+    if (sw) { sw.hidden = !ask; sw.setAttribute('aria-pressed', String(st.addChip)); var t = U.$('cm-chip-t'); if (t && u) t.textContent = U.fill(C.CHIP_ON, { u: u.name }); }
+    var oh = U.$('cm-other-hint'); if (oh) { oh.textContent = bad ? C.OTHER_BAD : C.OTHER_HINT; oh.classList.toggle('err', !!bad); }
+    var h = U.$('cm-fhint'); if (h) h.textContent = ok ? U.fill(C.LINES, { n: ConsultMsg.text(p, st).split('\n').length }) : C.PICK;
+    var b = U.$('cm-copy'); if (b) b.disabled = !ok;
+  },
+
+  setKind: function (k) {
+    ConsultMsg.st.kind = k;                                            // the unit / typed name stays as chosen
+    ConsultMsg.paint();
+  },
+
+  onSnap: function () { var st = ConsultMsg.st; if (st && !st.copied && U.$('cm-body') && !(document.activeElement && /^cm-(why|other)$/.test(document.activeElement.id))) ConsultMsg.paint(); },
+
+  copy: function () {
+    var st = ConsultMsg.st, p = ConsultMsg.patient(), u = st && ConsultMsg.unit(st); if (!p || !u) return;
+    if (st.other && !ConsultMsg.otherOk(u.name)) return;
+    var text = ConsultMsg.text(p, st), chip = ConsultMsg.chipAsk() && st.addChip;
+    Detail.copy(text).then(function (ok) {
+      if (!ok) return Toast.show(STR.CMSG.COPY_FAIL, 'err');
+      st.copied = true; st.sent = text; st.undone = false; st.added = null;
+      if (chip) ConsultMsg.addChip(u);
+      ConsultMsg.paint();
+    });
+  },
+
+  /** the existing writes: a listed unit → api_setConsult · a typed one → api_addService (adds it to the ward + this bed) */
+  addChip: function (u) {
+    var st = ConsultMsg.st, s = App.state.snap;
+    ConsultEdit.pid = st.pid;
+    if (st.other) {
+      var same = Svc.find(s, u.name);
+      if (same && !Svc.isHidden(s, same.service)) { ConsultEdit.toggle(same.service, true); st.added = { key: same.service, name: same.name, typed: false }; }
+      else { ConsultEdit.addNew(u.name); st.added = { key: '', name: u.name, typed: true }; }
+    } else { ConsultEdit.toggle(u.key, true); st.added = { key: u.key, name: u.name, typed: false }; }
+  },
+
+  undo: function () {
+    var st = ConsultMsg.st, a = st.added, s = App.state.snap; if (!a) return;
+    var key = a.key || ((Svc.find(s, a.name) || {}).service);
+    if (key) { ConsultEdit.pid = st.pid; ConsultEdit.toggle(key, false); }
+    st.undone = true; ConsultMsg.paint();
+  },
+
+  paintDone: function () {
+    var st = ConsultMsg.st, C = STR.CMSG, body = U.$('cm-body'), s = App.state.snap;
+    body.textContent = '';
+    body.appendChild(U.el('div', { cls: 'cm-ok', role: 'status' }, [U.el('i', { 'aria-hidden': 'true', text: '✓' }),
+      U.el('span', {}, [U.el('b', { text: C.DONE_T }), U.el('span', { text: C.DONE_S })])]));
+    var a = st.added;                                                  // chip first: it is the part you may want to undo
+    if (a && !st.undone) {
+      var sv = (a.key && Svc.get(s, a.key)) || Svc.find(s, a.name) || { service: a.name, name: a.name, short_label: a.name, color: 'gray' };
+      body.appendChild(U.el('div', { cls: 'cm-chiprow', id: 'cm-chiprow' }, [
+        U.el('span', {}, [Svc.tint(U.el('span', { cls: 'tag lg', text: sv.short_label || a.name }), sv),
+          U.el('span', { text: U.fill(a.typed ? C.CHIP_DONE_NEW : C.CHIP_DONE, { b: st.bed }) })]),
+        U.el('button', { type: 'button', cls: 'lnk', id: 'cm-undo', text: C.UNDO, onclick: ConsultMsg.undo })]));
+    } else if (a && st.undone) body.appendChild(U.el('div', { cls: 'cm-chiprow off', text: U.fill(C.CHIP_UNDONE, { u: a.name }) }));
+    body.appendChild(U.el('div', { cls: 'cm-step' }, [ConsultMsg.label(C.DONE_L), U.el('div', { cls: 'cm-sent', id: 'cm-sent', text: st.sent })]));
+    var foot = U.$('cm-foot'); foot.textContent = '';
+    foot.appendChild(U.el('div', { cls: 'cm-two' }, [
+      U.el('button', { type: 'button', cls: 'btn sec', id: 'cm-again', text: C.AGAIN, onclick: function () {
+        // the chip stays as it is now · the form keeps what was chosen (a typed unit that became a chip is now a listed one)
+        st.copied = false; if (st.added && !st.undone) { st.addChip = false; } ConsultMsg.paint(); } }),
+      U.el('button', { type: 'button', cls: 'btn', id: 'cm-finish', text: C.FINISH, onclick: function () { Sheet.close(); } })]));
+  }
+};
+</script>
+
+  <!-- casev.html — 1.10.0 (39 · r25 · mockup r2 owner 18/11 14:12): the archive after 4 days of real use.
+     ArchiveX  (inside เพิ่มเติม → คลังคนไข้, owner/editor):
+               · สรุปจำหน่าย = 4 ช่อง: D/C ทั้งหมด · สาย A · สาย B · ย้ายวอร์ด — นับตั้งแต่วันที่ Chief เลือก (Meta.stats_from) ถึงวันนี้, from
+                 DischargeStats (no names, kept for good: also the patients whose history is gone after 10 days) · R1 เห็น เปลี่ยนไม่ได้
+               · ปุ่มวันที่มุมขวา (Chief) → ทางลัด (วันที่ 1 เดือนนี้ · 28 วันก่อน · วันนี้) + ปฏิทิน + บันทึก
+               · สาย ทั้งหมด n / A n / B n + 🔍 (ช่องค้นซ่อนจนแตะ) · Chief: ชื่อวอร์ดในข้อความ consult (Meta.consult_ward)
+     CaseView  one discharged patient, read-only, like on the ward: grey D/C banner (date · reason · old bed · สาย · Admit · LOS · ลบเมื่อไร) ·
+               head facts · Problem list · U/D · Plan · Long-term · งาน. No buttons (owner: กู้คืน อยู่ที่การ์ดในคลังแล้ว · ไม่เอา PDF / คัดลอก). -->
+<div id="casev" class="casev" role="dialog" aria-modal="true" aria-label="ประวัติเคส" hidden></div>
+<script>
+STR.CASEV = {
+  SUM: 'สรุปจำหน่าย', RANGE: 'ถึงวันนี้ · {n} วัน', RANGE_DEF: 'ถึงวันนี้ · {n} วัน (ยังไม่ได้ตั้ง)', FROM: 'ตั้งแต่ {d}',
+  SET_L: 'นับตั้งแต่ (วันแรกของโรเตท)', P_MONTH: '1 {m}', P_28: '28 วันก่อน', P_TODAY: 'วันนี้', SET_SAVE: 'บันทึก',
+  SET_NOTE: 'ทุกคนในวอร์ดเห็นช่วงเดียวกัน · R1 ดูได้ เปลี่ยนไม่ได้', LOADING: 'กำลังนับ…', FAIL: 'นับไม่สำเร็จ แตะเพื่อลองใหม่',
+  T_ALL: 'D/C ทั้งหมด', T_A: 'สาย A', T_B: 'สาย B', T_X: 'ย้ายวอร์ด',
+  ALL: 'ทั้งหมด', TEAM: 'สาย {t}', FILTER: 'สาย', SEARCH: 'ค้นชื่อหรือ HN', NONE_TEAM: 'ไม่มีเคสของสายนี้ในคลัง',
+  CW: 'ชื่อวอร์ดในข้อความ consult', CW_PH: 'เช่น NVM 21S', CW_NOTE: 'ว่าง = ใช้ชื่อวอร์ด "{w}" · Chief เท่านั้น', CW_SAVE: 'บันทึก', CW_SAVED: 'บันทึกชื่อวอร์ดแล้ว',
+  CW_BAD: 'ไม่เกิน 30 ตัว และไม่มีเครื่องหมาย < >',
+  OPEN: 'ดูประวัติ', CARD_META: 'HN {hn} · เตียง {b}', CARD_DC: 'D/C {d} · {r}',
+  TITLE: 'ประวัติเคส', BACK: '‹ คลัง', DC: 'D/C แล้ว', DC_HOME: 'กลับบ้าน', DC_XFER: 'ย้ายไป {d}',
+  INFO: 'เตียงเดิม {b} · สาย {t}', ADMIT: 'Admit {d}', LOSV: 'LOS {n} วัน', META: '{sex}{age} · HN {hn}',
+  LOAD: 'กำลังเปิดเคส…', LOAD_FAIL: 'เปิดเคสไม่สำเร็จ', GONE: 'เคสนี้ไม่อยู่ในคลังแล้ว (กู้คืนหรือลบไปแล้ว)', RETRY: 'ลองใหม่',
+  TASKS: 'งาน', CONSULT: 'Consult', EMPTY: 'ไม่มีข้อมูลที่บันทึกไว้',
+  READONLY: 'ดูอย่างเดียว', KEEP: 'ลบประวัติอัตโนมัติ {d}'
+};
+
+/* ======================= ArchiveX — summary · สาย filter · Chief prefs (more.html ArchiveView calls these) ======================= */
+var ArchiveX = {
+  team: 'all', sum: null, sumKey: '', busy: false, err: false, setting: false, pick: '', box: null,
+
+  key: function () { var s = App.state.snap, w = (s && s.ward) || {}; return App.state.wardId + '|' + (w.stats_from || ''); },
+  load: function () {
+    var X = ArchiveX, k = X.key(), ward = App.state.wardId;
+    X.busy = true; X.err = false; X.sumKey = k;
+    Api.call('api_getDcSummary', [Token.get(), ward, ''], { retries: 1 }).then(function (res) {
+      if (ward !== App.state.wardId || X.sumKey !== k) return;
+      X.busy = false;
+      if (res.ok) X.sum = res.data; else X.err = true;
+      X.paint();
+    });
+  },
+
+  /** The block above the list (built once per visit by ArchiveView.render). */
+  build: function () {
+    var X = ArchiveX, C = STR.CASEV;
+    X.setting = false;
+    var search = U.el('button', { type: 'button', cls: 'asearch', id: 'arch-find', 'aria-label': C.SEARCH, title: C.SEARCH, onclick: function () {
+      var q = U.$('arch-q'); if (!q) return;
+      if (q.hidden) { q.hidden = false; q.focus(); } else if (!q.value) q.hidden = true; else q.focus();
+    } }, [U.icon(['M10.5 5a5.5 5.5 0 1 0 0 11a5.5 5.5 0 1 0 0-11', 'M15 15l5 5'], 'aico')]);
+    X.box = U.el('div', { cls: 'arch-x' }, [U.el('section', { cls: 'card asum', id: 'arch-sum', 'aria-label': C.SUM }),
+      U.el('div', { cls: 'afilter' }, [U.el('div', { cls: 'seg afseg', id: 'arch-team', role: 'group', 'aria-label': C.FILTER }), search])]);
+    if (X.sumKey !== X.key() || !X.sum) X.load();
+    X.paint();
+    return X.box;
+  },
+
+  /** list rows → only this สาย */
+  filter: function (rows) { var t = ArchiveX.team; return t === 'all' ? rows : rows.filter(function (r) { return String(r.team).toUpperCase() === t; }); },
+
+  paint: function () {
+    var X = ArchiveX, C = STR.CASEV, box = U.$('arch-sum'); if (!box) return;
+    // สาย: counts from the archive list
+    var seg = U.$('arch-team'), rows = ArchiveView.rows || [];
+    if (seg) {
+      seg.textContent = '';
+      [['all', C.ALL], ['A', U.fill(C.TEAM, { t: 'A' })], ['B', U.fill(C.TEAM, { t: 'B' })]].forEach(function (x) {
+        var n = x[0] === 'all' ? rows.length : rows.filter(function (r) { return String(r.team).toUpperCase() === x[0]; }).length, on = X.team === x[0];
+        seg.appendChild(U.el('button', { type: 'button', cls: on ? 'on' : '', 'data-v': x[0], 'aria-pressed': String(on), text: x[1] + (ArchiveView.rows ? ' ' + n : ''),
+          onclick: function () { X.team = x[0]; ArchiveView.paint(); } }));
+      });
+    }
+    if (X.sumKey !== X.key() && !X.busy) X.load();
+    box.textContent = '';
+    var s = App.state.snap, w = (s && s.ward) || {}, owner = App.role() === 'owner', d = X.sum;
+    var from = (d && d.from) || w.stats_from || '';
+    var head = U.el('div', { cls: 'asum-h' }, [U.el('div', { cls: 'asum-t' }, [U.el('b', { text: C.SUM }),
+      U.el('span', { text: d ? U.fill(w.stats_from ? C.RANGE : C.RANGE_DEF, { n: X.days(d.from, d.to) }) : '' })])]);
+    var fromTxt = from ? U.fill(C.FROM, { d: X.day(from) }) : '';
+    head.appendChild(owner
+      ? U.el('button', { type: 'button', cls: 'adate', id: 'asum-set', 'aria-expanded': String(X.setting), onclick: function () { X.setting = !X.setting; X.pick = w.stats_from || from; X.paint(); } },
+          [U.icon(['M5 6h14v14H5z', 'M5 10h14', 'M9 4v4', 'M15 4v4'], 'aico'), fromTxt])
+      : U.el('span', { cls: 'adate ro' }, [U.icon(['M5 6h14v14H5z', 'M5 10h14', 'M9 4v4', 'M15 4v4'], 'aico'), fromTxt]));
+    box.appendChild(head);
+    if (owner && X.setting) box.appendChild(X.setter());
+    if (X.err) return box.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: C.FAIL, onclick: function () { X.load(); X.paint(); } }));
+    if (!d) return box.appendChild(U.el('p', { cls: 'note', text: C.LOADING }));
+    var tile = function (n, label, cls) { return U.el('div', { cls: 'atile ' + cls }, [U.el('b', { text: String(n) }), U.el('span', { text: label })]); };
+    box.appendChild(U.el('div', { cls: 'atiles', id: 'asum-tiles' }, [tile(d.total, C.T_ALL, 't0'), tile(d.team.A, C.T_A, 'tA'), tile(d.team.B, C.T_B, 'tB'), tile(d.transfer, C.T_X, 't0')]));
+  },
+
+  /** Chief: shortcuts + calendar + บันทึก */
+  setter: function () {
+    var X = ArchiveX, C = STR.CASEV, today = X.today(), t = new Date();
+    var month = today.slice(0, 8) + '01', ago = X.addDays(today, -27);
+    var mName = t.toLocaleDateString('th-TH', { month: 'short' });
+    var inp = U.el('input', { cls: 'in', type: 'date', id: 'asum-date', max: today, 'aria-label': C.SET_L });
+    inp.value = X.pick || '';
+    inp.addEventListener('change', function () { X.pick = inp.value; X.paint(); });
+    var chips = U.el('div', { cls: 'apresets' }, [[month, U.fill(C.P_MONTH, { m: mName })], [ago, C.P_28], [today, C.P_TODAY]].map(function (p) {
+      var on = X.pick === p[0];
+      return U.el('button', { type: 'button', cls: 'apreset' + (on ? ' on' : ''), 'aria-pressed': String(on), text: p[1], onclick: function () { X.pick = p[0]; X.paint(); } });
+    }));
+    return U.el('div', { cls: 'aset' }, [U.el('label', { cls: 'cm-lab', 'for': 'asum-date', text: C.SET_L }), chips, inp,
+      U.el('p', { cls: 'cm-hint', text: C.SET_NOTE }),
+      U.el('button', { type: 'button', cls: 'btn', id: 'asum-save', text: C.SET_SAVE, onclick: function () { X.setFrom(inp.value); } })]);
+  },
+
+  setFrom: function (day) {
+    var X = ArchiveX;
+    if (day && !/^\d{4}-\d{2}-\d{2}$/.test(day)) return;
+    if (day > X.today()) day = X.today();
+    X.setting = false; X.sum = null; X.paint();
+    Ops.run('api_setArchivePrefs', { stats_from: day }, { apply: function (snap) { snap.ward = snap.ward || {}; snap.ward.stats_from = day; } })
+      .then(function () { X.sumKey = ''; X.load(); });
+  },
+
+  /** Chief: the ward name in the consult message (below the list). */
+  prefs: function () {
+    if (App.role() !== 'owner') return null;
+    var C = STR.CASEV, s = App.state.snap, w = (s && s.ward) || {};
+    var inp = U.el('input', { cls: 'in', id: 'cw-in', maxlength: '30', autocomplete: 'off', placeholder: C.CW_PH, 'aria-label': C.CW });
+    inp.value = w.consult_ward || '';
+    var err = U.el('div', { cls: 'ferr', hidden: 'hidden', text: C.CW_BAD });
+    var f = U.el('form', { cls: 'addrow' }, [inp, U.el('button', { type: 'submit', cls: 'btn sm', text: C.CW_SAVE })]);
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = inp.value.replace(/\s+/g, ' ').trim();
+      err.hidden = v.length <= 30 && !/[<>]/.test(v); if (!err.hidden) return;
+      inp.blur();
+      Ops.run('api_setArchivePrefs', { consult_ward: v }, { apply: function (snap) { snap.ward = snap.ward || {}; snap.ward.consult_ward = v; } })
+        .then(function (res) { if (res.ok) Toast.show(C.CW_SAVED); });
+    });
+    return U.el('div', { cls: 'card cwcard' }, [U.el('span', { cls: 'flabel', text: C.CW }), f, err,
+      U.el('p', { cls: 'note fhint', text: U.fill(C.CW_NOTE, { w: w.ward_name || '' }) })]);
+  },
+
+  today: function () { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); },
+  addDays: function (k, n) { var d = new Date(Date.parse(k + 'T12:00:00') + n * 86400000); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); },
+  day: function (k) { return k ? U.dateTh(k + 'T12:00:00') : ''; },
+  days: function (a, b) { return Math.round((Date.parse(b + 'T12:00:00') - Date.parse(a + 'T12:00:00')) / 86400000) + 1; }
+};
+
+/* ======================= CaseView — one discharged patient, read-only ======================= */
+var CaseView = {
+  r: null, data: null, seq: 0,
+  isOpen: function () { var v = U.$('casev'); return !!v && !v.hidden; },
+
+  open: function (r) {
+    var V = CaseView, C = STR.CASEV, v = U.$('casev'), my = ++V.seq, ward = App.state.wardId;
+    V.r = r; V.data = null; v.hidden = false; document.documentElement.classList.add('casev-on');
+    V.frame(); V.body().appendChild(U.el('p', { cls: 'note center', text: C.LOAD }));
+    Api.call('api_getArchivedCase', [Token.get(), ward, r.patient_id], { retries: 1 }).then(function (res) {
+      if (my !== V.seq || !V.isOpen()) return;
+      var b = V.body(); b.textContent = '';
+      if (!res.ok) {
+        if (res.code === 'STALE') { b.appendChild(U.el('p', { cls: 'note center', text: C.GONE })); ArchiveView.load(); return; }
+        return b.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: C.LOAD_FAIL + ' · ' + C.RETRY, onclick: function () { V.open(r); } }));
+      }
+      V.data = res.data; V.paint();
+    });
+  },
+
+  frame: function () {
+    var C = STR.CASEV, v = U.$('casev');
+    v.textContent = '';
+    v.appendChild(U.el('div', { cls: 'cv-top' }, [
+      U.el('button', { type: 'button', cls: 'cv-back', id: 'cv-back', text: C.BACK, onclick: function () { CaseView.close(); } }),
+      U.el('b', { text: C.TITLE })]));
+    v.appendChild(U.el('div', { cls: 'cv-body', id: 'cv-body' }));
+  },
+  body: function () { return U.$('cv-body'); },
+
+  paint: function () {
+    var V = CaseView, C = STR.CASEV, d = V.data, p = d.patient, b = V.body(), D = STR.DETAIL;
+    var reason = p.discharge_type === 'transfer_ward' ? U.fill(C.DC_XFER, { d: p.discharge_destination }) : C.DC_HOME;
+    var info = [U.fill(C.INFO, { b: p.last_bed_no || '—', t: p.team || '—' })];
+    if (p.admit_date) info.push(U.fill(C.ADMIT, { d: ArchiveX.day(p.admit_date) }));
+    if (d.stat && d.stat.los_days) info.push(U.fill(C.LOSV, { n: d.stat.los_days }));
+    var keepTo = V.keepUntil(p.discharged_at);
+    b.appendChild(U.el('div', { cls: 'cv-dc', id: 'cv-dc' }, [
+      U.el('div', { cls: 'cv-dc1' }, [U.el('span', { cls: 'cv-badge', text: C.DC }), U.el('b', { text: U.dateTh(p.discharged_at) + ' · ' + reason })]),
+      U.el('div', { cls: 'cv-dc2', text: info.join(' · ') }),
+      U.el('div', { cls: 'cv-dc3', text: C.READONLY + (keepTo ? ' · ' + U.fill(C.KEEP, { d: keepTo }) : '') })]));
+    var tm = String(p.team || '').toUpperCase();
+    var who = U.el('div', { cls: 'card dcard cv-who' }, [
+      U.el('div', { cls: 'cv-name' }, [tm === 'A' || tm === 'B' ? U.el('span', { cls: 'teamchip t' + tm, text: tm }) : null, U.el('span', { cls: 'pname', text: p.name })].filter(Boolean)),
+      U.el('div', { cls: 'pmeta', text: U.fill(C.META, { sex: p.sex || '', age: p.age == null ? '' : p.age, hn: p.hn || '—' }) })]);
+    var facts = U.el('div', { cls: 'facts' });
+    [['allergy', D.SEC.allergy], ['acp', D.SEC.acp], ['baseline', 'Baseline'], ['psychosocial', 'Psychosocial'], ['coverage', D.SEC.coverage]].forEach(function (f) {
+      if (!p[f[0]]) return;
+      facts.appendChild(U.el('div', { cls: 'fact s-' + f[0] + (f[0] === 'allergy' ? ' has' : '') }, [U.el('span', { cls: 'flabel', text: f[1] }), U.el('div', { cls: 'fval', text: p[f[0]] })]));
+    });
+    if (d.consults.length) {
+      var cv = U.el('div', { cls: 'fval' }), s = App.state.snap;
+      d.consults.forEach(function (k) { cv.appendChild(Svc.chip(s, k, 'tag lg')); });
+      facts.appendChild(U.el('div', { cls: 'fact s-consult' }, [U.el('span', { cls: 'flabel', text: C.CONSULT }), cv]));
+    }
+    if (facts.children.length) who.appendChild(facts);
+    b.appendChild(who);
+    var any = false;
+    [['dx', D.SEC.dx], ['summary', D.SEC.summary], ['short_plan', D.SEC.short_plan], ['long_plan', D.SEC.long_plan], ['dc_wait', STR.DETAIL.F.dc_wait]].forEach(function (f) {
+      if (!String(p[f[0]] || '').trim()) return;
+      any = true;
+      var card = U.el('div', { cls: 'card dcard cv-sec', 'data-f': f[0] }, [U.el('h3', { text: f[1] })]);
+      card.appendChild(f[0] === 'dc_wait' ? U.el('div', { text: p.dc_wait }) : Rich.render(p[f[0]], { print: true }));
+      b.appendChild(card);
+    });
+    if (!any) b.appendChild(U.el('p', { cls: 'note center', text: C.EMPTY }));
+    if (d.tasks.length) {
+      var tl = U.el('div', { cls: 'card dcard tsec cv-tasks' }, [U.el('h3', { text: C.TASKS })]);
+      d.tasks.forEach(function (t) { tl.appendChild(U.el('div', { cls: 'cv-task' + (t.done ? ' done' : '') }, [U.el('span', { cls: 'cv-ck', text: t.done ? '☑' : '☐' }), U.el('span', { text: t.text })])); });
+      b.appendChild(tl);
+    }
+  },
+
+  /** The day the daily job removes this history (discharged + keep_days) — so R1 knows how long they have. */
+  keepUntil: function (iso) {
+    var s = App.state.snap, n = (s && s.ward && s.ward.keep_days) || 0, t = Date.parse(iso);
+    return n && !isNaN(t) ? U.dateTh(new Date(t + n * 86400000).toISOString()) : '';
+  },
+
+  close: function () {
+    var v = U.$('casev'); if (!v || v.hidden) return;
+    v.hidden = true; v.textContent = ''; CaseView.seq++; CaseView.data = null;
+    document.documentElement.classList.remove('casev-on');
+  }
+};
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && CaseView.isOpen() && !Sheet.isOpen()) { CaseView.close(); e.stopImmediatePropagation(); }
+}, true);
 </script>
 
   <!-- qr.html — 1.6.0: a small QR Code encoder (byte mode · error correction M · versions 1–10 · best of 8 masks), written
