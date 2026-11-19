@@ -1849,6 +1849,17 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .keeplist .keep input { width: 20px; height: 20px; accent-color: var(--primary); }
 .paircode { margin: 14px auto 6px; text-align: center; font: 800 54px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 10px; color: var(--primary); }
 #scr-join .spinner { margin: 14px auto; }
+/* 1.11.0: the phone's steps (✓ done · ● now · ○ later) */
+.jsteps { list-style: none; padding: 0; margin: 4px 0 0; }
+.jsteps li { position: relative; padding: 8px 0 8px 34px; color: var(--faint); font-size: 15.5px; }
+.jsteps li::before { content: ''; position: absolute; left: 4px; top: 9px; width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line2); box-sizing: border-box; }
+.jsteps li.now { color: var(--text); font-weight: 650; }
+.jsteps li.now::before { box-shadow: none; border: 3px solid var(--primary); border-right-color: transparent; animation: spin .9s linear infinite; }
+.jsteps li.js2.now::before { animation: none; border-right-color: var(--primary); background: var(--primary-soft); }
+.jsteps li.done { color: var(--ok); }
+.jsteps li.done::before { content: '✓'; box-shadow: none; background: var(--ok); color: #fff; font: 800 13px/20px system-ui; text-align: center; }
+.jsteps li .paircode { display: none; }
+.jsteps li.now .paircode { display: block; margin: 10px 0 4px; text-align: left; }
 #login-chief, #c-back { display: block; margin: 14px auto 0; }
 /* นศพ.: nickname · user_id faint over the screen (taps go through) */
 .wm { position: fixed; inset: -30vmax; z-index: 40; pointer-events: none; display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around;
@@ -1868,6 +1879,27 @@ body.printing .wm { display: none !important; }
 .seg.wardpick button.on { background: var(--primary); color: var(--on-primary); box-shadow: none; }
 .qrpend { width: 100%; margin: 4px 0 8px; }
 .qrpend .preq { background: var(--primary-soft); border-radius: 12px; padding: 8px 10px; margin-top: 6px; }
+/* 1.11.0 (41 · r26): รับทั้งหมด · each row its own state · "เพิ่งรับ" · นศพ. ทำอะไรได้ */
+.qall { width: 100%; margin: 6px 0 2px; }
+.preq small.perr { color: var(--danger); }
+.prec-h { margin: 12px 0 0; }
+.mrow.prec { min-height: 40px; padding: 6px 2px; }
+.prec .pst { flex: none; font-size: 13.5px; font-weight: 650; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.prec.st-approving .pst::before, .prec.st-denying .pst::before { content: ''; width: 12px; height: 12px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
+.prec.st-approved .pst { color: var(--primary); }
+.prec.st-approved .pst::before { content: '✓'; }
+.prec.st-used .pst { color: var(--ok); }
+.prec.st-used .pst::before { content: '✓✓'; letter-spacing: -2px; }
+.prec.st-failed .pst { color: var(--danger); }
+.stucard .f + .f { margin-top: 10px; }
+.stucard .kv { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; }
+/* 1.11.0 (41 · r26): นศพ. — read-only history · tick dot when ticking is not allowed */
+.rosec h3 { margin-bottom: 6px; }
+.rosec .roval { overflow-wrap: anywhere; }
+.rofact .fval { overflow-wrap: anywhere; }
+.ck.ro::before { left: 18px; top: 19px; width: 7px; height: 7px; border: 0; background: var(--muted); }
+.ck.on.ro::before { left: 10px; top: 10px; width: 24px; height: 24px; opacity: .55; }
+.ck.on.ro::after { opacity: .8; }
 /* 1.6.2 (24 §1): list card — row 1 "HN · sex age · house | tasks" spans the whole card; row 2 = name + chips in their own row
    (they used to share the right column with the task badge, so a long chip cut the age off). One chip wider than the row → "…". */
 #bedgrid.ls .bed.occ { grid-template-columns: 44px minmax(0, 1fr) auto; grid-template-areas: "no id bd" "no r2 r2"; }
@@ -2188,7 +2220,7 @@ html.casev-on body { overflow: hidden; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.10.0", pages: true,
+  return { app_version: "1.11.0", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -2281,6 +2313,8 @@ var U = {
   nowIso: function () { var d = new Date(Date.now() + 7 * 3600000); return d.toISOString().slice(0, 19) + '+07:00'; },
   /** "2026-11-01T09:41:00+07:00" → "09:41" (Bangkok time as stored). */
   isoHhmm: function (iso) { var m = /T(\d\d:\d\d)/.exec(String(iso || '')); return m ? m[1] : ''; },
+  /** 1.11.0 (41 Q3): "2026-11-19T09:41:00+07:00" → "19/11 09:41" (day/month as stored, Bangkok) — who did a task, which day. */
+  isoDayHhmm: function (iso) { var m = /^\d{4}-(\d\d)-(\d\d)T(\d\d:\d\d)/.exec(String(iso || '')); return m ? Number(m[2]) + '/' + Number(m[1]) + ' ' + m[3] : ''; },
   standalone: function () { return ('standalone' in navigator) ? navigator.standalone === true : null; },
   show: function (screenId) {
     Array.prototype.forEach.call(document.querySelectorAll('.screen'), function (s) { s.hidden = s.id !== screenId; });
@@ -2639,6 +2673,17 @@ var App = {
 
   /** Role for this ward: the snapshot is fresher than boot (owner may change it in the Sheet). */
   role: function () { var s = App.state.snap, w = App.ward(); return (s && s.role) || (w && w.role) || 'viewer'; },
+  /** 1.11.0 (41 · r26): what a นศพ. may do, as the Chief set it (snapshot ward.stu_hist / stu_tasks). Others: always true.
+      'hist' = sees the history (read-only) · 'tick' = tick/untick tasks · 'add' = add + edit + delete own (like R1). */
+  can: function (what) {
+    if (App.role() !== 'viewer') return true;
+    var w = (App.state.snap && App.state.snap.ward) || {};
+    if (what === 'hist') return w.stu_hist === '1';
+    if (what === 'tick') return w.stu_tasks === 'tick' || w.stu_tasks === 'add';
+    if (what === 'add') return w.stu_tasks === 'add';
+    if (what === 'names') return w.stu_hist === '1' || !!w.stu_tasks;   // tasks come with names, done ones too
+    return false;
+  },
 
   clearData: function () {
     var st = App.state;
@@ -5602,6 +5647,7 @@ STR.DETAIL = {
   CONSULT: 'Consult', CEDIT: 'Edit', NO_CONSULT: '—', ADD_CONSULT: '+ Add consult',
   MANAGE: 'จัดการเตียง', MOVE: 'ย้ายเตียง', XFER: 'Transfer…',
   VIEW_ONLY: 'ดูอย่างเดียว', VIEWER_NOTE: 'viewer ไม่เห็น HN อายุ สิทธิ์ สรุปเคส และแผนการรักษา',
+  VIEWER_NOTE_H: 'นศพ. ดูอย่างเดียว · ไม่เห็น HN ชื่อเต็ม อายุ สิทธิ์ Baseline Psychosocial และแผนกลับ', RO_EMPTY: '—',   // 1.11.0 (41 Q1)
   GONE: 'คนไข้เตียงนี้ถูกจำหน่ายหรือย้ายออกแล้ว', CLOSE: 'ปิด', UNSAVED_SW: 'ยังมีข้อความที่บันทึกไม่สำเร็จ แตะเตียงนั้นอีกครั้งเพื่อเปิด (ข้อความนั้นจะหาย)', EDIT_ID: 'แก้ชื่อ เพศ อายุ HN', TEAM_SET: 'เปลี่ยนเป็นสาย {t}',
   DX: 'Dx', DX_PH: 'เช่น NSTEMI — รอ CAG', ADMIT: 'Admit', ADMIT_V: '{d} · D{n}', EDIT: 'Edit',
   PLAN_L: 'วันกลับ', PLAN_NONE: 'ยังไม่เลือกวัน', PLAN_LATE: 'เลยแผน ({d})', WAIT_L: 'รอก่อนกลับ', PLAN_BTN: 'เลือกวันกลับ',
@@ -5678,13 +5724,21 @@ var Detail = {
     headCard.appendChild(facts);
     if (!v) headCard.appendChild(Hist.addRow('d-hadd', ['allergy', 'acp', 'baseline', 'psychosocial']));
     var tasks = U.el('div', { cls: 'card dcard tsec' }, [U.el('h3', { text: D.TASKS })]);
-    if (!v) tasks.appendChild(Detail.addForm());
+    if (App.can('add')) tasks.appendChild(Detail.addForm());           // 1.11.0: + นศพ. when the Chief allows
     tasks.appendChild(U.el('div', { id: 'd-tasks' }));
     var planCard = U.el('div', { cls: 'card dcard', id: 'd-plan' });
     var grp = function (k, kids, extra) {
       return U.el('section', { cls: 'dgrp g-' + k, id: 'g-' + k, 'aria-label': D.GRP[k] }, [U.el('div', { cls: 'dgh' }, [U.el('h2', { text: D.GRP[k] })].concat(extra || []))].concat(kids));
     };
-    if (v) {
+    Detail.layout = Detail.layoutKey();
+    if (v && App.can('hist')) {                                        // 1.11.0 (41 · r26): นศพ. reads the history — nothing here can be edited
+      facts.insertBefore(Detail.roFact('admit_date', D.ADMIT), facts.firstChild);
+      facts.insertBefore(Detail.roFact('acp', D.F.acp), facts.firstChild.nextSibling);
+      facts.insertBefore(Detail.roFact('allergy', D.F.allergy), facts.firstChild.nextSibling);
+      var ro = function (f) { return U.el('div', { cls: 'card dcard rosec', 'data-f': f }, [U.el('h3', { text: D.SUB[f] }), U.el('div', { cls: 'roval', id: 'd-ro-' + f })]); };
+      [headCard, grp('hist', [ro('dx'), ro('summary')]), grp('today', [tasks, ro('short_plan')]), grp('home', [ro('long_plan')]),
+       U.el('p', { cls: 'note vnote', text: D.VIEWER_NOTE_H })].forEach(function (x) { body.appendChild(x); });
+    } else if (v) {
       [headCard, grp('today', [tasks]), grp('home', [planCard]), U.el('p', { cls: 'note vnote', text: D.VIEWER_NOTE })].forEach(function (x) { body.appendChild(x); });
     } else {
       var manage = U.el('div', { cls: 'card dcard dmanage' }, [U.el('h3', { text: D.MANAGE }), U.el('div', { cls: 'three' }, [
@@ -5751,6 +5805,7 @@ var Detail = {
     if (!Detail.isOpen()) return;
     var p = Detail.patient(), D = STR.DETAIL;
     if (!p) { Detail.close(true); if (!Detail.leaving) Toast.show(D.GONE); return; }
+    if (Detail.layout !== Detail.layoutKey() && Detail.viewer() && !TaskEdit.on) return Detail.open(Detail.pid);   // 1.11.0: the Chief changed what นศพ. may see/do
     var keep = Keep.mark();                                              // 1.7.3: the page stays where you are reading
     Detail.paintAll(p);
     keep();
@@ -5769,6 +5824,7 @@ var Detail = {
     if (p.sex) tt.appendChild(U.el('span', { cls: 'dsub dage', text: p.sex + (Detail.viewer() || p.age == null ? '' : p.age) }));
     if (!Detail.viewer() && p.allergy) tt.appendChild(U.el('span', { cls: 'dalg', title: p.allergy, text: '⚠ ' + p.allergy }));
     Detail.paintHead(p);
+    Detail.paintRo(p);
     Detail.paintTasks(p);
     Detail.paintConsults(p);
     Detail.paintPlan(p);
@@ -5782,6 +5838,25 @@ var Detail = {
     Detail.paintFav();
     var temp = Guess.isTemp(p.patient_id);
     ['d-dc', 'd-move', 'd-xfer', 'd-ckl', 'd-aedit', 'd-safe'].forEach(function (id) { var b = U.$(id); if (b) b.disabled = temp; });
+  },
+
+  /** 1.11.0: what the open page was built for (a นศพ.'s page is rebuilt when the Chief changes the setting). */
+  layoutKey: function () { return [App.role(), App.can('hist'), App.can('add')].join('|'); },
+  /** 1.11.0 (41 · r26): a read-only fact row (นศพ.) — Admit · Allergy · ACP */
+  roFact: function (f, label) {
+    return U.el('div', { cls: 'fact rofact s-' + f }, [U.el('span', { cls: 'flabel', text: label }), U.el('div', { cls: 'fval', id: 'd-ro-' + f })]);
+  },
+  paintRo: function (p) {
+    if (!Detail.viewer() || !App.can('hist')) return;
+    var D = STR.DETAIL;
+    ['allergy', 'acp'].forEach(function (f) { var b = U.$('d-ro-' + f); if (!b) return; b.textContent = p[f] || D.RO_EMPTY; b.classList.toggle('fph', !p[f]); });
+    var a = U.$('d-ro-admit_date');
+    if (a) { a.textContent = ''; a.appendChild(p.admit_date ? U.el('span', { cls: 'aval', text: U.fill(D.ADMIT_V, { d: Dc.dm(p.admit_date) + ' ' + String(Dc.date(p.admit_date).getFullYear() + 543).slice(-2), n: Dc.dayNo(p) }) }) : U.el('span', { cls: 'fph', text: D.RO_EMPTY })); }
+    ['dx', 'summary', 'short_plan', 'long_plan'].forEach(function (f) {
+      var b = U.$('d-ro-' + f); if (!b) return;
+      b.textContent = '';
+      b.appendChild(String(p[f] || '').trim() ? Rich.render(p[f], { print: true }) : U.el('span', { cls: 'fph', text: D.RO_EMPTY }));
+    });
   },
 
   /** v1.4 plan card · r19: no title (the group says D/C planning, A25) · Admit moved to the head (A8) */
@@ -6024,10 +6099,11 @@ var Detail = {
     var open = mine.filter(function (t) { return !t.done; }), done = mine.filter(function (t) { return t.done; });
     box.textContent = '';
     // r19 A24: no "ไม่มีงานค้าง" line — the add box says it all (viewer has no add box → a quiet dash)
-    if (!open.length && v) box.appendChild(U.el('div', { cls: 'tlist-empty', text: '—' }));
-    open.forEach(function (t) { box.appendChild(v ? U.el('div', { cls: 'trow' }, [U.el('div', { cls: 'ttext', text: '• ' + t.text })]) : Detail.taskRow(t)); });
+    var legacy = v && !App.can('names');                                // 1.11.0: นศพ. with nothing turned on = as 1.10.0 (dots, no names)
+    if (!open.length && !App.can('add')) box.appendChild(U.el('div', { cls: 'tlist-empty', text: '—' }));
+    open.forEach(function (t) { box.appendChild(legacy ? U.el('div', { cls: 'trow' }, [U.el('div', { cls: 'ttext', text: '• ' + t.text })]) : Detail.taskRow(t)); });
     var old = (s.done_old || {})[p.patient_id] || 0;                    // 1.7.0: older finished tasks are not in the snapshot
-    if (v || !(done.length + old)) return;
+    if (legacy || !(done.length + old)) return;
     var more = old ? (Detail.oldDone[p.patient_id] || []).filter(function (t) { return !done.some(function (x) { return x.task_id === t.task_id; }); }) : [];
     var det = U.el('details', { cls: 'done', open: Detail.doneOpen ? 'open' : null },
       [U.el('summary', { text: U.fill(D.DONE_N, { n: done.length + old }) })].concat(done.map(Detail.doneRow)).concat(more.map(Detail.doneRow)));
@@ -6048,11 +6124,11 @@ var Detail = {
 
   taskRow: function (t) {
     var D = STR.DETAIL, temp = Guess.isTemp(t.task_id);
-    var me = (App.state.snap.me || {}).display_name, canDel = !temp && (App.role() === 'owner' || (me && t.created_by === me));
+    var me = (App.state.snap.me || {}).display_name, canDel = !temp && App.can('add') && (App.role() === 'owner' || (me && t.created_by === me));   // 1.11.0: นศพ. = R1 rules
     return U.el('div', { cls: 'trow' + (temp ? ' saving' : '') }, [
-      U.el('button', { type: 'button', cls: 'ck', disabled: temp ? 'disabled' : null, 'aria-label': U.fill(D.TICK, { t: t.text }),
-        onclick: function () { Detail.tick(t.task_id, true); } }),
-      U.el('div', { cls: 'ttext' }, [TaskEdit.word(t), U.el('div', { cls: 'who', text: U.fill(D.WHO, { who: t.created_by || '—', t: U.isoHhmm(t.created_at) }) })]),   // 1.8.1: tap = edit
+      App.can('tick') ? U.el('button', { type: 'button', cls: 'ck', disabled: temp ? 'disabled' : null, 'aria-label': U.fill(D.TICK, { t: t.text }),
+        onclick: function () { Detail.tick(t.task_id, true); } }) : U.el('span', { cls: 'ck ro', 'aria-hidden': 'true' }),
+      U.el('div', { cls: 'ttext' }, [TaskEdit.word(t), U.el('div', { cls: 'who', text: U.fill(D.WHO, { who: t.created_by || '—', t: U.isoDayHhmm(t.created_at) }) })]),   // 1.8.1: tap = edit · 1.11.0: + day
       canDel ? U.el('button', { type: 'button', cls: 'xbtn', 'aria-label': U.fill(D.DEL, { t: t.text }), text: '✕',
         onclick: function () { Detail.delTask(t.task_id); } }) : null           // v1.4.1 F7: no "ลบ?" step (easy to add again)
     ]);
@@ -6061,8 +6137,9 @@ var Detail = {
   doneRow: function (t) {
     var D = STR.DETAIL;
     return U.el('div', { cls: 'trow' }, [
-      U.el('button', { type: 'button', cls: 'ck on', 'aria-label': U.fill(D.UNTICK, { t: t.text }), onclick: function () { Detail.tick(t.task_id, false); } }),
-      U.el('div', { cls: 'ttext' }, [U.el('s', { text: t.text }), U.el('div', { cls: 'who', text: U.fill(D.DONE_WHO, { who: t.done_by || '—', t: U.isoHhmm(t.done_at) }) })])
+      App.can('tick') ? U.el('button', { type: 'button', cls: 'ck on', 'aria-label': U.fill(D.UNTICK, { t: t.text }), onclick: function () { Detail.tick(t.task_id, false); } })
+        : U.el('span', { cls: 'ck on ro', 'aria-hidden': 'true' }),
+      U.el('div', { cls: 'ttext' }, [U.el('s', { text: t.text }), U.el('div', { cls: 'who', text: U.fill(D.DONE_WHO, { who: t.done_by || '—', t: U.isoDayHhmm(t.done_at) }) })])
     ]);
   },
 
@@ -6648,7 +6725,7 @@ STR.TASKS = {
    (busy()); it redraws when the box closes. Server: api_editTask (old_text → TEXT_CONFLICT if someone changed it first). */
 var TaskEdit = {
   on: null,                                                           // {el, t, box}
-  can: function (t) { return App.role() !== 'viewer' && !t.done && !Guess.isTemp(t.task_id); },
+  can: function (t) { return App.can('add') && !t.done && !Guess.isTemp(t.task_id); },   // 1.11.0: + นศพ. when the Chief allows
   /** the words of a task: a tappable span (or plain text when it cannot be edited) */
   word: function (t, cls) {
     var w = U.el('span', { cls: (cls || 'tword') + (TaskEdit.can(t) ? ' tedit' : ''), text: t.text });
@@ -6717,7 +6794,7 @@ var Tasks = {
 
   /** Header built once per visit (the quick-add box must survive repaints), then painted in place. */
   header: function (h) {
-    var snap = App.state.snap, T = STR.TASKS, viewer = App.role() === 'viewer', key = 'tasks:' + App.role();
+    var snap = App.state.snap, T = STR.TASKS, viewer = !App.can('add'), key = 'tasks:' + App.role() + ':' + App.can('add');   // 1.11.0
     if (h.getAttribute('data-built') !== key) {
       h.textContent = ''; h.setAttribute('data-built', key);
       var c = Tasks.c = { sub: U.el('span', { cls: 'sub' }), ref: U.el('span', { cls: 'refslot' }), team: BedMap.chips(Tasks.st, App.render, true) };
@@ -6833,7 +6910,7 @@ var Tasks = {
 
   /** One task line. Owner/editor: round tick button (44 px target); viewer: a dot. */
   row: function (t) {
-    var T = STR.TASKS, viewer = App.role() === 'viewer', temp = Guess.isTemp(t.task_id);
+    var T = STR.TASKS, viewer = !App.can('tick'), temp = Guess.isTemp(t.task_id);   // 1.11.0: นศพ. ticks when the Chief allows
     var tick = viewer ? U.el('span', { cls: 'ck2 ro', 'aria-hidden': 'true' })
       : U.el('button', { type: 'button', cls: 'ck2' + (t.done ? ' on' : ''), disabled: temp ? 'disabled' : null,
           'aria-label': U.fill(t.done ? T.UNTICK : T.TICK, { t: t.text }), 'aria-pressed': String(!!t.done),
@@ -8937,6 +9014,11 @@ STR.TEAM = {
   TITLE: 'ทีม', HINT: 'สมาชิก · QR เชิญ · คำขอ', HINT_N: 'มีคำขอรอ {n}', LOADING: 'กำลังโหลดทีม…', FAIL: 'โหลดทีมไม่สำเร็จ แตะเพื่อลองใหม่',
   TERM: 'รอบนี้', TERM_END: 'จบรอบ {d}', TERM_LEFT: 'อีก {n} วัน', TERM_NONE: 'ยังไม่ตั้งวันจบรอบ (ทุกคนใช้ได้จนกว่าจะเอาออก)', TERM_SET: 'ตั้ง/เลื่อนวัน', HANDOVER: 'ส่งต่อ Chief',
   TERM_NOTE: 'วันจบรอบเดียวกันทั้งทีม · หลังวันนี้ทุกคนหมดสิทธิ์เอง (ยกเว้นที่ติ๊ก "ต่อ" ตอนส่งต่อ Chief)',
+  ST: { approving: 'กำลังรับ…', denying: 'กำลังปฏิเสธ…', approved: 'รับแล้ว · รอเครื่องน้อง', used: 'เข้าแอปแล้ว', denied: 'ไม่รับ', failed: 'ไม่สำเร็จ' },
+  RETRY: 'ลองอีกครั้ง', ALL: 'รับทั้งหมด {n} คน', ALL_Q: 'เช็กรหัสครบแล้ว? แตะอีกครั้ง', RECENT: 'เพิ่งรับ', QR_COUNT: 'รอรับ {p} · รับแล้ว {a}',
+  STU_T: 'นศพ. ทำอะไรได้', STU_HIST: 'ประวัติคนไข้', STU_TASKS: 'งานค้าง', STU_H: [['', 'ไม่เห็น'], ['1', 'ดูได้']],
+  STU_K: [['', 'ดูอย่างเดียว'], ['tick', 'ติ๊กเสร็จ'], ['add', 'ติ๊ก + เพิ่ม/แก้']],
+  STU_NOTE: 'นศพ. ไม่เห็น HN ชื่อเต็ม อายุ สิทธิ์ และแผนกลับเสมอ · แก้ประวัติไม่ได้ · "ติ๊ก + เพิ่ม/แก้" = ทำกับงานได้เหมือน R1 (ลบได้เฉพาะงานที่ตัวเองเพิ่ม) · ชื่อน้องขึ้นที่งาน', STU_RO: 'Chief เป็นคนตั้ง',
   PEND: 'คำขอเข้าทีม (QR)', QR_WAIT: 'รอน้องสแกน… คำขอจะขึ้นตรงนี้ (ไม่ต้องออกจากหน้านี้)', PEND_NOTE: 'รับเมื่อรหัส 4 หลักตรงกับจอของน้อง · รับแล้ว = นศพ. ดูอย่างเดียว', NEW_PHONE: 'เครื่องใหม่', OK: 'รับ', NO: 'ไม่รับ',
   CHIEFS: 'Chief', ADMIN: 'ผู้ดูแลระบบ', R1: 'R1 (แก้ได้ทุกเตียง)', SLOT: 'สาย {t}', EMPTY_SLOT: 'ว่าง', PUT: 'ใส่ R1', REPLACE: 'แทนที่',
   STUDENTS: 'นศพ. · ดูอย่างเดียว', NONE: 'ยังไม่มี', QR_K: 'QR', EMAIL_K: 'อีเมล', ME: '(ฉัน)', UNTIL: 'ถึง {d}',
@@ -9005,12 +9087,6 @@ var TeamView = {
 
   /** 1.7.0: ops whose result is known before the server answers (shown at once). */
   guess: {
-    approve: function (d, i) {
-      var p = d.pending.filter(function (x) { return x.req_id === i.req_id; })[0];
-      d.pending = d.pending.filter(function (x) { return x !== p; });
-      if (p && !p.repair) d.members.push({ user_id: '', nick: p.nick, title: p.title, role: 'viewer', team: '', kind: 'device', me: false, saving: true });
-    },
-    deny: function (d, i) { d.pending = d.pending.filter(function (x) { return x.req_id !== i.req_id; }); },
     remove: function (d, i) { d.members = d.members.filter(function (m) { return m.user_id !== i.user_id; }); },
     term: function (d, i) { d.ward.term_end = i.term_end; }
   },
@@ -9029,8 +9105,87 @@ var TeamView = {
 
   /** The badge on เพิ่มเติม follows the list on screen at once. */
   badge: function () {
-    var b = App.state.base;
-    if (b && TeamView.data && b.pending !== TeamView.data.pending.length) { b.pending = TeamView.data.pending.length; App.paintChrome(); }
+    var b = App.state.base, n = TeamView.data ? TeamView.waiting(TeamView.data).length : null;
+    if (b && n != null && b.pending !== n) { b.pending = n; App.paintChrome(); }
+  },
+
+  /* ---------- 1.11.0 (41 · r26): รับ / ไม่รับ — every row keeps its own state; taps never wait for each other ----------
+     dec[req_id] = {st: approving|denying|approved|denied|failed, nick, title, at, msg, op}. What the server sends never puts a
+     tapped row back into "รอรับ" (it may still list it while the batch is waiting for the lock). Taps within 0.4 s, or while
+     a batch is on its way, go together in ONE api_teamDo {req_ids} (one lock on the server). */
+  dec: {}, q: { approve: [], deny: [] }, sending: false, qT: 0, armAll: false,
+
+  /** Requests still to decide on this screen (server list − rows tapped here, except failed ones). */
+  waiting: function (d) {
+    var T = TeamView;
+    return (d.pending || []).filter(function (p) { var x = T.dec[p.req_id]; return !x || x.st === 'failed'; });
+  },
+
+  decide: function (op, list) {
+    var T = TeamView, now = Date.now();
+    list.forEach(function (p) {
+      T.dec[p.req_id] = { st: op === 'approve' ? 'approving' : 'denying', nick: p.nick, title: p.title, at: now, op: op, repair: p.repair };
+      if (T.q[op].indexOf(p.req_id) < 0) T.q[op].push(p.req_id);
+    });
+    T.armAll = false; T.paintAll();
+    clearTimeout(T.qT);
+    if (!T.sending) T.qT = setTimeout(T.send, 400);
+  },
+
+  send: function () {
+    var T = TeamView, op = T.q.approve.length ? 'approve' : T.q.deny.length ? 'deny' : '';
+    if (!op || T.sending) return;
+    var ids = T.q[op].splice(0, 20), ward = App.state.wardId;
+    T.sending = true;
+    Api.call('api_teamDo', [Token.get(), ward, U.reqId(), op, { req_ids: ids }], { retries: 3, delays: [1000, 2000, 4000], timeout: 30000 }).then(function (res) {
+      T.sending = false;
+      if (ward !== App.state.wardId) return;
+      var set = function (id, st, msg) { if (T.dec[id]) { T.dec[id].st = st; T.dec[id].msg = msg || ''; T.dec[id].at = Date.now(); } };
+      if (!res.ok) ids.forEach(function (id) { set(id, 'failed', Api.msg(res)); });
+      else {
+        var r = res.data;
+        (r.done || []).forEach(function (id) { set(id, op === 'approve' ? 'approved' : 'denied'); });
+        (r.skipped || []).forEach(function (id) { set(id, op === 'approve' ? 'approved' : 'denied'); });   // decided already (another phone / a re-send) — the server's "เพิ่งรับ" tells the truth
+        (r.failed || []).forEach(function (f) { set(f.req_id, 'failed', f.message); });
+        if (r.team) T.data = r.team;
+        if (op === 'approve' && (r.done || []).length) App.note(STR.TEAM.DONE);
+      }
+      T.paintAll();
+      if (T.q.approve.length || T.q.deny.length) T.send(); else T.pollNow();
+    });
+  },
+
+  /** Rows for "เพิ่งรับ": what was tapped here + what the server says (newer word wins: used > approved > approving). */
+  recent: function (d) {
+    var T = TeamView, rank = { approving: 1, denying: 1, failed: 2, approved: 3, denied: 3, used: 4 }, by = {};
+    (d.recent || []).forEach(function (r) { by[r.req_id] = { st: r.status, nick: r.nick, title: r.title, at: Date.parse(r.decided_at) || 0 }; });
+    Object.keys(T.dec).forEach(function (id) {
+      var x = T.dec[id], s = by[id];
+      if (x.st === 'failed' && (d.pending || []).some(function (p) { return p.req_id === id; })) return;   // shown in the waiting list with its message
+      if (!s || rank[x.st] > rank[s.st] || x.st === 'failed') by[id] = { st: x.st, nick: x.nick, title: x.title, at: x.at, msg: x.msg, id: id };
+    });
+    return Object.keys(by).map(function (id) { var r = by[id]; r.id = id; return r; }).sort(function (a, b) { return b.at - a.at; }).slice(0, 12);
+  },
+
+  /** The team page (if on screen) and the QR sheet. */
+  paintAll: function () {
+    var T = TeamView;
+    T.badge();
+    if (App.state.tab === 'more' && More.sub === 'team' && !(window.Sheet && Sheet.isOpen())) App.render();
+    T.paintQr();
+  },
+
+  pollNow: function () {
+    var T = TeamView, ward = App.state.wardId;
+    Api.call('api_teamPending', [Token.get(), ward], { timeout: 10000 }).then(function (res) { if (res.ok) T.takePending(res.data, ward); });
+  },
+  takePending: function (data, ward) {
+    var T = TeamView;
+    if (!T.data || ward !== App.state.wardId) return;
+    var a = JSON.stringify([T.data.pending, T.data.recent]), b = JSON.stringify([data.pending, data.recent || []]);
+    if (a === b) return;
+    T.data.pending = data.pending; T.data.recent = data.recent || [];
+    T.paintAll();
   },
 
   /** 1.7.0: every 3 s while ทีม or the QR sheet is on screen — new requests appear without leaving the page. */
@@ -9043,11 +9198,8 @@ var TeamView = {
       if (!on) { T.watching = false; return; }
       var ward = App.state.wardId;
       Api.call('api_teamPending', [Token.get(), ward], { timeout: 10000 }).then(function (res) {
-        if (res.ok && T.data && ward === App.state.wardId && !App.hold) {
-          var a = JSON.stringify(T.data.pending), b = JSON.stringify(res.data.pending);
-          if (a !== b) { T.data.pending = res.data.pending; T.badge(); if (More.sub === 'team' && Sheet.kind !== 'qr') App.render(); T.paintQr(); }
-        }
-        setTimeout(tick, 3000);
+        if (res.ok && !App.hold) T.takePending(res.data, ward);          // 1.11.0: รับ/ไม่รับ no longer hold the page — new requests show meanwhile
+        setTimeout(tick, Sheet.kind === 'qr' ? 2000 : 3000);
       });
     };
     setTimeout(tick, 1500);
@@ -9061,10 +9213,11 @@ var TeamView = {
     if (T.err && !d) return sec.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: S.FAIL, onclick: function () { T.load(); App.render(); } }));
     if (!d) return sec.appendChild(U.el('p', { cls: 'note center', text: S.LOADING }));
     sec.appendChild(T.termCard(d));
-    if (d.pending.length) sec.appendChild(T.pendCard(d));
+    if (T.waiting(d).length || T.recent(d).length) sec.appendChild(T.pendCard(d));
     sec.appendChild(T.chiefCard(d));
     sec.appendChild(T.r1Card(d));
     sec.appendChild(T.stuCard(d));
+    sec.appendChild(T.rightsCard());
     sec.appendChild(T.inviteCard(d));
   },
 
@@ -9088,14 +9241,32 @@ var TeamView = {
   },
 
   pendRows: function (d, box) {
-    var S = STR.TEAM, T = TeamView;
-    d.pending.forEach(function (p) {
+    var S = STR.TEAM, T = TeamView, list = T.waiting(d);
+    if (list.length >= 2) {
+      box.appendChild(U.el('button', { type: 'button', cls: 'btn ' + (T.armAll ? 'dng' : 'sec') + ' qall', id: 't-all', text: T.armAll ? S.ALL_Q : U.fill(S.ALL, { n: list.length }), onclick: function () {
+        if (!T.armAll) { T.armAll = true; T.paintAll(); clearTimeout(T.armT); T.armT = setTimeout(function () { if (T.armAll) { T.armAll = false; T.paintAll(); } }, 5000); return; }
+        T.decide('approve', T.waiting(T.data));
+      } }));
+    }
+    list.forEach(function (p) {
+      var x = T.dec[p.req_id];
       box.appendChild(U.el('div', { cls: 'mrow preq', 'data-req': p.req_id }, [
-        U.el('div', { cls: 'mmain' }, [U.el('b', { text: p.nick + (p.repair ? ' (' + S.NEW_PHONE + ')' : '') }), U.el('small', { text: [p.title, U.isoHhmm(p.created_at)].filter(Boolean).join(' · ') })]),
+        U.el('div', { cls: 'mmain' }, [U.el('b', { text: p.nick + (p.repair ? ' (' + S.NEW_PHONE + ')' : '') }),
+          U.el('small', { cls: x ? 'perr' : '', text: x ? S.ST.failed + (x.msg ? ' · ' + x.msg : '') : [p.title, U.isoHhmm(p.created_at)].filter(Boolean).join(' · ') })]),
         U.el('span', { cls: 'pcode', text: p.pair_code }),
-        U.el('button', { type: 'button', cls: 'btn sm', text: S.OK, onclick: function (e) { T.op('approve', { req_id: p.req_id }, e.currentTarget); } }),
-        U.el('button', { type: 'button', cls: 'btn sec sm', text: S.NO, onclick: function (e) { T.op('deny', { req_id: p.req_id }, e.currentTarget); } })]));
+        U.el('button', { type: 'button', cls: 'btn sm', text: x ? S.RETRY : S.OK, onclick: function () { T.decide('approve', [p]); } }),
+        U.el('button', { type: 'button', cls: 'btn sec sm', text: S.NO, onclick: function () { T.decide('deny', [p]); } })]));
     });
+    var rec = T.recent(d);
+    if (rec.length) {
+      box.appendChild(U.el('p', { cls: 'label prec-h', text: S.RECENT }));
+      rec.forEach(function (r) {
+        var retry = r.st === 'failed' ? U.el('button', { type: 'button', cls: 'btn sec sm', text: S.RETRY, onclick: function () { T.decide(T.dec[r.id] ? T.dec[r.id].op : 'approve', [{ req_id: r.id, nick: r.nick, title: r.title }]); } }) : null;
+        box.appendChild(U.el('div', { cls: 'mrow prec st-' + r.st, 'data-req': r.id }, [
+          U.el('div', { cls: 'mmain' }, [U.el('b', { text: r.nick }), r.title ? U.el('small', { text: r.title }) : null]),
+          U.el('span', { cls: 'pst', text: S.ST[r.st] + (r.st === 'failed' && r.msg ? ' · ' + r.msg : '') }), retry]));
+      });
+    }
   },
 
   /** 1.7.0: requests inside the QR sheet (the chief is holding that screen up for the students). */
@@ -9103,8 +9274,9 @@ var TeamView = {
     var T = TeamView, box = T.qrPend;
     if (!box || !document.body.contains(box) || !T.data) return;
     box.textContent = '';
-    if (!T.data.pending.length) return box.appendChild(U.el('p', { cls: 'note center', text: STR.TEAM.QR_WAIT }));
-    box.appendChild(U.el('p', { cls: 'label', text: STR.TEAM.PEND + ' · ' + T.data.pending.length }));
+    var w = T.waiting(T.data).length, rec = T.recent(T.data), ok = rec.filter(function (r) { return r.st === 'approved' || r.st === 'used'; }).length;
+    if (!w && !rec.length) return box.appendChild(U.el('p', { cls: 'note center', text: STR.TEAM.QR_WAIT }));
+    box.appendChild(U.el('p', { cls: 'label', text: U.fill(STR.TEAM.QR_COUNT, { p: w, a: ok }) }));
     T.pendRows(T.data, box);
   },
 
@@ -9143,6 +9315,24 @@ var TeamView = {
     if (!list.length) card.appendChild(U.el('p', { cls: 'note', text: S.NONE }));
     list.forEach(function (m) { card.appendChild(T.mrow(m, [m.title, m.kind === 'device' ? S.QR_K : S.EMAIL_K].filter(Boolean).join(' · '))); });
     return card;
+  },
+
+  /** 1.11.0 (41 · r26): what นศพ. may see / do in this ward — Chief sets it (Meta.stu_hist · stu_tasks), R1 sees it. */
+  rightsCard: function () {
+    var S = STR.TEAM, w = (App.state.snap && App.state.snap.ward) || {}, own = TeamView.owner();
+    var line = function (label, name, opts, cur) {
+      if (!own) return U.el('div', { cls: 'kv' }, [U.el('span', { text: label }), U.el('span', { text: (opts.filter(function (o) { return o[0] === cur; })[0] || opts[0])[1] })]);
+      var seg = Form.toggles(name, opts, cur, function (v) {
+        var inp = {}; inp[name] = v;
+        Ops.run('api_setArchivePrefs', inp, { apply: function (snap) { snap.ward = snap.ward || {}; snap.ward[name] = v; } })
+          .then(function (res) { if (res && res.ok) App.note(STR.TEAM.DONE); });
+      });
+      seg.id = 't-' + name.replace('_', '-');
+      return Form.field(label, seg);
+    };
+    return U.el('div', { cls: 'card stucard' }, [U.el('h2', { text: S.STU_T }),
+      line(S.STU_HIST, 'stu_hist', S.STU_H, w.stu_hist || ''), line(S.STU_TASKS, 'stu_tasks', S.STU_K, w.stu_tasks || ''),
+      U.el('p', { cls: 'note', text: S.STU_NOTE + (own ? '' : ' · ' + S.STU_RO) })]);
   },
 
   inviteCard: function (d) {
@@ -9342,7 +9532,8 @@ var BindEmail = {
                 keeps waiting; it is useless once used.
      #scr-chief ?req=chief or "ขอใช้วอร์ด (Chief)" on the login page: pick a ward the admin opened + e-mail + round → the admin approves.
      1.7.0: ward name / ward list come inside the page (BOOT.join_info, BOOT.chief_wards) · the phone asks every 2 s for the first
-     2 min (cache only on the server) · the approval answer brings the bed map · wards are big buttons, none picked at first. -->
+     2 min (cache only on the server) · the approval answer brings the bed map · wards are big buttons, none picked at first.
+     1.11.0 (41 · r26): steps 1–4 · "Chief รับแล้ว" from the cache at once, then the session (retried on BUSY) · nickname kept. -->
 <div id="scr-join" class="screen" hidden>
   <div class="narrow">
     <div class="brand"><span class="logo"></span><div><h1>Med<span class="jad">Jad</span></h1><p id="j-ward">เม็ดจัด</p></div></div>
@@ -9360,7 +9551,9 @@ var BindEmail = {
 STR.JOIN = {
   LOADING: 'กำลังเปิด…', BAD: 'ลิงก์นี้ใช้ไม่ได้แล้ว ขอ QR ใหม่จาก Chief', TITLE: 'เข้าทีมวอร์ด {w}', NOTE: 'สำหรับ นศพ. · ดูได้อย่างเดียว · ไม่ต้องใช้อีเมล',
   NICK: 'ชื่อเล่น (ให้ Chief จำได้)', TITLE_L: 'ชั้นปี', SEND: 'ขอเข้า', SENDING: 'กำลังส่ง…',
-  WAIT_T: 'บอกรหัสนี้กับ Chief หรือ R1', WAIT_N: 'ให้กด "รับ" ในหน้า เพิ่มเติม → ทีม · หน้านี้จะเข้าแอปเองเมื่อได้รับ', CHECK: 'เช็กอีกครั้ง',
+  WAIT_T: 'บอกรหัสนี้กับ Chief หรือ R1', WAIT_N: 'Chief กด "รับ" ในกล่อง QR หรือ เพิ่มเติม → ทีม · หน้านี้จะเข้าแอปเองเมื่อได้รับ', CHECK: 'เช็กอีกครั้ง',
+  SLOW: 'คิวยาว กำลังลองใหม่…', S1: 'ส่งคำขอแล้ว', S2: 'บอกรหัสนี้กับ Chief หรือ R1', S3: 'รอ Chief กดรับ', S3_OK: 'Chief รับแล้ว', S4: 'เข้าแอป', S4_NOW: 'กำลังเปิดผังเตียง…',
+  GO_FAIL: 'ยังเปิดไม่ได้ (ระบบไม่ว่าง)', GO_AGAIN: 'ลองอีกครั้ง',
   DENIED: 'Chief ไม่ได้รับคำขอนี้', EXPIRED: 'คำขอหมดอายุแล้ว (24 ชม.)', USED: 'เครื่องนี้เข้าแอปแล้ว — เปิด MedJad จากไอคอน', AGAIN: 'ขอใหม่'
 };
 STR.CHIEF = {
@@ -9387,13 +9580,18 @@ var Join = {
     var J = STR.JOIN, b = Join.body();
     U.$('j-ward').textContent = info.ward_name;
     var nick = Form.input('nick', { maxlength: '20', enterkeyhint: 'send', id: 'j-nick' });
+    nick.value = Store.get('joinNick') || '';                          // 1.11.0: asking again after "ไม่รับ" / expiry
     var title = Form.toggles('title', info.titles.map(function (t) { return [t, t]; }), '');
     var msg = U.el('p', { cls: 'ferr', role: 'alert', hidden: 'hidden' }), go = U.el('button', { type: 'submit', cls: 'btn', id: 'j-send', text: J.SEND });
     var f = U.el('form', { cls: 'aform', novalidate: 'novalidate' }, [Form.field(J.NICK, nick), Form.field(J.TITLE_L, title), msg, go]);
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       go.disabled = true; go.classList.add('busy'); go.textContent = J.SENDING;
-      Api.call('api_joinRequest', [Join.code, { nick: nick.value, title: f.querySelector('input[name="title"]').value }], { retries: 1 }).then(function (res) {
+      var slow = setTimeout(function () { go.textContent = J.SLOW; }, 4000);   // 1.11.0: many phones at once → the server queue
+      Store.set('joinNick', nick.value.trim());
+      // 1.11.0: BUSY = nothing was written → safe to ask again (asking again with the same nickname also retires the older request)
+      Api.call('api_joinRequest', [Join.code, { nick: nick.value, title: f.querySelector('input[name="title"]').value }], { retries: 3, delays: [1000, 2000, 4000] }).then(function (res) {
+        clearTimeout(slow);
         go.disabled = false; go.classList.remove('busy'); go.textContent = J.SEND;
         if (!res.ok) { msg.textContent = Api.msg(res); msg.hidden = false; return; }
         var s = { code: Join.code, secret: res.data.secret, pair: res.data.pair_code, ward: res.data.ward_name, at: Date.now() };
@@ -9405,40 +9603,71 @@ var Join = {
     b.appendChild(f);
     nick.focus();
   },
+  /** 1.11.0 (41 · r26): steps 1–4 on the phone · "Chief รับแล้ว ✓" comes from the server cache (no Sheet read) before the
+      slower call that opens the session. */
   waiting: function (s) {
     var J = STR.JOIN, b = Join.body();
     U.$('j-ward').textContent = s.ward || '';
-    b.appendChild(U.el('h2', { text: J.WAIT_T }));
-    b.appendChild(U.el('div', { cls: 'paircode', id: 'j-pair', text: s.pair }));
-    b.appendChild(U.el('p', { cls: 'note center', text: J.WAIT_N }));
-    b.appendChild(U.el('div', { cls: 'spinner', 'aria-hidden': 'true' }));
-    b.appendChild(U.el('button', { type: 'button', cls: 'btn ghost', text: J.CHECK, onclick: function () { Join.poll(s, true); } }));
+    var li = function (k, text, extra) { return U.el('li', { cls: 'js' + k, 'data-k': k }, [U.el('span', { cls: 'jtxt', text: text })].concat(extra || [])); };
+    Join.steps = U.el('ol', { cls: 'jsteps', id: 'j-steps' }, [li(1, J.S1), li(2, J.S2, [U.el('div', { cls: 'paircode', id: 'j-pair', text: s.pair })]), li(3, J.S3), li(4, J.S4)]);
+    b.appendChild(Join.steps);
+    b.appendChild(U.el('p', { cls: 'note center', id: 'j-note', text: J.WAIT_N }));
+    Join.again = U.el('button', { type: 'button', cls: 'btn ghost', id: 'j-check', text: J.CHECK, onclick: function () { Join.phase === 'go' ? Join.go(s) : Join.poll(s, true); } });
+    b.appendChild(Join.again);
+    Join.phase = 'wait'; Join.mark(2);
     Join.polls = 0; clearTimeout(Join.timer);
     var next = function () {                                           // 1.7.0: every 2 s for 2 min, then every 5 s
-      Join.timer = setTimeout(function () { if (document.visibilityState === 'visible') Join.poll(s); next(); }, Join.polls < 60 ? 2000 : 5000);
+      Join.timer = setTimeout(function () { if (document.visibilityState === 'visible' && Join.phase === 'wait') Join.poll(s); if (Join.phase === 'wait') next(); }, Join.polls < 60 ? 2000 : 5000);
     };
     next();
+  },
+  /** Step n is "now": the ones before it are done (✓). */
+  mark: function (n, text) {
+    if (!Join.steps) return;
+    Array.prototype.forEach.call(Join.steps.children, function (el) {
+      var k = Number(el.getAttribute('data-k'));
+      el.classList.toggle('done', k < n); el.classList.toggle('now', k === n);
+    });
+    var J = STR.JOIN, t3 = Join.steps.querySelector('.js3 .jtxt'), t4 = Join.steps.querySelector('.js4 .jtxt');
+    t3.textContent = n > 3 ? J.S3_OK : J.S3;
+    t4.textContent = n === 4 ? (text || J.S4_NOW) : J.S4;
   },
   poll: function (s, manual) {
     if (!manual && ++Join.polls > 420) { clearTimeout(Join.timer); Join.timer = -1; return; }   // ~30 min, then by hand
     if (!manual && Join.busy) return;
     Join.busy = true;
-    Api.call('api_joinStatus', [s.secret, U.deviceLabel(), BOOT.k || ''], { retries: 0 }).then(function (res) {
+    Api.call('api_joinStatus', [s.secret, U.deviceLabel(), BOOT.k || '', { fast: true }], { retries: 0 }).then(function (res) {
       Join.busy = false;
+      if (Join.phase !== 'wait') return;
       if (!res.ok) { if (res.code === 'NOT_FOUND') Join.end(STR.JOIN.EXPIRED); return; }
       var st = res.data.status;
       if (st === 'pending') return;
+      if (st === 'approving') return Join.go(s);
       if (st === 'approved') return Join.done(res.data);
       Join.end(st === 'denied' ? STR.JOIN.DENIED : st === 'used' ? STR.JOIN.USED : STR.JOIN.EXPIRED, st !== 'used');
     });
   },
+  /** The chief tapped รับ → open the session (waits for the server queue; BUSY/time-out are tried again by themselves). */
+  go: function (s) {
+    var J = STR.JOIN;
+    Join.phase = 'go'; clearTimeout(Join.timer);
+    Join.mark(4); Join.again.hidden = true;
+    var note = U.$('j-note'); if (note) note.textContent = '';
+    Api.call('api_joinStatus', [s.secret, U.deviceLabel(), BOOT.k || '', { fast: true, go: true }], { retries: 3, delays: [1000, 2000, 4000], timeout: 30000 }).then(function (res) {
+      if (res.ok && res.data.status === 'approved') return Join.done(res.data);
+      if (res.ok && res.data.status === 'approving') return setTimeout(function () { Join.go(s); }, 1500);
+      if (res.ok && res.data.status !== 'pending') return Join.end(res.data.status === 'used' ? J.USED : res.data.status === 'denied' ? J.DENIED : J.EXPIRED, res.data.status !== 'used');
+      if (!res.ok && res.code === 'NOT_FOUND') return Join.end(J.EXPIRED, true);
+      Join.mark(4, J.GO_FAIL); Join.again.hidden = false; Join.again.textContent = J.GO_AGAIN;
+    });
+  },
   end: function (text, again) {
-    clearTimeout(Join.timer); Join.polls = 1e9; Store.del('join');
+    clearTimeout(Join.timer); Join.polls = 1e9; Join.phase = 'end'; Store.del('join');
     var b = Join.body(); b.appendChild(U.el('p', { cls: 'msg info', text: text }));
     if (again) b.appendChild(U.el('button', { type: 'button', cls: 'btn', text: STR.JOIN.AGAIN, onclick: function () { Join.start(Join.code); } }));
   },
   done: function (boot) {
-    clearTimeout(Join.timer); Join.polls = 1e9; Store.del('join');
+    clearTimeout(Join.timer); Join.polls = 1e9; Join.phase = 'done'; Store.del('join');
     var token = boot.token;
     Token.set(token); App.clearData(); App.state.boot = boot; App.pickWard('');
     if (boot.snap && boot.snap.ward_id === App.state.wardId) App.apply(boot.snap.data, true);   // 1.7.0: map is ready at once
