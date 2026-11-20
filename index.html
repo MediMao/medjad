@@ -2220,7 +2220,7 @@ html.casev-on body { overflow: hidden; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.11.0", pages: true,
+  return { app_version: "1.11.1", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -7563,9 +7563,11 @@ var PrintView = {
   print: function () {
     var input = { team: PrintView.team, orient: PrintView.o, kind: PrintView.kind, n: PrintView.patients(App.state.snap, PrintView.team).length, pages: (PrintView.pages || []).length,
                   print_id: PrintView.printId || '' };
-    Api.call('api_logPrint', [Token.get(), App.state.wardId, U.reqId(), input], { retries: 2, delays: [3000, 9000] });   // fire and forget (never blocks printing)
     document.body.classList.add('printing');
-    setTimeout(function () { window.print(); }, 50);
+    // 1.11.1: print INSIDE the tap. iPhone Safari on the GitHub link (the app is the page itself, not inside Google's frame) asks
+    // "This website has been blocked from automatically printing" when print() comes later (1.10.0: setTimeout 50 ms).
+    window.print();
+    Api.call('api_logPrint', [Token.get(), App.state.wardId, U.reqId(), input], { retries: 2, delays: [3000, 9000] });   // fire and forget (never blocks printing)
   },
   close: function () {
     var v = U.$('printview'); v.hidden = true; v.textContent = ''; document.body.classList.remove('printing');
