@@ -2258,7 +2258,7 @@ html.casev-on body { overflow: hidden; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.12.1", pages: true,
+  return { app_version: "1.12.2", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -8802,7 +8802,9 @@ STR.CASEV = {
 var ArchiveX = {
   team: 'all', sum: null, sumKey: '', busy: false, err: false, setting: false, pick: '', box: null,
 
-  key: function () { var s = App.state.snap, w = (s && s.ward) || {}; return App.state.wardId + '|' + (w.stats_from || ''); },
+  /** 1.12.1: + the ward's stamp — any D/C · แก้เหตุผล · กู้คืน · ลบ changes it → the 5 boxes are counted again (1.10.0–1.12.0 kept the
+      first numbers for the whole session: a death recorded later did not show until the app was opened again) */
+  key: function () { var s = App.state.snap, w = (s && s.ward) || {}; return App.state.wardId + '|' + (w.stats_from || '') + '|' + ((s && s.stamp) || ''); },
   load: function () {
     var X = ArchiveX, k = X.key(), ward = App.state.wardId;
     X.busy = true; X.err = false; X.sumKey = k;
@@ -8836,6 +8838,7 @@ var ArchiveX = {
 
   paint: function () {
     var X = ArchiveX, C = STR.CASEV, box = U.$('arch-sum'); if (!box) return;
+    if (X.sumKey !== X.key()) X.load();                                 // 1.12.1: the ward changed since these numbers → count again (old numbers stay until then)
     // สาย: counts from the archive list
     var seg = U.$('arch-team'), rows = ArchiveView.rows || [];
     if (seg) {
