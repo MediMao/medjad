@@ -2147,6 +2147,41 @@ body.printing .wm { display: none !important; }
 :root[data-theme="dark"] { --dc-ink: #3A4644; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --dc-ink: #3A4644; } }
 html.casev-on body { overflow: hidden; }
+/* 1.12.0 (45 · r27): discharge types — green กลับบ้าน · blue ย้ายไป … · dark grey เสียชีวิต (never red) · DcType.cls */
+:root { --dc-home: #1E7F4F; --dc-home-bg: #E3F4EA; --dc-xfer: #1D5FA8; --dc-xfer-bg: #E3EEFB; --dc-dead: #2B3331; --dc-dead-bg: #DCE0DF; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --dc-home: #7CD9A6; --dc-home-bg: #173326; --dc-xfer: #8DBDF2; --dc-xfer-bg: #142A44; --dc-dead: #E4E8E7; --dc-dead-bg: #3A4341; } }
+:root[data-theme="dark"] { --dc-home: #7CD9A6; --dc-home-bg: #173326; --dc-xfer: #8DBDF2; --dc-xfer-bg: #142A44; --dc-dead: #E4E8E7; --dc-dead-bg: #3A4341; }
+.dcpill { display: inline-block; padding: 1px 8px; border-radius: 7px; font-weight: 750; font-size: 13px; }
+.dcpill.dc-home { color: var(--dc-home); background: var(--dc-home-bg); }
+.dcpill.dc-xfer { color: var(--dc-xfer); background: var(--dc-xfer-bg); }
+.dcpill.dc-death { color: var(--dc-dead); background: var(--dc-dead-bg); }
+.cv-badge.dc-death { background: #1C2221; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.35); }
+.atiles.a5 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+.atiles.a5 .atile b { font-size: 23px; }
+.atiles.a5 .atile span { font-size: 11.5px; }
+.atile.tD b { color: var(--dc-dead); }
+.dcform .dcseg { margin: 4px 0 10px; }
+.dcform .dcseg .dct-death.on { background: var(--dc-dead); color: var(--surface); }
+.dcform .dcdest, .dcform .dcdeath { margin-bottom: 8px; }
+.dcok { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 12px; background: var(--dc-dead-bg); color: var(--dc-dead); font-weight: 700; font-size: 15.5px; cursor: pointer; }
+.dcok input { width: 22px; height: 22px; flex: none; margin: 0; accent-color: var(--dc-dead); }
+.dcform[data-type="death"] #dc-yes:not(:disabled) { background: var(--dc-dead); color: var(--surface); }
+.dcform #dc-yes:disabled { opacity: .5; }
+/* 1.12.0: archive PDF — old bed in a dashed box · D/C badge (black = เสียชีวิต) · the sheet */
+#printview .pv-no.pv-old, #printview .pv-tA .pv-no.pv-old, #printview .pv-tB .pv-no.pv-old { background: #fff; color: #222; box-shadow: none; border: 1.2pt dashed #555; }
+#printview .pv-dcb { display: inline-block; max-width: 100%; margin: 0.8mm 0 0.5mm; padding: 0.2mm 1.4mm; border-radius: 1.2mm; font-weight: 700; font-size: 7.4pt; line-height: 1.35; }
+#printview .pv-dcb.dc-home { color: #1E6B44; box-shadow: inset 0 0 0 0.8pt #1E6B44; }
+#printview .pv-dcb.dc-xfer { color: #174F8C; box-shadow: inset 0 0 0 0.8pt #174F8C; }
+#printview .pv-dcb.dc-death { color: #fff; background: #111; }
+#printview .pv-strip .pv-dcb { margin-top: 0.8mm; }
+.apopts .apdates { justify-content: flex-start; gap: 8px; }
+.apopts .apdates .in { flex: 1; min-width: 0; }
+.apopts .pseg button { padding-left: 8px; padding-right: 8px; }
+.apnames { margin: 10px 0 8px; max-height: 32vh; overflow: auto; border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; }
+.apnames > b { display: block; margin-bottom: 4px; }
+.apn { display: flex; align-items: center; gap: 8px; min-height: 30px; font-size: 14.5px; }
+.apn .apb { flex: none; min-width: 28px; text-align: center; border: 1.2px dashed var(--line2); border-radius: 6px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.apn .apnm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
 
 </head>
@@ -2220,7 +2255,7 @@ html.casev-on body { overflow: hidden; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.11.1", pages: true,
+  return { app_version: "1.12.0", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -2268,6 +2303,24 @@ var STR = {
 };
 
 /* ======================= Helpers ======================= */
+/* ======================= 1.12.0 (45 · r27): discharge types — the page's copy of Config.gs DC_TYPES_ =======================
+   Everything that shows a type asks here (never `=== 'transfer_ward' ? … : กลับบ้าน`). New type = one line here + one in Config.gs. */
+STR.DC = {
+  LABEL: { home: 'กลับบ้าน', transfer_ward: 'ย้ายไป {d}', death: 'เสียชีวิต' },      // the reason in a line / on a card
+  PICK: { home: 'กลับบ้าน', transfer_ward: 'ย้ายวอร์ด', death: 'เสียชีวิต' },          // the choice in the D/C / reason sheets
+  BADGE: { home: 'D/C แล้ว', transfer_ward: 'ย้ายวอร์ดแล้ว', death: 'เสียชีวิต' }       // the case page banner
+};
+var DcType = {
+  RULES: { home: { dest: false, readmit: true, cls: 'dc-home' }, transfer_ward: { dest: true, readmit: true, cls: 'dc-xfer' }, death: { dest: false, readmit: false, cls: 'dc-death' } },
+  keys: function () { return Object.keys(DcType.RULES); },
+  get: function (k) { return DcType.RULES[k] ? k : 'home'; },                      // blank / unknown (old rows) = home, as the server
+  rule: function (k) { return DcType.RULES[DcType.get(k)]; },
+  /** r = {discharge_type, discharge_destination} → "กลับบ้าน" / "ย้ายไป ICU" / "เสียชีวิต" */
+  label: function (r) { var k = DcType.get(r && r.discharge_type); return U.fill(STR.DC.LABEL[k], { d: (r && r.discharge_destination) || '—' }); },
+  badge: function (k) { return STR.DC.BADGE[DcType.get(k)]; },
+  cls: function (k) { return DcType.rule(k).cls; }
+};
+
 var U = {
   $: function (id) { return document.getElementById(id); },
   /** 1.8.3 (D134): run fn once Sarabun is here (every weight the page uses) — or after ms, or at once when fonts can't load
@@ -3427,11 +3480,12 @@ STR.ADMIT = {
   NAME_REQ: 'กรอกชื่อ-สกุลก่อน', SEX_REQ: 'เลือกเพศ', AGE_BAD: 'อายุต้องเป็นตัวเลข 0–120', HN_BAD: 'HN ต้องเป็นตัวเลข 8 หลัก',
   TEAM_REQ: 'เลือกสาย', HN_DUP: 'HN นี้อยู่เตียง {b} แล้ว', TAKEN: 'เตียง {b} มีคนแล้ว เลือกเตียงว่าง:',
   FULL: 'เตียงเต็มทุกเตียง ต้องจำหน่ายหรือย้ายคนไข้ออกก่อน', NET: 'บันทึกไม่สำเร็จ ข้อมูลยังอยู่ แตะบันทึกเพื่อลองใหม่',
-  ARCH: 'HN นี้อยู่ในคลัง (จำหน่ายไม่เกิน 14 วัน) · แตะ "ยืนยัน รับเป็นรายใหม่" ถ้าเป็นการรับใหม่จริง',
+  DEAD: 'HN นี้บันทึกว่าเสียชีวิตอยู่ในคลัง — ตรวจ HN อีกครั้ง · ถ้าถูกต้องจริง แตะ "ยืนยัน รับเป็นรายใหม่"',   // 1.12.0
+  ARCH: 'HN นี้อยู่ในคลัง (จำหน่ายไม่เกิน 10 วัน) · แตะ "ยืนยัน รับเป็นรายใหม่" ถ้าเป็นการรับใหม่จริง',
   DONE: 'รับใหม่ เตียง {b} แล้ว', PICK: 'เตียง {b}',
   READMIT: 'รับคนเดิมกลับจากคลัง (เช่น กลับจาก ICU) ›'                       // r19 A34
 };
-STR.READMIT = { TITLE: 'รับกลับเข้าเตียง {b}', HINT: 'คนที่ D/C หรือ Transfer ออกไปไม่เกิน 14 วัน · ประวัติ แผน consult กลับมาครบ', LOADING: 'กำลังโหลด…',
+STR.READMIT = { TITLE: 'รับกลับเข้าเตียง {b}', HINT: 'คนที่ D/C หรือย้ายวอร์ดออกไปไม่เกิน 10 วัน (ไม่รวมเสียชีวิต) · ประวัติ แผน consult กลับมาครบ', LOADING: 'กำลังโหลด…',
   EMPTY: 'ไม่มีคนไข้ในคลัง', FAIL: 'โหลดคลังไม่สำเร็จ · แตะเพื่อลองใหม่', GO: 'รับเข้าเตียง {b}', XFER: 'Transfer → {d}', HOME: 'D/C กลับบ้าน', SEARCH: 'ค้นชื่อหรือ HN',
   DUP: 'HN นี้อยู่เตียง {b} แล้ว', DONE: 'รับ {n} กลับเข้าเตียง {b} แล้ว' };
 STR.XFER = { TITLE: 'ย้ายวอร์ด · เตียง {b}', LABEL: 'ชื่อวอร์ดปลายทาง', PH: 'เช่น ICU, ศัลยกรรมชาย', USED: 'เคยใช้', GO: 'ย้ายออก' };
@@ -3550,12 +3604,12 @@ var Form = {
 
 /* ======================= Admit (M5) ======================= */
 var Admit = {
-  bed: '', reqId: '', readmit: false, busy: false, form: null,
+  bed: '', reqId: '', readmit: false, dead: false, busy: false, form: null,
 
   /** keep = values typed before (form re-opened after the server refused) · reqId = keep the same one. */
   open: function (bedNo, keep, reqId) {
     var A = STR.ADMIT, bed = App.state.snap.beds.filter(function (b) { return b.bed_no === bedNo; })[0] || {}, k = keep || {};
-    Admit.bed = bedNo; Admit.reqId = reqId || U.reqId(); Admit.readmit = !!k.confirm_readmit; Admit.busy = false;
+    Admit.bed = bedNo; Admit.reqId = reqId || U.reqId(); Admit.readmit = !!k.confirm_readmit; Admit.dead = !!k.confirm_deceased; Admit.busy = false;
     var f = U.el('form', { cls: 'aform', novalidate: 'novalidate' });
     var val = function (el, v) { if (v != null) el.value = String(v); return el; };
     if (!k.name) f.appendChild(U.el('button', { type: 'button', cls: 'lnk readmit-l', id: 'adm-readmit', text: A.READMIT, onclick: function () { ReAdmit.open(bedNo); } }));
@@ -3572,7 +3626,7 @@ var Admit = {
     f.appendChild(U.el('button', { type: 'submit', cls: 'btn', id: 'adm-save', text: Admit.readmit ? A.SAVE_AGAIN : A.SAVE }));
     f.addEventListener('submit', function (e) { e.preventDefault(); Admit.submit(); });
     f.addEventListener('input', function (e) {
-      if (e.target.name === 'hn' && Admit.readmit) { Admit.readmit = false; U.$('adm-save').textContent = A.SAVE; }
+      if (e.target.name === 'hn' && (Admit.readmit || Admit.dead)) { Admit.readmit = false; Admit.dead = false; U.$('adm-save').textContent = A.SAVE; }   // 1.12.0: + dead
       e.target.classList.remove('bad');
     });
     Admit.form = f;
@@ -3611,6 +3665,10 @@ var Admit = {
               hn: Form.val(f, 'hn'), team: Form.val(f, 'team') };
     var bad = Admit.check(v);
     if (bad) return Admit.say(bad[0], bad[1]);
+    if ((App.state.snap.archive_dead_hns || []).indexOf(v.hn) >= 0 && !Admit.dead) {   // 1.12.0: died — the stronger warning, here at once
+      Admit.readmit = true; Admit.dead = true; U.$('adm-save').textContent = A.SAVE_AGAIN;
+      return Admit.say(A.DEAD, 'hn', 'warn');
+    }
     if ((App.state.snap.archive_hns || []).indexOf(v.hn) >= 0 && !Admit.readmit) {   // D34/D35: warn here, no server trip
       Admit.readmit = true; U.$('adm-save').textContent = A.SAVE_AGAIN;
       return Admit.say(A.ARCH, 'hn', 'warn');
@@ -3619,6 +3677,7 @@ var Admit = {
     var bedNo = Admit.bed, reqId = Admit.reqId;
     if (Guess.pt(App.state.snap, 'tmp-' + reqId) || App.state.snap.patients.some(function (p) { return p.bed_no === bedNo; })) return Admit.offerBeds(Admit.freeNow());
     var input = { bed_no: bedNo, name: v.name, sex: v.sex, age: Number(v.age), hn: v.hn, team: v.team, confirm_readmit: Admit.readmit };
+    if (Admit.dead) input.confirm_deceased = true;                         // 1.12.0: "HN นี้บันทึกว่าเสียชีวิต" — the user checked it and tapped again
     Sheet.close();
     Ops.run('api_admitPatient', input, {
       reqId: reqId,
@@ -3643,6 +3702,9 @@ var Admit = {
     switch (res.code) {
       case 'HN_IN_ARCHIVE':
         Admit.readmit = true; U.$('adm-save').textContent = A.SAVE_AGAIN;
+        return Admit.say(res.message, 'hn', 'warn');
+      case 'HN_DECEASED':                                                // 1.12.0 (45 · r27)
+        Admit.readmit = true; Admit.dead = true; U.$('adm-save').textContent = A.SAVE_AGAIN;
         return Admit.say(res.message, 'hn', 'warn');
       case 'HN_DUPLICATE_ACTIVE': return Admit.say(U.fill(A.HN_DUP, { b: d.bed_no }), 'hn');
       case 'BED_TAKEN': return Admit.offerBeds(d.free_beds || []);
@@ -3679,31 +3741,8 @@ var Admit = {
   }
 };
 
-/* ======================= Transfer to another ward (M6) ======================= */
-var Transfer = {
-  open: function (p) {
-    var X = STR.XFER, sugs = App.state.snap.dest_suggestions || [];
-    var inp = Form.input('dest', { maxlength: '50', placeholder: X.PH, enterkeyhint: 'done' });
-    var go = U.el('button', { type: 'submit', cls: 'btn', text: X.GO, disabled: 'disabled' });
-    var f = U.el('form', { cls: 'aform', novalidate: 'novalidate' }, [Form.field(X.LABEL, inp)]);
-    if (sugs.length) {
-      f.appendChild(U.el('span', { cls: 'flabel', text: X.USED }));
-      f.appendChild(U.el('div', { cls: 'sugs' }, sugs.map(function (w) {
-        return U.el('button', { type: 'button', cls: 'sug', text: w, onclick: function () { inp.value = w; go.disabled = false; } });
-      })));
-    }
-    f.appendChild(go);
-    inp.addEventListener('input', function () { go.disabled = !inp.value.trim(); });
-    f.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var dest = inp.value.replace(/\s+/g, ' ').trim();
-      if (!dest) return;
-      Sheet.close();
-      Detail.discharge(p, 'transfer_ward', dest);
-    });
-    Sheet.open(U.fill(X.TITLE, { b: p.bed_no }), [f], { focus: 'input[name="dest"]', closeText: STR.SHEET.CANCEL, kind: 'xfer' });
-  }
-};
+/* ======================= Transfer (M6) — 1.12.0: part of the D/C sheet (discharge.html); kept for old callers ======================= */
+var Transfer = { open: function (p) { Discharge.open(p, 'transfer_ward'); } };
 
 /* ======================= ReAdmit (r19 A34): an empty bed → someone from the archive back into THIS bed ======================= */
 var ReAdmit = {
@@ -3730,11 +3769,12 @@ var ReAdmit = {
     if (ReAdmit.err) return list.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: R.FAIL, onclick: function () { ReAdmit.err = false; ReAdmit.paint(); ReAdmit.load(); } }));
     if (!ReAdmit.rows) return list.appendChild(U.el('p', { cls: 'note center', text: R.LOADING }));
     var q = ReAdmit.q.trim().toLowerCase();
-    var rows = ReAdmit.rows.filter(function (r) { return !q || r.name.toLowerCase().indexOf(q) >= 0 || String(r.hn).indexOf(q) >= 0; });
-    rows.sort(function (a, b) { return (a.discharge_type === 'transfer_ward' ? 0 : 1) - (b.discharge_type === 'transfer_ward' ? 0 : 1) || (a.discharged_at < b.discharged_at ? 1 : -1); });
+    var rows = ReAdmit.rows.filter(function (r) { return DcType.rule(r.discharge_type).readmit && (!q || r.name.toLowerCase().indexOf(q) >= 0 || String(r.hn).indexOf(q) >= 0); });   // 1.12.0: not who died
+    var xf = function (r) { return DcType.rule(r.discharge_type).dest ? 0 : 1; };   // moved to another ward first (they come back most)
+    rows.sort(function (a, b) { return xf(a) - xf(b) || (a.discharged_at < b.discharged_at ? 1 : -1); });
     if (!rows.length) return list.appendChild(U.el('p', { cls: 'note center', text: R.EMPTY }));
     rows.forEach(function (r) {
-      var why = r.discharge_type === 'transfer_ward' ? U.fill(R.XFER, { d: r.discharge_destination || '—' }) : R.HOME;
+      var why = DcType.label(r);
       list.appendChild(U.el('button', { type: 'button', cls: 'rarow', onclick: function () { ReAdmit.go(r); } }, [
         U.el('b', { text: r.name }), U.el('span', { cls: 'go', text: U.fill(R.GO, { b: ReAdmit.bed }) }),
         U.el('small', { text: 'HN ' + r.hn + ' · ' + why + ' · ' + More.when(r.discharged_at) })]));
@@ -5638,7 +5678,7 @@ STR.DETAIL = {
   EDIT_HINT: 'แตะเพื่อแก้', DONE_EDIT: 'Done', COUNT: '{n} / {max} ตัวอักษร',
   BED: 'B{b}', BED_L: 'เตียง {b}', BACK: 'กลับไปผังเตียง', BACK_BTN: '‹ กลับไปผังเตียง', DC: 'D/C',
   AUTO: 'Saved',                                                                                  // v1.4.1 F2: the bottom button says it
-  DC_T: 'D/C กลับบ้าน · เตียง {b}', DC_Q: 'จำหน่าย {name} กลับบ้าน?', DC_NOTE: 'เตียงจะว่างทันที · ถ้ากดผิด กู้คืนได้ที่ เพิ่มเติม → คลังคนไข้ (14 วัน)',
+  DC_T: 'D/C กลับบ้าน · เตียง {b}', DC_Q: 'จำหน่าย {name} กลับบ้าน?', DC_NOTE: 'เตียงจะว่างทันที · ถ้ากดผิด กู้คืนได้ที่ เพิ่มเติม → คลังคนไข้ (10 วัน)',
   DC_YES: 'ยืนยัน D/C', DC_NO: 'ยกเลิก',                                                          // v1.4.1 F10
   META: '{sex} · {age} ปี · HN {hn}', COPY_HN: 'Copy HN', COPIED: 'HN copied', COPY_FAIL: 'คัดลอกไม่ได้', META_V: '{sex} · สาย {t}', TEAM: 'สาย {t}',
   TASKS: 'To-do', ADD_PH: 'เพิ่มงาน เช่น CTWA, tap ascites', ADD: 'Add',
@@ -5741,10 +5781,10 @@ var Detail = {
     } else if (v) {
       [headCard, grp('today', [tasks]), grp('home', [planCard]), U.el('p', { cls: 'note vnote', text: D.VIEWER_NOTE })].forEach(function (x) { body.appendChild(x); });
     } else {
-      var manage = U.el('div', { cls: 'card dcard dmanage' }, [U.el('h3', { text: D.MANAGE }), U.el('div', { cls: 'three' }, [
+      // 1.12.0 (45 · r27): 2 buttons — ย้ายเตียง · D/C (กลับบ้าน / ย้ายวอร์ด / เสียชีวิต in one sheet: discharge.html)
+      var manage = U.el('div', { cls: 'card dcard dmanage' }, [U.el('h3', { text: D.MANAGE }), U.el('div', { cls: 'two' }, [
         U.el('button', { type: 'button', cls: 'btn ghost', id: 'd-move', text: D.MOVE, onclick: function () { Detail.startMove(); } }),
-        U.el('button', { type: 'button', cls: 'btn ghost', id: 'd-xfer', text: D.XFER, onclick: function () { var p = Detail.patient(); if (p) Transfer.open(p); } }),
-        U.el('button', { type: 'button', cls: 'btn dcbtn', id: 'd-dc', text: D.DC, onclick: function () { var p = Detail.patient(); if (p) Detail.confirmDc(p); } })])]);
+        U.el('button', { type: 'button', cls: 'btn dcbtn', id: 'd-dc', text: D.DC, onclick: function () { var p = Detail.patient(); if (p) Discharge.open(p); } })])]);
       var dx = Hist.rich('dx'), sp = Hist.rich('short_plan', true), lp = Hist.rich('long_plan'), ud = Hist.rich('summary');
       // r19 A26: D/C planning starts folded until it is switched on (or has a day / รอ / long-term plan)
       var dcsw = U.el('button', { type: 'button', cls: 'dcsw', id: 'd-dcsw', role: 'switch', 'aria-label': D.DC_SW, onclick: function () { Detail.setDcOn(!Detail.dcOn(Detail.patient())); } },
@@ -6010,16 +6050,8 @@ var Detail = {
     if (bs) { var ok = !st.text || st.cls === 'ok'; bs.className = 'bstat ' + (ok ? 'ok' : st.cls === 'fail' ? 'fail' : 'busy'); bs.textContent = ok ? '✓ ' + STR.DETAIL.AUTO : st.text; }
   },
 
-  /** v1.4.1 F10 (changes 01 #13): D/C home asks first — ยืนยัน / ยกเลิก. ย้ายวอร์ด already asks for the destination. */
-  confirmDc: function (p) {
-    var D = STR.DETAIL, pid = p.patient_id;
-    Sheet.open(U.fill(D.DC_T, { b: p.bed_no }), [
-      U.el('p', { cls: 'dcq', text: U.fill(D.DC_Q, { name: p.name }) }), U.el('p', { cls: 'note', text: D.DC_NOTE }),
-      U.el('div', { cls: 'two' }, [U.el('button', { type: 'button', cls: 'btn sec', text: D.DC_NO, onclick: function () { Sheet.close(); } }),
-        U.el('button', { type: 'button', cls: 'btn dng', id: 'dc-yes', text: D.DC_YES, onclick: function () {
-          Sheet.close(); var q = App.state.snap && Guess.pt(App.state.snap, pid); if (q) Detail.discharge(q, 'home'); } })])
-    ], { kind: 'dc', closeText: D.DC_NO, focus: '.two .btn.sec', onRefresh: function () { if (!Guess.pt(App.state.snap, pid)) Sheet.close(); } });
-  },
+  /** 1.12.0: kept for old callers — the D/C sheet (discharge.html) */
+  confirmDc: function (p) { Discharge.open(p); },
 
   paintHead: function (p) {
     var D = STR.DETAIL, h = U.$('d-head'), v = Detail.viewer(), temp = Guess.isTemp(p.patient_id);
@@ -6180,14 +6212,14 @@ var Detail = {
     BedMap.startMove(pid);
   },
 
-  /** M6: home (default, one tap) or transfer_ward with a destination. The bed is empty at once. */
+  /** M6 · 1.12.0: type from DcType (home · transfer_ward + destination · death). The bed is empty at once. */
   discharge: function (p, type, dest) {
     var pid = p.patient_id;
     if (Guess.isTemp(pid)) return;
     Detail.leaving = true;
     Detail.close(true);
     var input = { patient_id: pid, expected_version: p.version, type: type };
-    if (type === 'transfer_ward') input.destination = dest;
+    if (DcType.rule(type).dest) input.destination = dest;
     Ops.run('api_dischargePatient', input, { apply: function (s) { Guess.discharge(s, pid); } });
     BedMap.flashBed(p.bed_no);
   }
@@ -7297,7 +7329,29 @@ STR.PRINT = {
   WM: 'เอกสารลับ · {who} · {uid} · {id} · {when}',
   IOS_LAND: 'iPhone / iPad: หน้าพิมพ์จะเริ่มที่แนวตั้ง → แตะ Orientation เลือกแนวนอน (ปุ่มขวา) ก่อนพิมพ์ / บันทึก PDF',
   FN_FULL: 'ฉบับเต็ม', FN_BRIEF: 'แบบย่อ', FN_TEAM: 'สาย {t}',   // 1.8.3: PDF file name
+  // 1.12.0 (45 · r27): archive PDF
+  ARCH_T: 'เคสจำหน่าย {r}', LOS: 'LOS {n}', DC_ON_DAY: '{r} · D/C {d}', FN_ARCH: 'เคสจำหน่าย',
   MAX_PER_PAGE: 8, MIN_ROOM: 22, MIN_ROOM_B: 14
+};
+
+/* ======================= 1.12.0 (45 · r27): PrintSource — what the paginator prints, so it is not tied to App.state.snap =======================
+   {list, ix (consult chips), tasks, title, team, archive} · ward(scope) = the bed map as before · archive(cases, meta) = discharged cases
+   (from api_getArchivedCases, already oldest D/C first then old bed): bed = old bed, Today = tasks still open at D/C + Plan (no D/C planning). */
+var PrintSource = {
+  ward: function (scope) {
+    var snap = App.state.snap;
+    return { list: PrintView.patients(snap, scope), ix: BedMap.index(snap), tasks: snap.tasks, title: PrintView.scopeName(snap, scope), team: scope, archive: false };
+  },
+  archive: function (cases, meta) {
+    var cons = {}, tasks = [];
+    var list = cases.map(function (c) {
+      var p = Object.assign({}, c.patient, { bed_no: c.patient.last_bed_no || '—', _los: c.stat && c.stat.los_days ? c.stat.los_days : null });
+      cons[p.patient_id] = c.consults || []; tasks = tasks.concat(c.tasks || []);
+      return p;
+    });
+    var R = STR.PRINT, range = ArchPrint.rangeText(meta.from, meta.to) + (meta.team && meta.team !== 'all' ? ' · ' + U.fill(R.SCOPE_TEAM, { t: meta.team }) : '');
+    return { list: list, ix: { cons: cons, snap: App.state.snap }, tasks: tasks, title: U.fill(R.ARCH_T, { r: range }), team: meta.team || 'all', archive: true };
+  }
 };
 
 var PrintSheet = {
@@ -7374,9 +7428,18 @@ var PrintView = {
   name: function (p) { return PrintView.opt.brief ? PrintView.shortName(p.name) : p.name; },
   /** "F58 · D4" */
   sd: function (p) {
-    var d = Dc.dayNo(p);
-    return U.el('span', { cls: 'pv-sd' }, [(p.sex || '') + (p.age === '' || p.age == null ? '' : p.age)].concat(d ? [' · ', PrintView.t('b', '', 'D' + d)] : []));
+    var d = PrintView.arch() ? (p._los ? U.fill(STR.PRINT.LOS, { n: p._los }) : '') : (Dc.dayNo(p) ? 'D' + Dc.dayNo(p) : '');   // 1.12.0: archive = LOS n
+    return U.el('span', { cls: 'pv-sd' }, [(p.sex || '') + (p.age === '' || p.age == null ? '' : p.age)].concat(d ? [' · ', PrintView.t('b', '', d)] : []));
   },
+  /** 1.12.0: printing the archive (PrintSource.archive) */
+  arch: function () { return !!(PrintView.src && PrintView.src.archive); },
+  /** 1.12.0: archive badge "ย้ายไป ICU · D/C 20 พ.ย." (black for เสียชีวิต) · bed number in a dashed box (old bed) */
+  dcb: function (p) {
+    if (!PrintView.arch()) return null;
+    var d = String(p.discharged_at || '').slice(0, 10);
+    return PrintView.t('div', 'pv-dcb ' + DcType.cls(p.discharge_type), U.fill(STR.PRINT.DC_ON_DAY, { r: DcType.label(p), d: d ? Dc.dm(d) : '' }));
+  },
+  no: function (p) { return PrintView.t('span', 'pv-no' + (PrintView.arch() ? ' pv-old' : ''), p.bed_no); },
   alg: function (p) { return p.allergy ? U.el('div', { cls: 'pv-alg' }, [PrintView.t('b', '', STR.PRINT.ALLERGY), ' ' + p.allergy]) : null; },
   acp: function (p) { return p.acp ? U.el('div', { cls: 'pv-acp' }, [PrintView.t('b', '', STR.PRINT.ACP), ' ' + p.acp]) : null; },
   /** 1.6.2 (24 §4): Baseline status sits with Allergy / ACP (Patient cell · portrait strip), every kind of PDF. */
@@ -7391,22 +7454,22 @@ var PrintView = {
   who: function (p, ix) {
     var t = PrintView.t, m = PrintView.metaBits(p);
     return U.el('div', { cls: 'pv-c1 pv-keep' }, [
-      U.el('div', { cls: 'pv-who' }, [t('span', 'pv-no', p.bed_no), U.el('div', { cls: 'pv-nmw' }, [t('div', 'pv-nm', PrintView.name(p)), PrintView.sd(p)])]),
-      t('div', 'pv-meta', m.hn), m.adm ? t('div', 'pv-meta', m.adm) : null, PrintView.alg(p), PrintView.acp(p), PrintView.base(p), PrintView.tags(p, ix)]);
+      U.el('div', { cls: 'pv-who' }, [PrintView.no(p), U.el('div', { cls: 'pv-nmw' }, [t('div', 'pv-nm', PrintView.name(p)), PrintView.sd(p)])]),
+      PrintView.dcb(p), t('div', 'pv-meta', m.hn), m.adm ? t('div', 'pv-meta', m.adm) : null, PrintView.alg(p), PrintView.acp(p), PrintView.base(p), PrintView.tags(p, ix)]);
   },
   /** D-P7 แนวตั้ง: one strip, 3 zones — [n] name F58 · D4 / HN · สิทธิ์ · Admit | ⚠ ALLERGY / ACP | consult chips (right). */
   strip: function (p, ix) {
     var t = PrintView.t, m = PrintView.metaBits(p);
     return U.el('div', { cls: 'pv-strip' }, [
-      U.el('div', { cls: 'pv-sl' }, [t('span', 'pv-no', p.bed_no), U.el('div', { cls: 'pv-nmw' }, [U.el('div', { cls: 'pv-nml' }, [t('span', 'pv-nm', PrintView.name(p)), PrintView.sd(p)]),
-        t('div', 'pv-meta', [m.hn, m.adm].filter(Boolean).join(' · '))])]),
+      U.el('div', { cls: 'pv-sl' }, [PrintView.no(p), U.el('div', { cls: 'pv-nmw' }, [U.el('div', { cls: 'pv-nml' }, [t('span', 'pv-nm', PrintView.name(p)), PrintView.sd(p)]),
+        t('div', 'pv-meta', [m.hn, m.adm].filter(Boolean).join(' · ')), PrintView.dcb(p)])]),
       U.el('div', { cls: 'pv-sm' }, [PrintView.alg(p), PrintView.acp(p), PrintView.base(p)]),
       U.el('div', { cls: 'pv-sr' }, [PrintView.tags(p, ix)])]);
   },
   /** D-P12 the label of a continued part: [n] name (ต่อ) + ⚠ Allergy (portrait = a slim strip). */
   cont: function (p, port) {
     var t = PrintView.t;
-    var kids = [t('span', 'pv-no', p.bed_no), t('span', 'pv-nm', PrintView.name(p) + ' ' + STR.PRINT.CONT), PrintView.alg(p)];
+    var kids = [PrintView.no(p), t('span', 'pv-nm', PrintView.name(p) + ' ' + STR.PRINT.CONT), PrintView.alg(p)];
     return U.el('div', { cls: port ? 'pv-strip pv-sc' : 'pv-cont' }, kids);
   },
   /** D-P5 แบบย่อ: drop ☑ ☒ lines and the indented lines under them. */
@@ -7463,15 +7526,15 @@ var PrintView = {
     return U.el('div', { cls: 'pv-lbl pv-u' }, [R.DCP, d]);
   },
   /** Today (D-P4): PENDING → PLAN → D/C PLANNING (รอ … then the long plan). PENDING / PLAN heads only when Today has > 1 part. */
-  today: function (p, snap, rich) {
+  today: function (p, src, rich) {                                       // 1.12.0: src = PrintSource (or the snapshot: both have .tasks)
     var R = STR.PRINT, t = PrintView.t, brief = PrintView.opt.brief, secs = [];
-    var tasks = snap.tasks.filter(function (x) { return x.patient_id === p.patient_id && !x.done; });
+    var tasks = src.tasks.filter(function (x) { return x.patient_id === p.patient_id && !x.done; });
     if (tasks.length) secs.push({ l: R.PENDING, k: tasks.map(function (x) { return U.el('div', { cls: 'pv-task pv-u' }, [t('span', 'pv-cb', '☐'), t('span', '', x.text)]); }) });
     var sp = brief ? PrintView.open(p.short_plan) : p.short_plan, lp = brief ? PrintView.open(p.long_plan) : p.long_plan;
     if (String(sp || '').trim()) secs.push({ l: R.PLAN, k: [rich(sp, true)] });
     // 1.6.2 (24 §4): Psychosocial = in D/C planning, after "รอ …" (ฉบับเต็ม only; แบบย่อ leaves it out)
     var psy = !brief && String(p.psychosocial || '').trim() ? U.el('div', { cls: 'pv-psy pv-u' }, [t('b', '', R.PSY), ' ' + p.psychosocial]) : null;
-    if (Dc.all(p).length || p.dc_wait || psy || String(lp || '').trim()) {
+    if (!PrintView.arch() && (Dc.all(p).length || p.dc_wait || psy || String(lp || '').trim())) {   // 1.12.0: archive = no D/C planning
       secs.push({ dc: true, k: [p.dc_wait ? t('div', 'pv-wait pv-u', p.dc_wait) : null, psy, String(lp || '').trim() ? rich(lp) : null] });
     }
     var out = [];
@@ -7543,7 +7606,7 @@ var PrintView = {
     if (PrintView.title0 == null) PrintView.title0 = document.title;
     var parts = ['MedJad', w ? String(w.ward_name || '').replace(/[\\/:*?"<>|]+/g, '-').trim() : '',
       PrintView.team && PrintView.team !== 'all' ? U.fill(R.FN_TEAM, { t: PrintView.team }) : '',
-      PrintView.kind === 'hand' ? R.FN_BRIEF : R.FN_FULL,
+      PrintView.arch() ? R.FN_ARCH : '', PrintView.kind === 'hand' ? R.FN_BRIEF : R.FN_FULL,
       p2(d.getDate()) + '-' + p2(d.getMonth() + 1) + '-' + p2((d.getFullYear() + 543) % 100), p2(d.getHours()) + p2(d.getMinutes())];
     document.title = parts.filter(Boolean).join(' ');
   },
@@ -7561,8 +7624,9 @@ var PrintView = {
     });
   },
   print: function () {
-    var input = { team: PrintView.team, orient: PrintView.o, kind: PrintView.kind, n: PrintView.patients(App.state.snap, PrintView.team).length, pages: (PrintView.pages || []).length,
-                  print_id: PrintView.printId || '' };
+    var src = PrintView.src, input = { team: PrintView.team, orient: PrintView.o, kind: PrintView.kind, n: src ? src.list.length : PrintView.patients(App.state.snap, PrintView.team).length,
+                  pages: (PrintView.pages || []).length, print_id: PrintView.printId || '' };
+    if (PrintView.arch()) input.src = 'archive';                         // 1.12.0: count only, no names (still set BEFORE print: fix 1.11.1)
     document.body.classList.add('printing');
     // 1.11.1: print INSIDE the tap. iPhone Safari on the GitHub link (the app is the page itself, not inside Google's frame) asks
     // "This website has been blocked from automatically printing" when print() comes later (1.10.0: setTimeout 50 ms).
@@ -7570,21 +7634,112 @@ var PrintView = {
     Api.call('api_logPrint', [Token.get(), App.state.wardId, U.reqId(), input], { retries: 2, delays: [3000, 9000] });   // fire and forget (never blocks printing)
   },
   close: function () {
-    var v = U.$('printview'); v.hidden = true; v.textContent = ''; document.body.classList.remove('printing');
+    var v = U.$('printview'); v.hidden = true; v.textContent = ''; document.body.classList.remove('printing'); PrintView.src = null;
     if (PrintView.title0 != null) { document.title = PrintView.title0; PrintView.title0 = null; }   // 1.8.3
+  }
+};
+
+/* ======================= 1.12.0 (45 · r27): ArchPrint — "พิมพ์เคสในคลัง" (🖨 next to 🔍 in the archive · Chief + R1) =======================
+   D/C day range: วันนี้ · ทั้งคลัง · or จาก–ถึง (not before the oldest case in the archive) · ประเภท · สาย · ย่อ / เต็ม · แนว ·
+   the names that will print + how many BEFORE สร้าง PDF (counted on the phone from the archive list) · ≤ 60 (server: TOO_MANY). */
+STR.APRINT = {
+  TITLE: 'พิมพ์เคสในคลัง', RANGE: 'ช่วงวันที่ D/C', TODAY: 'วันนี้', ALLARCH: 'ทั้งคลัง', FROM: 'จาก', TO: 'ถึง', TYPE: 'ประเภท', ALL: 'ทั้งหมด',
+  TEAM: 'สาย', KIND: 'แบบ', BRIEF: 'ย่อ', FULL: 'เต็ม', ORIENT: 'แนวกระดาษ', LAND: 'แนวนอน', PORT: 'แนวตั้ง',
+  N: '{n} คน', NONE: 'ไม่มีเคสในช่วงนี้', GO: 'สร้าง PDF · {n} คน', LOADING: 'กำลังเตรียม…', MAX: 'เกิน {m} คน — แคบช่วงวันที่ลง',
+  WAIT_LIST: 'กำลังโหลดคลัง…'
+};
+var ArchPrint = {
+  st: null,
+  day: function (iso) { return String(iso || '').slice(0, 10); },
+  /** "16 พ.ย. – 21 พ.ย." · one day = "21 พ.ย." */
+  rangeText: function (a, b) { return a === b ? Dc.dm(a) : Dc.dm(a) + ' – ' + Dc.dm(b); },
+  oldest: function (rows) { return rows.reduce(function (m, r) { var d = ArchPrint.day(r.discharged_at); return d && (!m || d < m) ? d : m; }, '') || ArchiveX.today(); },
+  rows: function () {
+    var st = ArchPrint.st;
+    return (ArchiveView.rows || []).filter(function (r) {
+      var d = ArchPrint.day(r.discharged_at);
+      return d && d >= st.from && d <= st.to && (st.type === 'all' || DcType.get(r.discharge_type) === st.type) &&
+        (st.team === 'all' || String(r.team).toUpperCase() === st.team);
+    }).sort(function (a, b) { var x = ArchPrint.day(a.discharged_at), y = ArchPrint.day(b.discharged_at); return x !== y ? (x < y ? -1 : 1) : String(a.last_bed_no).localeCompare(String(b.last_bed_no), 'en', { numeric: true }); });
+  },
+  open: function () {
+    var A = STR.APRINT, today = ArchiveX.today(), rows0 = ArchiveView.rows || [], oldest = ArchPrint.oldest(rows0);
+    if (!ArchiveView.rows) return Toast.show(A.WAIT_LIST);
+    var st = ArchPrint.st = ArchPrint.st || { range: 'today', from: today, to: today, type: 'all', team: ArchiveX.team || 'all',
+      kind: Store.get('aprintKind') === 'hand' ? 'hand' : 'full', o: Store.get('printO') === 'port' ? 'port' : 'land' };
+    if (st.range === 'today') { st.from = st.to = today; } else if (st.range === 'all') { st.from = oldest; st.to = today; }
+    if (st.from < oldest) st.from = oldest; if (st.to > today) st.to = today;
+    var go = U.el('button', { type: 'button', cls: 'btn', id: 'ap-go' }), names = U.el('div', { cls: 'apnames', id: 'ap-names' }), err = U.el('p', { cls: 'ferr', role: 'alert', hidden: 'hidden' });
+    var seg = function (key, opts, id) {
+      var g = U.el('div', { cls: 'seg pseg', role: 'group', id: id });
+      opts.forEach(function (o) { g.appendChild(U.el('button', { type: 'button', 'data-v': o[0], text: o[1], onclick: function () { st[key] = o[0]; if (key === 'range') setRange(); paint(); } })); });
+      return g;
+    };
+    var fromI = U.el('input', { cls: 'in', type: 'date', id: 'ap-from', min: oldest, max: today, 'aria-label': A.FROM });
+    var toI = U.el('input', { cls: 'in', type: 'date', id: 'ap-to', min: oldest, max: today, 'aria-label': A.TO });
+    var setRange = function () { if (st.range === 'today') { st.from = st.to = today; } else if (st.range === 'all') { st.from = oldest; st.to = today; } };
+    var onDate = function () {
+      st.range = 'pick';
+      st.from = fromI.value && fromI.value >= oldest ? fromI.value : oldest;
+      st.to = toI.value && toI.value <= today ? toI.value : today;
+      if (st.from > st.to) { var x = st.from; st.from = st.to; st.to = x; }
+      paint();
+    };
+    fromI.addEventListener('change', onDate); toI.addEventListener('change', onDate);
+    var rng = seg('range', [['today', A.TODAY], ['all', A.ALLARCH]], 'ap-range');
+    var typ = seg('type', [['all', A.ALL]].concat(DcType.keys().map(function (k) { return [k, STR.DC.PICK[k]]; })), 'ap-type');
+    var tm = seg('team', [['all', A.ALL], ['A', 'A'], ['B', 'B']], 'ap-team');
+    var knd = seg('kind', [['hand', A.BRIEF], ['full', A.FULL]], 'ap-kind');
+    var ori = seg('o', [['land', A.LAND], ['port', A.PORT]], 'ap-o');
+    var row = function (label, ctl) { return U.el('div', { cls: 'porow' }, [U.el('span', { cls: 'plbl', text: label }), ctl]); };
+    var paint = function () {
+      [[rng, st.range], [typ, st.type], [tm, st.team], [knd, st.kind], [ori, st.o]].forEach(function (x) {
+        Array.prototype.forEach.call(x[0].querySelectorAll('button'), function (b) { var on = b.getAttribute('data-v') === x[1]; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+      });
+      fromI.value = st.from; toI.value = st.to;
+      var list = ArchPrint.rows(), max = BOOT.archive_print_max || 60;
+      names.textContent = '';
+      names.appendChild(U.el('b', { text: U.fill(A.N, { n: list.length }) + ' · ' + ArchPrint.rangeText(st.from, st.to) }));
+      list.forEach(function (r) {
+        names.appendChild(U.el('div', { cls: 'apn' }, [U.el('span', { cls: 'apb', text: r.last_bed_no || '—' }), U.el('span', { cls: 'apnm', text: r.name }),
+          U.el('span', { cls: 'dcpill ' + DcType.cls(r.discharge_type), text: DcType.label(r) })]));
+      });
+      err.hidden = true;
+      go.disabled = !list.length || list.length > max;
+      go.textContent = !list.length ? A.NONE : list.length > max ? U.fill(A.MAX, { m: max }) : U.fill(A.GO, { n: list.length });
+    };
+    go.addEventListener('click', function () {
+      var ward = App.state.wardId, meta = { from: st.from, to: st.to, team: st.team }, input = { from: st.from, to: st.to };
+      if (st.type !== 'all') input.type = st.type;
+      if (st.team !== 'all') input.team = st.team;
+      Store.set('aprintKind', st.kind); Store.set('printO', st.o);
+      go.disabled = true; go.textContent = A.LOADING;
+      Api.call('api_getArchivedCases', [Token.get(), ward, input], { retries: 1, timeout: 40000 }).then(function (res) {
+        if (ward !== App.state.wardId || Sheet.kind !== 'aprint') return;
+        if (!res.ok) { paint(); err.textContent = Api.msg(res); err.hidden = false; return; }
+        if (!res.data.cases.length) { paint(); err.textContent = A.NONE; err.hidden = false; return; }
+        Sheet.close();
+        U.fontsReady(function () {
+          PrintFull.show(meta.team, st.o, { brief: st.kind === 'hand', hideSolved: PrintSheet.st.solved === 'hide', memo: st.kind === 'full', src: PrintSource.archive(res.data.cases, meta) });
+        });
+      });
+    });
+    paint();
+    Sheet.open(A.TITLE, [U.el('div', { cls: 'popts apopts' }, [row(A.RANGE, rng), U.el('div', { cls: 'porow apdates' }, [U.el('span', { cls: 'plbl', text: A.FROM }), fromI, U.el('span', { cls: 'plbl', text: A.TO }), toI]),
+      row(A.TYPE, typ), row(A.TEAM, tm), row(A.KIND, knd), row(A.ORIENT, ori)]), names, err, go], { kind: 'aprint', closeText: STR.SHEET.CANCEL, onRefresh: paint });
   }
 };
 
 /* ======================= PrintFull: the one paginator for all 4 kinds (r20 D-P17) ======================= */
 var PrintFull = {
   /** One patient → { row, cells, strip }. cells = the grid cells (แนวนอน: Patient cell first = one keep unit). */
-  build: function (p, ix, snap, opt) {
+  build: function (p, ix, src, opt) {                                     // 1.12.0: src = PrintSource
     var R = STR.PRINT, t = PrintView.t, port = PrintView.o === 'port', brief = !!opt.brief;
     var rich = function (txt, days) { return String(txt || '').trim() ? Rich.render(txt, { print: true, hideSolved: opt.hideSolved, days: !!days }) : null; };   // 1.8.0: days = "(D13)" text
     var cell = function (cls, kids) { return U.el('div', { cls: 'pv-fc ' + cls }, kids.filter(Boolean)); };
     var ud = brief ? PrintView.udBrief(p.summary) : p.summary;
     var probs = brief ? PrintView.probsBrief(p.dx, opt.hideSolved) : rich(p.dx, true);
-    var cells = [cell('f2 pv-ud', [rich(ud)]), cell('f3', [probs || t('div', 'pv-dcn pv-u', R.NO_DX)]), cell('f4', PrintView.today(p, snap, rich)), cell('f5', [])];
+    var cells = [cell('f2 pv-ud', [rich(ud)]), cell('f3', [probs || t('div', 'pv-dcn pv-u', R.NO_DX)]), cell('f4', PrintView.today(p, src, rich)), cell('f5', [])];
     if (!port) cells.unshift(cell('f1', [PrintView.who(p, ix)]));
     var grid = U.el('div', { cls: 'pv-frow pv-fgrid' + (port ? '' : ' pv-t' + p.team) }, cells);
     if (!port) return { row: grid, cells: cells, grid: grid, strip: null };
@@ -7617,11 +7772,11 @@ var PrintFull = {
   show: function (scope, o, opt) {
     var R = STR.PRINT, snap = App.state.snap; if (!snap) return;
     opt = opt || {};
-    var brief = !!opt.brief, port = o === 'port';
-    PrintView.team = scope; PrintView.o = o; PrintView.kind = brief ? 'hand' : 'full'; PrintView.opt = opt;
+    var brief = !!opt.brief, port = o === 'port', src = opt.src || PrintSource.ward(scope);   // 1.12.0: the bed map, or the archive
+    PrintView.src = src; PrintView.team = src.team; PrintView.o = o; PrintView.kind = brief ? 'hand' : 'full'; PrintView.opt = opt;
     PrintView.printId = PrintView.newId();                                  // 1.6.0 #66: one document number per preview
-    var ix = BedMap.index(snap), list = PrintView.patients(snap, scope);
-    var title = PrintView.scopeName(snap, scope) + ' · ' + (brief ? R.HAND : R.FULLK) + ' · ' + U.fill(R.COUNT, { n: list.length });
+    var ix = src.ix, list = src.list;
+    var title = src.title + ' · ' + (brief ? R.HAND : R.FULLK) + ' · ' + U.fill(R.COUNT, { n: list.length });
     var F = PrintView.frame(o), pages = F.pages;
     var probe = PrintFull.fpage(0, title, opt); probe.style.height = 'auto'; pages.appendChild(probe);
     var pb = probe.querySelector('.pv-fbody'); pb.style.cssText = 'flex:none;height:auto;overflow:visible';
@@ -7637,7 +7792,7 @@ var PrintFull = {
     var hgt = function (el) { pb.appendChild(el); var h = el.getBoundingClientRect().height; pb.removeChild(el); return h; };
     newPage();
     list.forEach(function (p) {
-      var B = PrintFull.build(p, ix, snap, opt);
+      var B = PrintFull.build(p, ix, src, opt);
       pb.appendChild(B.row);
       var rowH = B.row.getBoundingClientRect().height, gridH = B.grid.getBoundingClientRect().height;
       var cs = getComputedStyle(B.cells[0]), cpad = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
@@ -8048,7 +8203,6 @@ var ArchiveView = {
 
   row: function (r) {
     var A = ArchiveView, S = STR.ARCH, owner = App.role() === 'owner', busy = A.busy === r.patient_id;
-    var reason = r.discharge_type === 'transfer_ward' ? U.fill(S.XFER, { d: r.discharge_destination }) : S.HOME;
     // 1.10.0 (mockup r2): สาย badge · ชื่อ · HN + เตียงเดิม · D/C วันที่ + เหตุผล · the whole top = ดูประวัติ (CaseView, casev.html) ·
     // actions = one quiet bar under the card (same labels / same classes .btn as before: the tests and the habits keep working)
     var tm = String(r.team || '').toUpperCase(), d = new Date(r.discharged_at), dm = isNaN(d) ? '' : U.dateTh(r.discharged_at).replace(/\s*\d+$/, '');
@@ -8058,7 +8212,7 @@ var ArchiveView = {
         U.el('span', { cls: 'atext' }, [
           U.el('span', { cls: 'pname sm', text: r.name }),
           U.el('span', { cls: 'pmeta', text: U.fill(STR.CASEV.CARD_META, { hn: r.hn, b: r.last_bed_no || '—' }) }),
-          U.el('span', { cls: 'pmeta adc', text: U.fill(STR.CASEV.CARD_DC, { d: dm, r: r.discharge_type === 'transfer_ward' ? U.fill(STR.CASEV.DC_XFER, { d: r.discharge_destination }) : STR.CASEV.DC_HOME }) })]),
+          U.el('span', { cls: 'pmeta adc' }, [U.el('span', { cls: 'dcpill ' + DcType.cls(r.discharge_type), text: DcType.label(r) }), ' ' + U.fill(STR.CASEV.CARD_DC_D, { d: dm })])]),   // 1.12.0: colour = type
         U.el('span', { cls: 'achev', 'aria-hidden': 'true', text: '›' })])
     ]);
     if (A.confirmDel === r.patient_id) {
@@ -8125,22 +8279,23 @@ var ArchiveView = {
   reasonSheet: function (r) {
     var S = STR.ARCH, X = STR.XFER, sugs = (App.state.snap && App.state.snap.dest_suggestions) || [];
     var f = U.el('form', { cls: 'aform', novalidate: 'novalidate' });
-    var radios = Form.radios('type', [['home', S.R_HOME], ['transfer_ward', S.R_XFER]], r.discharge_type || 'home');
+    var radios = Form.radios('type', DcType.keys().map(function (k) { return [k, STR.DC.PICK[k]]; }), DcType.get(r.discharge_type));   // 1.12.0: 3 kinds
     var inp = Form.input('dest', { maxlength: '50', placeholder: X.PH }); inp.value = r.discharge_destination || '';
     var destBox = U.el('div', {}, [Form.field(X.LABEL, inp)]);
     if (sugs.length) destBox.appendChild(U.el('div', { cls: 'sugs' }, sugs.map(function (w) {
       return U.el('button', { type: 'button', cls: 'sug', text: w, onclick: function () { inp.value = w; } });
     })));
     var err = U.el('p', { cls: 'ferr', role: 'alert', hidden: 'hidden' }), btn = U.el('button', { type: 'submit', cls: 'btn', text: S.R_SAVE });
-    var sync = function () { destBox.hidden = Form.val(f, 'type') !== 'transfer_ward'; };
+    var sync = function () { destBox.hidden = !DcType.rule(Form.val(f, 'type')).dest; };
     f.appendChild(U.el('div', { cls: 'f' }, [radios])); f.appendChild(destBox); f.appendChild(err); f.appendChild(btn);
     f.addEventListener('change', sync);
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var type = Form.val(f, 'type'), dest = inp.value.replace(/\s+/g, ' ').trim();
-      if (type === 'transfer_ward' && !dest) { err.textContent = X.LABEL; err.hidden = false; return; }
+      var needDest = DcType.rule(type).dest;
+      if (needDest && !dest) { err.textContent = X.LABEL; err.hidden = false; return; }
       btn.disabled = true; btn.textContent = S.SAVING;
-      Ops.run('api_updateArchiveReason', type === 'home' ? { patient_id: r.patient_id, type: type } : { patient_id: r.patient_id, type: type, destination: dest },
+      Ops.run('api_updateArchiveReason', needDest ? { patient_id: r.patient_id, type: type, destination: dest } : { patient_id: r.patient_id, type: type },
               { wait: true }).then(function (res) {
         btn.disabled = false; btn.textContent = S.R_SAVE;
         if (res.ok) { Sheet.close(); Toast.show(S.SAVED); return ArchiveView.load(); }
@@ -8615,7 +8770,7 @@ var ConsultMsg = {
 
   <!-- casev.html — 1.10.0 (39 · r25 · mockup r2 owner 18/11 14:12): the archive after 4 days of real use.
      ArchiveX  (inside เพิ่มเติม → คลังคนไข้, owner/editor):
-               · สรุปจำหน่าย = 4 ช่อง: D/C ทั้งหมด · สาย A · สาย B · ย้ายวอร์ด — นับตั้งแต่วันที่ Chief เลือก (Meta.stats_from) ถึงวันนี้, from
+               · สรุปจำหน่าย = 4 ช่อง: D/C ทั้งหมด · สาย A · สาย B · ย้ายวอร์ด (1.12.0: + เสียชีวิต = 5 ช่อง · ปุ่ม 🖨 = ArchPrint, print.html) — นับตั้งแต่วันที่ Chief เลือก (Meta.stats_from) ถึงวันนี้, from
                  DischargeStats (no names, kept for good: also the patients whose history is gone after 10 days) · R1 เห็น เปลี่ยนไม่ได้
                · ปุ่มวันที่มุมขวา (Chief) → ทางลัด (วันที่ 1 เดือนนี้ · 28 วันก่อน · วันนี้) + ปฏิทิน + บันทึก
                · สาย ทั้งหมด n / A n / B n + 🔍 (ช่องค้นซ่อนจนแตะ) · Chief: ชื่อวอร์ดในข้อความ consult (Meta.consult_ward)
@@ -8627,11 +8782,12 @@ STR.CASEV = {
   SUM: 'สรุปจำหน่าย', RANGE: 'ถึงวันนี้ · {n} วัน', RANGE_DEF: 'ถึงวันนี้ · {n} วัน (ยังไม่ได้ตั้ง)', FROM: 'ตั้งแต่ {d}',
   SET_L: 'นับตั้งแต่ (วันแรกของโรเตท)', P_MONTH: '1 {m}', P_28: '28 วันก่อน', P_TODAY: 'วันนี้', SET_SAVE: 'บันทึก',
   SET_NOTE: 'ทุกคนในวอร์ดเห็นช่วงเดียวกัน · R1 ดูได้ เปลี่ยนไม่ได้', LOADING: 'กำลังนับ…', FAIL: 'นับไม่สำเร็จ แตะเพื่อลองใหม่',
-  T_ALL: 'D/C ทั้งหมด', T_A: 'สาย A', T_B: 'สาย B', T_X: 'ย้ายวอร์ด',
+  T_ALL: 'D/C ทั้งหมด', T_A: 'สาย A', T_B: 'สาย B', T_X: 'ย้ายวอร์ด',   // 1.12.0: + T_DEAD (5 ช่อง)
   ALL: 'ทั้งหมด', TEAM: 'สาย {t}', FILTER: 'สาย', SEARCH: 'ค้นชื่อหรือ HN', NONE_TEAM: 'ไม่มีเคสของสายนี้ในคลัง',
   CW: 'ชื่อวอร์ดในข้อความ consult', CW_PH: 'เช่น NVM 21S', CW_NOTE: 'ว่าง = ใช้ชื่อวอร์ด "{w}" · Chief เท่านั้น', CW_SAVE: 'บันทึก', CW_SAVED: 'บันทึกชื่อวอร์ดแล้ว',
   CW_BAD: 'ไม่เกิน 30 ตัว และไม่มีเครื่องหมาย < >',
-  OPEN: 'ดูประวัติ', CARD_META: 'HN {hn} · เตียง {b}', CARD_DC: 'D/C {d} · {r}',
+  OPEN: 'ดูประวัติ', CARD_META: 'HN {hn} · เตียง {b}', CARD_DC: 'D/C {d} · {r}', CARD_DC_D: '· D/C {d}',
+  T_DEAD: 'เสียชีวิต', PRINT: 'พิมพ์เคสในคลัง',
   TITLE: 'ประวัติเคส', BACK: '‹ คลัง', DC: 'D/C แล้ว', DC_HOME: 'กลับบ้าน', DC_XFER: 'ย้ายไป {d}',
   INFO: 'เตียงเดิม {b} · สาย {t}', ADMIT: 'Admit {d}', LOSV: 'LOS {n} วัน', META: '{sex}{age} · HN {hn}',
   LOAD: 'กำลังเปิดเคส…', LOAD_FAIL: 'เปิดเคสไม่สำเร็จ', GONE: 'เคสนี้ไม่อยู่ในคลังแล้ว (กู้คืนหรือลบไปแล้ว)', RETRY: 'ลองใหม่',
@@ -8663,8 +8819,10 @@ var ArchiveX = {
       var q = U.$('arch-q'); if (!q) return;
       if (q.hidden) { q.hidden = false; q.focus(); } else if (!q.value) q.hidden = true; else q.focus();
     } }, [U.icon(['M10.5 5a5.5 5.5 0 1 0 0 11a5.5 5.5 0 1 0 0-11', 'M15 15l5 5'], 'aico')]);
+    var print = U.el('button', { type: 'button', cls: 'asearch', id: 'arch-print', 'aria-label': C.PRINT, title: C.PRINT, onclick: function () { ArchPrint.open(); } },   // 1.12.0
+      [U.icon(['M7 9V4h10v5', 'M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2', 'M7 14h10v6H7z'], 'aico')]);
     X.box = U.el('div', { cls: 'arch-x' }, [U.el('section', { cls: 'card asum', id: 'arch-sum', 'aria-label': C.SUM }),
-      U.el('div', { cls: 'afilter' }, [U.el('div', { cls: 'seg afseg', id: 'arch-team', role: 'group', 'aria-label': C.FILTER }), search])]);
+      U.el('div', { cls: 'afilter' }, [U.el('div', { cls: 'seg afseg', id: 'arch-team', role: 'group', 'aria-label': C.FILTER }), search, print])]);
     if (X.sumKey !== X.key() || !X.sum) X.load();
     X.paint();
     return X.box;
@@ -8701,7 +8859,9 @@ var ArchiveX = {
     if (X.err) return box.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: C.FAIL, onclick: function () { X.load(); X.paint(); } }));
     if (!d) return box.appendChild(U.el('p', { cls: 'note', text: C.LOADING }));
     var tile = function (n, label, cls) { return U.el('div', { cls: 'atile ' + cls }, [U.el('b', { text: String(n) }), U.el('span', { text: label })]); };
-    box.appendChild(U.el('div', { cls: 'atiles', id: 'asum-tiles' }, [tile(d.total, C.T_ALL, 't0'), tile(d.team.A, C.T_A, 'tA'), tile(d.team.B, C.T_B, 'tB'), tile(d.transfer, C.T_X, 't0')]));
+    var by = d.by || { transfer_ward: d.transfer, death: 0 };          // 1.12.0: 5 ช่อง — ทั้งหมด (รวมเสียชีวิต) · A · B · ย้ายวอร์ด · เสียชีวิต
+    box.appendChild(U.el('div', { cls: 'atiles a5', id: 'asum-tiles' }, [tile(d.total, C.T_ALL, 't0'), tile(d.team.A, C.T_A, 'tA'), tile(d.team.B, C.T_B, 'tB'),
+      tile(by.transfer_ward || 0, C.T_X, 't0 tX'), tile(by.death || 0, C.T_DEAD, 't0 tD')]));
   },
 
   /** Chief: shortcuts + calendar + บันทึก */
@@ -8788,13 +8948,13 @@ var CaseView = {
 
   paint: function () {
     var V = CaseView, C = STR.CASEV, d = V.data, p = d.patient, b = V.body(), D = STR.DETAIL;
-    var reason = p.discharge_type === 'transfer_ward' ? U.fill(C.DC_XFER, { d: p.discharge_destination }) : C.DC_HOME;
+    var reason = DcType.label(p);                                       // 1.12.0
     var info = [U.fill(C.INFO, { b: p.last_bed_no || '—', t: p.team || '—' })];
     if (p.admit_date) info.push(U.fill(C.ADMIT, { d: ArchiveX.day(p.admit_date) }));
     if (d.stat && d.stat.los_days) info.push(U.fill(C.LOSV, { n: d.stat.los_days }));
     var keepTo = V.keepUntil(p.discharged_at);
     b.appendChild(U.el('div', { cls: 'cv-dc', id: 'cv-dc' }, [
-      U.el('div', { cls: 'cv-dc1' }, [U.el('span', { cls: 'cv-badge', text: C.DC }), U.el('b', { text: U.dateTh(p.discharged_at) + ' · ' + reason })]),
+      U.el('div', { cls: 'cv-dc1' }, [U.el('span', { cls: 'cv-badge ' + DcType.cls(p.discharge_type), text: DcType.badge(p.discharge_type) }), U.el('b', { text: U.dateTh(p.discharged_at) + (DcType.get(p.discharge_type) === 'death' ? '' : ' · ' + reason) })]),   // 1.12.0: the badge already says เสียชีวิต
       U.el('div', { cls: 'cv-dc2', text: info.join(' · ') }),
       U.el('div', { cls: 'cv-dc3', text: C.READONLY + (keepTo ? ' · ' + U.fill(C.KEEP, { d: keepTo }) : '') })]));
     var tm = String(p.team || '').toUpperCase();
@@ -8844,6 +9004,67 @@ var CaseView = {
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && CaseView.isOpen() && !Sheet.isOpen()) { CaseView.close(); e.stopImmediatePropagation(); }
 }, true);
+</script>
+
+  <!-- discharge.html — 1.12.0 (45 · r27 · Doc "สรุปฟีเจอร์ที่คุยกันวันนี้" ชุดที่ 2): ONE sheet for D/C, from the bed page's D/C button.
+     "จำหน่าย · เตียง N" → กลับบ้าน (picked: still 2 taps, D/C → บันทึก) · ย้ายวอร์ด (destination + names used before) ·
+     เสียชีวิต (the save button works only after ticking "ยืนยันว่า … เสียชีวิต" · no time box: the time of saving is kept).
+     Types come from DcType (core.html) — replaces Detail.confirmDc + Transfer (both now open this sheet).
+     ids kept from 1.11: #d-dc opens it · #dc-yes = save (old tests and habits) · Sheet.kind 'dc'. -->
+<script>
+STR.DCS = {
+  TITLE: 'จำหน่าย · เตียง {b}', TYPE: 'จำหน่ายแบบ', NOTE: 'เตียงจะว่างทันที · ถ้ากดผิด กู้คืนได้ที่ เพิ่มเติม → คลังคนไข้ (10 วัน)',
+  DEST: 'ชื่อวอร์ดปลายทาง', DEST_PH: 'เช่น ICU, ศัลยกรรมชาย', USED: 'เคยใช้', DEATH_OK: 'ยืนยันว่า {n} เสียชีวิต',
+  DEATH_NOTE: 'ใช้เวลาที่กดบันทึกเป็นเวลาจำหน่าย · ไม่ขึ้นในรายการ "รับกลับเข้าเตียง"',
+  SAVE: { home: 'D/C กลับบ้าน', transfer_ward: 'ย้ายออก', death: 'บันทึกเสียชีวิต' }, CANCEL: 'ยกเลิก'
+};
+
+var Discharge = {
+  /** p = the patient on the bed page · type = the choice picked at first (default กลับบ้าน) */
+  open: function (p, type) {
+    var X = STR.DCS, pid = p.patient_id, sugs = (App.state.snap && App.state.snap.dest_suggestions) || [];
+    type = DcType.get(type);
+    var name = U.el('p', { cls: 'dcq', text: p.name });
+    var seg = Form.toggles('type', DcType.keys().map(function (k) { return [k, STR.DC.PICK[k], 'dct-' + k]; }), type, function (v) { type = v; sync(); });
+    seg.id = 'dc-type'; seg.classList.add('dcseg');
+    var inp = Form.input('dest', { maxlength: '50', placeholder: X.DEST_PH, enterkeyhint: 'done', id: 'dc-dest' });
+    var destBox = U.el('div', { cls: 'dcdest' }, [Form.field(X.DEST, inp)]);
+    if (sugs.length) {
+      destBox.appendChild(U.el('span', { cls: 'flabel', text: X.USED }));
+      destBox.appendChild(U.el('div', { cls: 'sugs' }, sugs.map(function (w) {
+        return U.el('button', { type: 'button', cls: 'sug', text: w, onclick: function () { inp.value = w; sync(); } });
+      })));
+    }
+    var tick = U.el('input', { type: 'checkbox', id: 'dc-dead-ok' });
+    var deathBox = U.el('div', { cls: 'dcdeath' }, [
+      U.el('label', { cls: 'dcok', 'for': 'dc-dead-ok' }, [tick, U.el('span', { text: U.fill(X.DEATH_OK, { n: p.name }) })]),
+      U.el('p', { cls: 'note', text: X.DEATH_NOTE })]);
+    var go = U.el('button', { type: 'submit', cls: 'btn dng', id: 'dc-yes' });
+    var f = U.el('form', { cls: 'aform dcform', novalidate: 'novalidate' }, [name, U.el('span', { cls: 'flabel', text: X.TYPE }), seg, destBox, deathBox,
+      U.el('p', { cls: 'note', text: X.NOTE }),
+      U.el('div', { cls: 'two' }, [U.el('button', { type: 'button', cls: 'btn sec', text: X.CANCEL, onclick: function () { Sheet.close(); } }), go])]);
+    var dest = function () { return inp.value.replace(/\s+/g, ' ').trim(); };
+    var sync = function () {
+      var r = DcType.rule(type);
+      destBox.hidden = !r.dest; deathBox.hidden = type !== 'death';
+      go.textContent = X.SAVE[type] || X.SAVE.home;
+      go.disabled = (r.dest && !dest()) || (type === 'death' && !tick.checked);
+      f.setAttribute('data-type', type);
+    };
+    inp.addEventListener('input', sync); tick.addEventListener('change', sync);
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      sync(); if (go.disabled) return;
+      var q = App.state.snap && Guess.pt(App.state.snap, pid);
+      Sheet.close();
+      if (q) Detail.discharge(q, type, DcType.rule(type).dest ? dest() : '');
+    });
+    Sheet.open(U.fill(X.TITLE, { b: p.bed_no }), [f], { kind: 'dc', closeText: X.CANCEL, focus: DcType.rule(type).dest ? '#dc-dest' : '#dc-yes',
+      onRefresh: function () { if (!Guess.pt(App.state.snap, pid)) Sheet.close(); } });
+    sync();
+    if (DcType.rule(type).dest) inp.focus(); else go.focus();
+  }
+};
 </script>
 
   <!-- qr.html — 1.6.0: a small QR Code encoder (byte mode · error correction M · versions 1–10 · best of 8 masks), written
