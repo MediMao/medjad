@@ -236,10 +236,6 @@ button { cursor: pointer; }
 .rbtn.busy b { display: inline-block; animation: spin .8s linear infinite; }
 .rbtn.stale { background: var(--warn-bg); border-color: var(--badge-line); color: var(--warn-text); }
 .rbtn.fail { border-color: var(--danger); color: var(--danger); }
-.fpill { display: flex; height: 40px; max-width: 55%; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); overflow: hidden; flex: none; }
-.fpill button { border: 0; background: none; color: inherit; font-weight: 800; font-size: 14px; padding: 0 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.fpill.on { background: var(--ink); color: var(--ink-fg); border-color: var(--ink); }
-.fpill .x { flex: none; padding: 0 12px; border-left: 1px solid rgba(127,127,127,.45); font-size: 16px; }
 .modebar { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; height: 40px; padding: 0 4px 0 12px;
   border-radius: 12px; background: var(--primary-soft); font-size: 13.5px; font-weight: 700; }
 .modebar button { height: 34px; border: 0; border-radius: 10px; padding: 0 12px; background: var(--surface); font-weight: 700; color: var(--text); }
@@ -795,8 +791,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .chip2.cons .x { flex: none; padding: 0 12px 0 4px; }
 .chips2.sm { width: auto; }
 .chips2.sm .chip2 { height: 30px; padding: 0 10px; font-size: 13px; }
-.edhint { font-size: 13px; font-weight: 600; color: var(--hdr-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.edhint b { color: var(--hdr-fg); }
 /* view menu (one button instead of four equal ones) */
 .vscrim { position: fixed; inset: 0; z-index: 44; }
 .vmenu {
@@ -836,86 +830,7 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .rseg button.on.tb { background: var(--teamB); color: var(--teamBfg); }
 .rseg.bad { box-shadow: inset 0 0 0 1.5px var(--danger); }
 
-/* ===================== v1.2 edit table (M16; 02 r8 §14, r10–r11; spec 03 D42–D45) =====================
-   Same keyed cards as the other views, laid out as a row of fields. Pinned bed column with a mask on its left so
-   nothing shows beside it while scrolling sideways. Row styles hang on .erow (not on the grid) so the drag copy
-   looks the same. */
-#main.edmode { overflow: hidden; padding: 0; display: flex; flex-direction: column; }
-#main.edmode #tab-map { flex: 1; min-height: 0; }
-#main.edmode .loadbar { margin: 8px 8px 0; width: auto; }
-.tablewrap { height: 100%; overflow: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding: 8px 8px 16px; }
-.bedgrid.ed { grid-template-columns: 1fr; gap: 0; width: max-content; min-width: 100%; }
-.bedgrid.ed, .dragghost { --ecols: 60px 54px 104px 112px 128px 64px 56px 150px 180px; }
-.ehead, .newrow, .bed.occ.erow { display: grid; grid-template-columns: var(--ecols); align-items: center; }
-.ehead { position: sticky; top: -8px; z-index: 6; background: var(--bg); height: 30px; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: -2px; border-bottom: 1px solid var(--line2); }
-.ehead > span { padding: 0 6px; }
-.ehead > span:first-child { position: sticky; left: 0; z-index: 1; height: 100%; display: flex; align-items: center; background: var(--bg); }
-.ed .slot { height: 48px; border-radius: 0; }
-.bed.occ.erow { grid-template-areas: none; grid-template-rows: 1fr; align-content: stretch; gap: 0; padding: 0; overflow: clip; cursor: default; touch-action: auto; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: var(--surface); }
-.bed.occ.erow::before { display: none; }
-.erow .ecell {
-  position: sticky;
-  left: 0;
-  z-index: 2;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 0 4px 0 0;
-  background: var(--surface);
-  border-right: 1px solid var(--line);
-}
-.newrow .ecell { position: sticky; left: 0; z-index: 2; height: 100%; display: flex; align-items: center; gap: 2px; padding: 0 2px 0 0; background: var(--surface2); }
-.erow .ecell::before, .newrow .ecell::before, .ehead > span:first-child::before {
-  content: ""; position: absolute; right: 100%; top: -2px; bottom: -2px; width: 40px; background: var(--bg); }
-.bed.occ.erow .ecell .no {
-  grid-area: auto;
-  position: static;
-  margin: 0;
-  border-radius: 0;
-  height: 100%;
-  min-width: 40px;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-  font-weight: 700;
-}
-.handle { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 18px; touch-action: none; cursor: grab; }
-.ein {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  min-width: 0;
-  padding: 0 10px;
-  border-radius: 0;
-  font-size: 16px;
-  color: var(--text);
-  background: transparent;
-  border: 0;
-  -webkit-appearance: none;
-  appearance: none;
-  border-left: 1px solid var(--line);
-}
-.ein:focus { outline: none; background: var(--surface); border: 0; padding: 0 10px; border-left: 1px solid var(--line); box-shadow: inset 0 0 0 2px var(--primary); }
-.ein::placeholder { color: var(--faint); opacity: 1; }
-.ein.bad { border-color: var(--danger); background: var(--danger-soft); box-shadow: inset 0 0 0 2px var(--danger); }
-.ein:disabled { opacity: .55; }
-.etog { height: 100%; margin: 0; border-radius: 0; border: 0; background: transparent; font-weight: 700; font-size: 14px; color: var(--faint); border-left: 1px solid var(--line); }
-.etog.tA { background: transparent; color: var(--teamA); }
-.etog.tB { background: transparent; color: var(--teamB); }
-.etog.set { color: var(--text); }
-.bed.occ.erow.saved .ecell .no::after { content: "✓"; position: absolute; margin-left: 32px; font-size: 11px; color: var(--primary); }
-.newrow { position: absolute; inset: 0; border: 0; border-radius: 0; overflow: clip; grid-template-rows: 1fr; border-bottom: 1px solid var(--line); background: var(--surface2); }
-.slot.has > .newrow { display: none; }
-.ed .bed.empty { display: none; }
-.newrow .ecell .no { font-weight: 800; color: var(--muted); min-width: 34px; text-align: center; }
-.newrow .ph { flex: 1; text-align: center; color: var(--muted); font-size: 20px; }
-.newrow .go { flex: none; height: 36px; border: 0; border-radius: 8px; background: var(--primary); color: var(--on-primary); font-weight: 700; padding: 0 8px; font-size: 13px; }
-.newrow .ein { background: transparent; border: 0; height: 100%; width: 100%; margin: 0; border-left: 1px solid var(--line); border-radius: 0; padding: 0 10px; }
-.newrow .ein:focus { background: var(--surface); border: 0; border-left: 1px solid var(--line); padding: 0 10px; box-shadow: inset 0 0 0 2px var(--primary); }
-
+/* v1.2 edit table: gone in 1.8.3 (D136) — its rules removed in 1.13.2 */
 
 /* ===================== v1.3 every screen size (01 #39–#47; 02 r12 §18; spec 03 §17) =====================
    m = 600–1023 px (iPad portrait, Split View) · l = ≥ 1024 px (iPad landscape, iPad 13" portrait, computers).
@@ -980,13 +895,12 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 :root:is([data-size="m"], [data-size="l"]) #tab-map .slot { height: calc(80px * var(--zs)); }
 :root:is([data-size="m"], [data-size="l"]) #tab-map .g2 .slot { height: calc(92px * var(--zs)); }
 :root:is([data-size="m"], [data-size="l"]) #tab-map .ls .slot { height: calc(60px * var(--zs)); }
-:root:is([data-size="m"], [data-size="l"]) #tab-map .ed .slot { height: 48px; }
-:root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ:not(.erow) {
+:root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ {
   padding: calc(7px * var(--zs)) calc(9px * var(--zs)) calc(7px * var(--zs)) calc(10px * var(--zs));
   gap: calc(3px * var(--zs)) calc(6px * var(--zs));
 }
-:root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ:not(.erow)::before { width: 4px; }
-:root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ:not(.erow) .no {
+:root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ::before { width: 4px; }
+:root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ .no {
   font-size: calc(15px * var(--zs));
   margin: calc(-7px * var(--zs)) 0 0 calc(-10px * var(--zs));
   padding: calc(3px * var(--zs)) calc(9px * var(--zs)) calc(3px * var(--zs)) calc(8px * var(--zs));
@@ -1008,7 +922,7 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 :root:is([data-size="m"], [data-size="l"]) #tab-map .ls .bed.occ { grid-template-columns: calc(44px * var(--zs)) auto minmax(0, 1fr) auto; }   /* padding + tile edge = the general card rule (r13) */
 :root:is([data-size="m"], [data-size="l"]) #tab-map .ls .bed.occ .no { font-size: calc(18px * var(--zs)); }
 @media (hover: hover) and (pointer: fine) {   /* D61: a real mouse only */
-  :root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ:not(.erow):hover { box-shadow: 0 0 0 2px var(--line2), var(--shadow); }
+  :root:is([data-size="m"], [data-size="l"]) #tab-map .bed.occ:hover { box-shadow: 0 0 0 2px var(--line2), var(--shadow); }
   :root:is([data-size="m"], [data-size="l"]) #tab-map .bed.empty:hover { background: var(--primary-soft); color: var(--primary); }
 }
 
@@ -1017,12 +931,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 :root:is([data-size="m"], [data-size="l"]) .chips { grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); }
 :root:is([data-size="m"], [data-size="l"]) .picker { padding-left: 16px; padding-right: 16px; }
 
-/* --- edit table: columns stretch to the width; no sideways scroll when it fits (#43) --- */
-:root:is([data-size="m"], [data-size="l"]) .bedgrid.ed,
-:root:is([data-size="m"], [data-size="l"]) .dragghost { --ecols: 58px 46px minmax(96px, 1fr) minmax(96px, 1.1fr) minmax(104px, 1.25fr) 60px 52px minmax(96px, 1.5fr) minmax(110px, 1.7fr); }   /* r14: + Dx; mins total 718 px, so iPad mini portrait scrolls sideways (bed column stays pinned) */
-:root:is([data-size="m"], [data-size="l"]) .bedgrid.ed { width: 100%; min-width: 718px; max-width: 1060px; margin-left: auto; margin-right: auto; }
-:root:is([data-size="m"], [data-size="l"]) .tablewrap { padding: 10px 16px 20px; }
-:root:is([data-size="m"], [data-size="l"]) .ein, :root:is([data-size="m"], [data-size="l"]) .etog { height: 100%; }
 
 
 
@@ -1062,7 +970,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .detail .in:focus { background: var(--surface); border-color: var(--primary); }
 .detail .in.ta { line-height: 1.5; }
 /* --- edit table: the hover look only for a real mouse (D61) --- */
-@media (hover: hover) and (pointer: fine) { .ein:not(:focus):hover { background: var(--surface2); } }
 
 /* --- big screens (m/l): header and content share one column edge --- */
 :root:is([data-size="m"], [data-size="l"]) .top { padding-left: max(16px, calc(16px + (100% - 32px - 1060px) / 2)); padding-right: max(12px, calc(12px + (100% - 32px - 1060px) / 2)); }
@@ -1181,7 +1088,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .cal button:disabled { background: transparent; color: var(--faint); cursor: default; }
 .cal button.was { background: var(--primary-soft); color: var(--primary); }
 .cal-mo { font-size: 13px; font-weight: 700; color: var(--muted); margin: 0 2px 6px; }
-.pl-who { margin: -4px 0 10px; }
 .sheet .sugs { margin-top: 10px; }
 .sheet .flabel.pv-gap { margin-top: 12px; }
 
@@ -1255,7 +1161,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 #printview .pv-tA .pv-no {background: var(--pv-A); color: #fff; }
 #printview .pv-tB .pv-no {background: #fff; color: var(--pv-B); box-shadow: inset 0 0 0 1.4pt var(--pv-B); }
 #printview .pv-who {display: flex; gap: 2mm; align-items: flex-start; }
-#printview .pv-row {display: flex; flex-wrap: wrap; align-items: center; gap: .8mm 1.4mm; font-size: 7pt; color: var(--pv-mut); }
 #printview .pv-dcn {color: var(--pv-faint); }
 #printview .pv-tags {display: flex; flex-wrap: wrap; gap: .8mm; margin-top: auto; }
 #printview .pv-tag {font-size: 6.6pt; font-weight: 700; padding: .15mm 1.5mm; border-radius: 1.2mm;
@@ -1317,8 +1222,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 #bedgrid:not(.ls) .bed.occ .id:has(> .hm) { gap: 3px; }
 /* F19: room between the last field and the buttons of a sheet */
 #sheet .two { margin-top: 14px; }
-#sheet .pv-notef { display: block; margin-top: 14px; }
-#sheet .pv-notef ~ .note { margin-top: 10px; }
 
 /* ===================== v1.5 ประวัติ (minutes 12 · design r16) ===================== */
 /* rich text: read view + print share these */
@@ -1400,8 +1303,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .lsec .lview { border: 0; background: none; font: inherit; color: var(--text); padding: 4px 0; text-align: left; cursor: text; flex: 1; min-width: 0; }
 .lsec .redit { flex: 1; margin: 0; min-width: 200px; }
 .lsec .sst { margin: 0; }
-.dhead .conrow { margin-top: 6px; gap: 10px; align-items: center; }
-.dhead .conrow .flabel { margin: 0; min-width: 44px; }
 .dhead #d-cons { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; min-width: 0; }
 /* ⚠ Allergy / ACP */
 .safe { padding-top: 8px; padding-bottom: 8px; }
@@ -1426,7 +1327,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 :root[data-size="l"] .detail.full .dcol > .card.dcard:first-child { border-top: 0; }
 :root[data-size="l"] .detail.full .s-dx .rich { font-size: 15px; }
 .vnote { padding: 0 16px; }
-.ein.multi { color: var(--muted); cursor: pointer; text-overflow: ellipsis; }
 
 /* ---------- v1.5 print: flex pages · ward block · rich text in pt · ส่งเวร clamp · ฉบับเต็ม ---------- */
 #printview .pv-page { display: flex; flex-direction: column; }
@@ -1461,8 +1361,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 #printview .pv-task { display: flex; gap: 1mm; font-size: 7.2pt; font-weight: 600; line-height: 1.3; margin-bottom: .5mm; }
 #printview .pv-cb { font-size: 8.4pt; line-height: 1; }
 #printview .pv-cont { font-size: 7.4pt; font-weight: 700; color: var(--pv-mut); }
-.addbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding-top: 10px !important; padding-bottom: 10px !important; }
-.addbar .flabel { margin: 0 4px 0 0; }
 .addchip { border: 1px dashed var(--line2); background: none; color: var(--muted); border-radius: 999px; font: inherit; font-size: 13px; padding: 4px 10px; cursor: pointer; }
 @media (hover: hover) and (pointer: fine) { .addchip:hover { color: var(--primary); border-color: var(--primary); } }
 .rtb { white-space: nowrap; flex: none; }
@@ -1847,9 +1745,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .qrbox { display: grid; place-items: center; padding: 8px 0; }
 .qrbox svg.qr { width: min(72vw, 280px); height: auto; border-radius: 8px; box-shadow: 0 0 0 1px var(--line); }
 .qrlink { font: 12.5px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); background: var(--surface2); border-radius: 8px; padding: 8px 10px; overflow-wrap: anywhere; user-select: all; -webkit-user-select: all; }
-.keeplist { display: flex; flex-direction: column; gap: 2px; max-height: 38vh; overflow: auto; border: 1px solid var(--line); border-radius: var(--r-ctl); padding: 4px 10px; }
-.keeplist .keep { display: flex; align-items: center; gap: 10px; min-height: 40px; }
-.keeplist .keep input { width: 20px; height: 20px; accent-color: var(--primary); }
 /* 1.13.0 เปลี่ยนรอบ: ป้ายสถานะคน · ข้อความเชิญ · ส่งต่อ Chief รายคน */
 .mbadge { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 600; vertical-align: 1px;
   background: var(--seg); color: var(--muted); white-space: nowrap; }
@@ -1884,7 +1779,6 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .jsteps li::before { content: ''; position: absolute; left: 4px; top: 9px; width: 20px; height: 20px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--line2); box-sizing: border-box; }
 .jsteps li.now { color: var(--text); font-weight: 650; }
 .jsteps li.now::before { box-shadow: none; border: 3px solid var(--primary); border-right-color: transparent; animation: spin .9s linear infinite; }
-.jsteps li.js2.now::before { animation: none; border-right-color: var(--primary); background: var(--primary-soft); }
 .jsteps li.done { color: var(--ok); }
 .jsteps li.done::before { content: '✓'; box-shadow: none; background: var(--ok); color: #fff; font: 800 13px/20px system-ui; text-align: center; }
 .jsteps li .paircode { display: none; }
@@ -2130,14 +2024,18 @@ body.printing .wm { display: none !important; }
 .atile span { display: block; font-size: 12.5px; font-weight: 700; color: var(--muted); }
 .atile.tA { background: #EAF0FD; background: color-mix(in srgb, var(--teamA) 12%, var(--surface)); } .atile.tA b, .atile.tA span { color: #2148B0; color: color-mix(in srgb, var(--teamA) 82%, var(--text)); }
 .atile.tB { background: #FCEEE6; background: color-mix(in srgb, var(--teamB) 12%, var(--surface)); } .atile.tB b, .atile.tB span { color: #A9461A; color: color-mix(in srgb, var(--teamB) 82%, var(--text)); }
-.afilter { display: flex; align-items: center; gap: 8px; }
-.afseg { flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.afseg button { min-width: 0; padding: 0 4px; }
+.alisthead { display: flex; align-items: center; gap: 8px; min-height: 48px; }   /* 1.13.2: list heading + ค้น + พิมพ์ (แถบสายเอาออก) */
+.alisthead .alh-t { flex: 1; min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; padding-left: 2px; font-size: 15px; }
+.alisthead .alh-t b { font-weight: 700; }
+.achip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; max-width: 100%; padding: 0 14px; border-radius: 999px; border: 0; font: inherit;
+  font-size: 14.5px; font-weight: 700; background: var(--primary-soft); color: var(--primary); cursor: pointer; }
+.achip span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.achip .ax { font-size: 13px; opacity: .8; }
 .asearch { flex: none; width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid var(--line2); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; }
 .asearch .aico { width: 20px; height: 20px; }
 #arch-q { margin-bottom: 10px; }
 #arch-q[hidden] { display: none; }
-.cwcard { margin-top: 14px; padding: 12px 14px; }
+
 .acard { padding: 0; overflow: hidden; }
 .acard .aopen { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px 10px; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
 .acard .aopen .teamchip { margin-top: 0; flex: none; }
@@ -2196,8 +2094,7 @@ button.atile:disabled { cursor: default; }
 .atiles.stale .atile { opacity: .45; }
 .asum .ahow, .asum .apv { margin: -2px 0 0; font-size: 12.5px; }
 .asum .apv { color: var(--primary); font-weight: 700; }
-.ashowing { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 2px 2px 8px; font-size: 14px; font-weight: 700; }
-#arch-showing .ahow { margin: -4px 2px 8px; font-size: 12.5px; }
+#arch-gone .ahow { margin: 4px 2px 6px; font-size: 12.5px; }
 .acard .anot { display: block; font-size: 12px; color: var(--muted); font-style: italic; }
 .atile.tD b { color: var(--dc-dead); }
 .dcform .dcseg { margin: 4px 0 10px; }
@@ -2223,6 +2120,8 @@ button.atile:disabled { cursor: default; }
 .apn .apb { flex: none; min-width: 28px; text-align: center; border: 1.2px dashed var(--line2); border-radius: 6px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .apn .apnm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>
+
+.cwset { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }   /* 1.13.2: inside ตั้งค่าวอร์ด */
 
 </head>
 <body>
@@ -2295,7 +2194,7 @@ button.atile:disabled { cursor: default; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.13.1", pages: true,
+  return { app_version: "1.13.2", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -3443,7 +3342,7 @@ var Auth = {
     var kv = function (k, v) { return U.el('div', { cls: 'kv' }, [U.el('span', { text: k }), U.el('span', { text: v })]); };
     box.appendChild(U.el('div', { cls: 'card' }, [
       U.el('h2', { text: A.TITLE }),
-      kv(A.NAME, w ? w.display_name : b.display_name), kv(A.EMAIL, b.device_only ? A.NO_EMAIL : b.email), kv(A.UID, b.user_id || '—'),
+      kv(A.EMAIL, b.device_only ? A.NO_EMAIL : b.email), kv(A.UID, b.user_id || '—'),   // 1.13.2: ชื่อเล่นอยู่ใน "ตั้งค่าของฉัน" แล้ว (แก้ได้ที่นั่น)
       kv(A.WARD, w ? w.ward_name : '—'), kv(A.ROLE, w ? Auth.roleText(w, App.role()) : '—'),
       w && w.end ? kv(A.END, Acct.day(w.end)) : null,
       b.is_system_admin ? kv(A.ADMIN, A.YES) : null,
@@ -3528,7 +3427,7 @@ STR.ADMIT = {
   READMIT: 'รับคนเดิมกลับจากคลัง (เช่น กลับจาก ICU) ›'                       // r19 A34
 };
 STR.READMIT = { TITLE: 'รับกลับเข้าเตียง {b}', HINT: 'คนที่ D/C หรือย้ายวอร์ดออกไปไม่เกิน 10 วัน (ไม่รวมเสียชีวิต) · ประวัติ แผน consult กลับมาครบ', LOADING: 'กำลังโหลด…',
-  EMPTY: 'ไม่มีคนไข้ในคลัง', FAIL: 'โหลดคลังไม่สำเร็จ · แตะเพื่อลองใหม่', GO: 'รับเข้าเตียง {b}', XFER: 'Transfer → {d}', HOME: 'D/C กลับบ้าน', SEARCH: 'ค้นชื่อหรือ HN',
+  EMPTY: 'ไม่มีคนไข้ในคลัง', FAIL: 'โหลดคลังไม่สำเร็จ · แตะเพื่อลองใหม่', GO: 'รับเข้าเตียง {b}', XFER: 'Transfer → {d}', SEARCH: 'ค้นชื่อหรือ HN',
   DUP: 'HN นี้อยู่เตียง {b} แล้ว', DONE: 'รับ {n} กลับเข้าเตียง {b} แล้ว' };
 STR.XFER = { TITLE: 'ย้ายวอร์ด · เตียง {b}', LABEL: 'ชื่อวอร์ดปลายทาง', PH: 'เช่น ICU, ศัลยกรรมชาย', USED: 'เคยใช้', GO: 'ย้ายออก' };
 STR.CEDIT = { TITLE: 'Consult · เตียง {b}', HINT: 'แตะเพื่อเพิ่ม/ลบ บันทึกทันที',
@@ -3536,12 +3435,10 @@ STR.CEDIT = { TITLE: 'Consult · เตียง {b}', HINT: 'แตะเพื
   NEW_BAD: 'ชื่อหน่วย 1–20 ตัวอักษร ไม่มี < > หรือ ,',   // v1.4.1 F13
   MANAGE: 'จัดการรายการ', HID_L: 'ซ่อนจากรายการแล้ว · แตะเพื่อเอาออกจากเตียงนี้' };   // 1.8.1 (27 §2.4 · §2.6)
 STR.IDENT = { TITLE: 'แก้ข้อมูล · เตียง {b}', SAVE: 'บันทึก', SAVING: 'กำลังบันทึก…', NOCHANGE: 'ยังไม่ได้แก้อะไร', DONE: 'แก้ข้อมูลเตียง {b} แล้ว' };
-
 var Sheet = {
   onClose: null, onRefresh: null, kind: '',
   isOpen: function () { return !U.$('sheet').hidden; },
   holds: function () { return Sheet.isOpen(); },
-
   /** opts: {onClose, onRefresh, focus (CSS selector), closeText, kind} */
   open: function (title, kids, opts) {
     opts = opts || {};
@@ -3559,9 +3456,7 @@ var Sheet = {
     var first = sh.querySelector(opts.focus || 'button:not([disabled])');
     if (first) first.focus();
   },
-
   setTitle: function (t) { var el = U.$('sheet-title'); if (el) el.textContent = t; },
-
   /** silent = closing because of logout / ward switch (do not apply waiting data). */
   close: function (silent) {
     if (!Sheet.isOpen()) return;
@@ -3571,7 +3466,6 @@ var Sheet = {
     if (cb) cb();
     if (!silent) App.flushPending();
   },
-
   /** New data arrived (own write or refresh) — let the open sheet repaint itself if it wants. */
   refresh: function () { if (Sheet.isOpen() && Sheet.onRefresh) Sheet.onRefresh(); }
 };
@@ -4069,7 +3963,6 @@ STR.MAP = {
   TITLE: 'ผังเตียง', SUB: 'คนไข้ {occ}/{total} · ว่าง {free}', VIEWER: ' · ดูอย่างเดียว', SUB_F: 'กรองแล้ว {n} จาก {occ} คน',
   LAYOUT: { ph: 'ผังวอร์ด', g2: 'การ์ด 2 ช่อง', ls: 'รายการ' }, VIEWS_L: 'มุมมอง',   // 1.8.3: ตารางแก้ไข removed (D136)
   LAYOUT_HINT: { ph: 'ตามตำแหน่งจริงในวอร์ด', g2: 'ชื่อยาวขึ้น', ls: 'แถวละเตียง' },
-  VIEW: 'มุมมอง: {v}',
   TEAM_ALL: 'ทุกสาย', TEAM: 'สาย {t}', ALL_SM: 'ทั้งหมด', CONSULT: 'Consult ▾', CONSULT_ON: '{s}', CLEAR: 'ล้างตัวกรอง consult',
   NONE: 'ไม่มีเตียงที่ตรงกับตัวกรอง', NONE_HINT: 'แตะ ✕ ที่ปุ่มตัวกรอง หรือเลือก "ทุกสาย" เพื่อดูทุกเตียง',
   NO_BEDS: 'ยังไม่มีเตียง', NO_BEDS_HINT: 'owner เพิ่มเตียงในแท็บ Beds ของ Sheet',
@@ -4860,8 +4753,8 @@ Drag.bind();
 STR.RICH = {
   T_UNDO: 'ย้อนกลับ', T_REDO: 'ทำซ้ำ',                                     // 1.6.2 (24 §5)
   T_HEAD: 'Heading = หัว problem (พิมพ์ # แล้วเว้นวรรคก็ได้)', T_B: 'ตัวหนา', T_U: 'ขีดเส้นใต้', T_HL: 'ไฮไลต์ = สำคัญ', T_LI: 'bullet (พิมพ์ - แล้วเว้นวรรคก็ได้)', T_IND: 'เยื้อง (Tab)',
-  T_CK: 'checkbox ( )', T_DATE: 'ใส่วันที่วันนี้', T_SOLVED: 'Improved: problem นี้ดีขึ้นแล้ว (เทา · ยุบได้) / แตะอีกครั้งเพื่อเอาออก', DONE: 'Done', IMPROVED: 'Improved', HEAD_PH: 'Heading',
-  SOLVED_N: '{n} problem จบแล้ว', CK: { o: 'ยังไม่ทำ', d: 'ทำแล้ว', x: 'ยกเลิก' },
+  T_CK: 'checkbox ( )', T_DATE: 'ใส่วันที่วันนี้', T_SOLVED: 'Improved: problem นี้ดีขึ้นแล้ว (เทา · ยุบได้) / แตะอีกครั้งเพื่อเอาออก', DONE: 'Done', IMPROVED: 'Improved',
+  CK: { o: 'ยังไม่ทำ', d: 'ทำแล้ว', x: 'ยกเลิก' },
   // 1.8.0 (25 §2.2 · §2.3)
   DAY: 'D{n}', DAY_DONE: 'D1–{n}', DAY_PRINT: ' (D{n})', DAY_PRINT_DONE: ' (D1–{n})', DAY_WARN: 'ยังจำเป็น?',
   DAY_T: 'นับจากวันที่เริ่ม (เริ่ม = D1)', DAY_DONE_T: 'หยุดแล้ว: รวม {n} วัน', Q: 'คำถามค้าง · แตะเมื่อได้คำตอบ'
@@ -5716,12 +5609,10 @@ STR.DETAIL = {
   GRP: { hist: 'History', today: 'Today', home: 'D/C planning' },
   SUB: { dx: 'Problem list', summary: 'U/D · ประวัติเดิม', short_plan: 'Plan', long_plan: 'Long-term plan · ยากลับบ้าน · นัด' },
   MORE_UD: 'ดูทั้งหมด ▾', LESS_UD: 'ย่อ ▴', JUMP: 'ไปที่', HEADS: 'Problems', ALLV: 'All', VIEW_HINT: 'Problems = เห็นแค่หัว # และ ☐ ที่ค้าง',
-  FULL: 'เต็มจอ', UNFULL: 'ย่อเป็นแผงขวา', PREV: 'เตียงก่อนหน้า', NEXT: 'เตียงถัดไป', ST_SAVED: 'Saved ✓ {t}', ST_FAIL: 'บันทึกไม่สำเร็จ', RETRY: 'ลองใหม่',
+  FULL: 'เต็มจอ', UNFULL: 'ย่อเป็นแผงขวา', PREV: 'เตียงก่อนหน้า', NEXT: 'เตียงถัดไป', ST_FAIL: 'บันทึกไม่สำเร็จ', RETRY: 'ลองใหม่',
   EDIT_HINT: 'แตะเพื่อแก้', DONE_EDIT: 'Done', COUNT: '{n} / {max} ตัวอักษร',
   BED: 'B{b}', BED_L: 'เตียง {b}', BACK: 'กลับไปผังเตียง', BACK_BTN: '‹ กลับไปผังเตียง', DC: 'D/C',
   AUTO: 'Saved',                                                                                  // v1.4.1 F2: the bottom button says it
-  DC_T: 'D/C กลับบ้าน · เตียง {b}', DC_Q: 'จำหน่าย {name} กลับบ้าน?', DC_NOTE: 'เตียงจะว่างทันที · ถ้ากดผิด กู้คืนได้ที่ เพิ่มเติม → คลังคนไข้ (10 วัน)',
-  DC_YES: 'ยืนยัน D/C', DC_NO: 'ยกเลิก',                                                          // v1.4.1 F10
   META: '{sex} · {age} ปี · HN {hn}', COPY_HN: 'Copy HN', COPIED: 'HN copied', COPY_FAIL: 'คัดลอกไม่ได้', META_V: '{sex} · สาย {t}', TEAM: 'สาย {t}',
   TASKS: 'To-do', ADD_PH: 'เพิ่มงาน เช่น CTWA, tap ascites', ADD: 'Add',
   DONE_N: 'เสร็จแล้ว ({n})', DONE_OLD_LOADING: 'กำลังโหลดงานที่เสร็จนานแล้ว…', WHO: '{who} · {t}', DONE_WHO: '✓ {who} · {t}',
@@ -5731,14 +5622,14 @@ STR.DETAIL = {
   VIEW_ONLY: 'ดูอย่างเดียว', VIEWER_NOTE: 'viewer ไม่เห็น HN อายุ สิทธิ์ สรุปเคส และแผนการรักษา',
   VIEWER_NOTE_H: 'นศพ. ดูอย่างเดียว · ไม่เห็น HN ชื่อเต็ม อายุ สิทธิ์ Baseline Psychosocial และแผนกลับ', RO_EMPTY: '—',   // 1.11.0 (41 Q1)
   GONE: 'คนไข้เตียงนี้ถูกจำหน่ายหรือย้ายออกแล้ว', CLOSE: 'ปิด', UNSAVED_SW: 'ยังมีข้อความที่บันทึกไม่สำเร็จ แตะเตียงนั้นอีกครั้งเพื่อเปิด (ข้อความนั้นจะหาย)', EDIT_ID: 'แก้ชื่อ เพศ อายุ HN', TEAM_SET: 'เปลี่ยนเป็นสาย {t}',
-  DX: 'Dx', DX_PH: 'เช่น NSTEMI — รอ CAG', ADMIT: 'Admit', ADMIT_V: '{d} · D{n}', EDIT: 'Edit',
+  DX_PH: 'เช่น NSTEMI — รอ CAG', ADMIT: 'Admit', ADMIT_V: '{d} · D{n}', EDIT: 'Edit',
   PLAN_L: 'วันกลับ', PLAN_NONE: 'ยังไม่เลือกวัน', PLAN_LATE: 'เลยแผน ({d})', WAIT_L: 'รอก่อนกลับ', PLAN_BTN: 'เลือกวันกลับ',
   DC_SW: 'เริ่ม D/C planning', DC_OFF: 'ยังไม่เริ่ม',                                              // r19 A26
   // 1.8.0 (25 §2.4 · D116): one Safety check block per day in Plan · the list is edited HERE only
   SAFE: '+ Safety checklist', SAFE_HEAD: 'Safety check', SAFE_ITEMS: ['VTE prophylaxis', 'Line / Foley ถอดได้ไหม', 'ATB de-escalate / stop date', 'Pressure injury', 'Nutrition', 'Delirium', 'Deprescribe'],
   SAFE_HAVE: 'มี Safety check ของวันนี้แล้ว', SAFE_ADDED: 'เพิ่ม Safety check ใน Plan แล้ว', SAFE_NEW: 'แทนที่ Safety check {d} ด้วยของวันนี้ · แตะเพื่อย้อนกลับ ↶', SAFE_UNDONE: 'ย้อนกลับ Safety check แล้ว',
   CKL: '+ D/C checklist', CKL_ITEMS: ['แจ้งญาติ', 'ขอนัด {u}', 'ยากลับบ้าน', 'ใบนัด / ใบรับรองแพทย์'], CKL_ALL: 'มี D/C checklist ครบแล้ว', CKL_ADDED: 'เพิ่ม D/C checklist แล้ว',
-  SUMMARY: 'สรุปเคส (บันทึกอัตโนมัติ)', F: { dx: 'Problem list', dc_wait: 'รอก่อนกลับ', coverage: 'สิทธิ์', summary: 'U/D', short_plan: 'Plan', long_plan: 'Long-term plan', allergy: 'Allergy', acp: 'ACP', baseline: 'Baseline', psychosocial: 'Psychosocial' },
+  F: { dx: 'Problem list', dc_wait: 'รอก่อนกลับ', coverage: 'สิทธิ์', summary: 'U/D', short_plan: 'Plan', long_plan: 'Long-term plan', allergy: 'Allergy', acp: 'ACP', baseline: 'Baseline', psychosocial: 'Psychosocial' },
   TYPING: 'กำลังพิมพ์…', CONFLICT: 'มีคนแก้ข้อความนี้พร้อมกัน', THEIRS: 'ข้อความของอีกคน:', MINE: 'ใช้ของฉัน', USE_THEIRS: 'ใช้ของเขา',
   CONFLICT_ST: 'มีข้อความชนกัน · เลือกด้านล่าง', UNSAVED: 'ยังมีข้อความที่บันทึกไม่สำเร็จ แตะกลับอีกครั้งเพื่อออก (ข้อความนั้นจะหาย)',
   LATE: '{f} เตียง {b}: มีคนแก้พร้อมกัน ระบบเก็บข้อความของอีกคนไว้'
@@ -7011,7 +6902,7 @@ var Tasks = {
      · AdmitEdit — fix the admit date (D ที่ follows, #52). Viewer: plan tab read only, no sheet. -->
 <script>
 STR.PLAN = {
-  TAB: 'แผนกลับ', TITLE: 'แผนกลับบ้าน', SUB: 'วางแผนแล้ว {n} จาก {all} คน · {from} – {to}',
+  TITLE: 'แผนกลับบ้าน', SUB: 'วางแผนแล้ว {n} จาก {all} คน · {from} – {to}',
   BYDAY: 'ตามวัน', GRID: 'วางแผนทีละเตียง', VIEWS: 'มุมมองแผนกลับ',
   TODAY: 'วันนี้', TMR: 'พรุ่งนี้', N: 'คน', NOBODY: 'ยังไม่มีใคร', LATER: 'หลัง {d}', NONE: 'ยังไม่วางแผน', LATE: 'เลยแผน · ยังไม่กลับ',
   LG_ONE: 'วันเดียว', LG_FLEX: 'เลือกได้หลายวัน (ย้ายได้)', LG_HEAVY: 'กรอบเหลือง = {n} คนขึ้นไป',
@@ -7022,7 +6913,7 @@ STR.PLAN = {
   EMPTY: 'ยังไม่มีคนไข้ในวอร์ด',
   SHEET: 'D/C planning · B{b} {name}', HINT_CAL: 'เลือกได้หลายวัน · ตัวเลขใต้วันที่ = คนอื่นที่มีแผนวันนั้นแล้ว', PREV2: '2 สัปดาห์ก่อน', NEXT2: '2 สัปดาห์ถัดไป',   // r19 A31 A32
   WAIT: 'รอก่อนกลับ', WAIT_PH: 'เช่น รอ CAG, รอ PEG, รอญาติ',
-  SAVE: 'บันทึก', SAVE_N: 'บันทึก · {n} วัน', CANCEL: 'ยกเลิก', OTHERS: '{n} คน', DAY_LABEL: '{wd} {d}{m}{others}',
+  SAVE: 'บันทึก', SAVE_N: 'บันทึก · {n} วัน', CANCEL: 'ยกเลิก', OTHERS: '{n} คน',
   SAVED: 'Saved · แผนกลับเตียง {b}', MAX: 'เลือกได้ไม่เกิน {n} วัน',
   ADMIT: 'วัน admit · เตียง {b}', ADMIT_NOTE: 'วันที่รับจริง (D1) · ไม่เกินวันนี้ · ย้อนได้ไม่เกิน 365 วัน', ADMIT_BAD: 'วันที่ไม่ถูกต้อง',
   WD: ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'], MO: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
@@ -7948,7 +7839,7 @@ STR.MORE = {
   ARCHIVE: 'คลังคนไข้ (10 วัน)', ARCHIVE_HINT: 'ดูประวัติ · สรุปจำหน่าย · กู้คืน', LOG: 'Log การใช้งาน', LOG_HINT: '100 รายการล่าสุด (owner)',
   WARD_SET: 'ตั้งค่าวอร์ด', WARD_NOTE: 'owner เท่านั้น · ใช้กับทุกคนในวอร์ด', HEAVY: 'แผนกลับ "เยอะ" เมื่อถึง (คน/วัน)', LESS: 'ลดลง', MORE_N: 'เพิ่มขึ้น',
   PAPER: 'หัวกระดาษ', PAPER_NOTE: 'ขึ้นทุกหน้าของ PDF · ใช้ทั้งวอร์ด · owner และ editor แก้ได้', PAPER_EDIT: 'ตั้งค่า', LEFT: 'ซ้าย', RIGHT: 'ขวา',
-  PHONE: 'เบอร์วอร์ด', TEAM: 'ทีม / ชื่อน้อง', PNOTE: 'โน้ตหัวกระดาษ', ZONES: 'โซน', NONE_SET: '—', NO_ZONES: 'ไม่แบ่งโซน (พิมพ์ฉบับเต็มเป็นตารางเดียว)',
+  TEAM: 'ทีม / ชื่อน้อง', NONE_SET: '—',
   SET_TITLE: 'ตั้งค่าของฉัน', SET_NOTE: 'จำไว้กับบัญชี ใช้ได้ทุกเครื่อง', NICK: 'ชื่อเล่น', THEME: 'ธีม',
   THEMES: { auto: 'อัตโนมัติ', light: 'สว่าง', dark: 'มืด' }, NICK_TITLE: 'ชื่อเล่นของฉัน', NICK_LABEL: 'ชื่อเล่น (1–20 ตัว ห้ามซ้ำกับคนในวอร์ด)',
   NICK_SAVE: 'บันทึก', NICK_SAVING: 'กำลังบันทึก…', NICK_DONE: 'เปลี่ยนชื่อเล่นเป็น {n} แล้ว', NICK_TAKEN: 'มีคนในวอร์ดใช้ชื่อ "{n}" แล้ว',
@@ -7960,12 +7851,12 @@ STR.MORE = {
 STR.ARCH = {
   TITLE: 'คลังคนไข้', SUB: '{n} คน · เก็บประวัติ {k} วันหลัง D/C', SEARCH: 'ค้นชื่อหรือ HN', EMPTY: 'ไม่มีคนไข้ในคลัง',
   NONE: 'ไม่พบชื่อหรือ HN นี้', LOADING: 'กำลังโหลดคลัง…', LOAD_FAIL: 'โหลดคลังไม่สำเร็จ แตะเพื่อลองใหม่',
-  META: 'HN {hn} · เตียงเดิม {b} · สาย {t}', HOME: 'D/C กลับบ้าน', XFER: 'ย้ายวอร์ด: {d}', AT: '{r} · {d}',
+  META: 'HN {hn} · เตียงเดิม {b} · สาย {t}', XFER: 'ย้ายวอร์ด: {d}',
   RESTORE: 'กู้คืน', REASON: 'แก้เหตุผล', DEL: 'ลบถาวร', DEL_Q: 'ลบ {n} ถาวร? ย้อนไม่ได้', DEL_NO: 'ไม่ลบ', DEL_YES: 'ลบถาวร',
   RESTORED: 'กู้คืน {n} เข้าเตียง {b} แล้ว', DELETED: 'ลบถาวรแล้ว', SAVED: 'แก้เหตุผลแล้ว',
   PICK_TITLE: 'เลือกเตียงว่าง', PICK_NOTE: 'เตียง {b} ตอนนี้เป็นของ {who} — เลือกเตียงว่างให้ {n}',
   FULL: 'เตียงเต็มทุกเตียง ต้องจำหน่ายหรือย้ายคนไข้ออกก่อน (เตียง {b} ตอนนี้เป็นของ {who})', DUP: 'HN นี้รับเป็นรายใหม่แล้ว อยู่เตียง {b}',
-  R_TITLE: 'เหตุผลจำหน่าย · {n}', R_HOME: 'กลับบ้าน', R_XFER: 'ย้ายวอร์ด', R_SAVE: 'บันทึก', SAVING: 'กำลังทำ…'
+  R_TITLE: 'เหตุผลจำหน่าย · {n}', R_SAVE: 'บันทึก', SAVING: 'กำลังทำ…'
 };
 STR.LOGV = {
   TITLE: 'Log การใช้งาน', EMPTY: 'ยังไม่มี Log', LOADING: 'กำลังโหลด Log…', FAIL: 'โหลด Log ไม่สำเร็จ แตะเพื่อลองใหม่',
@@ -8087,7 +7978,8 @@ var More = {
         onclick: function () { var v = n + d; Ops.run('api_setWardPrefs', { dc_heavy: v }, { apply: function (s) { s.ward = s.ward || {}; s.ward.dc_heavy = v; } }); } });
     };
     return U.el('div', { cls: 'card' }, [U.el('h2', { text: R.WARD_SET }), U.el('p', { cls: 'note', text: R.WARD_NOTE }),
-      U.el('div', { cls: 'kv setrow' }, [U.el('span', { text: R.HEAVY }), U.el('span', { cls: 'stepper' }, [step(-1, R.LESS), out, step(1, R.MORE_N)])])]);
+      U.el('div', { cls: 'kv setrow' }, [U.el('span', { text: R.HEAVY }), U.el('span', { cls: 'stepper' }, [step(-1, R.LESS), out, step(1, R.MORE_N)])]),
+      ArchiveX.prefs()]);                                                // 1.13.2: was under the archive list
   },
 
   /** M14: nickname + theme (every role, only for yourself). */
@@ -8223,7 +8115,7 @@ var ArchiveView = {
       search.addEventListener('input', function () { A.q = search.value; A.paint(); });
       A.list = U.el('div', { cls: 'alist' });
       // 1.10.0 (mockup r2): สรุป 4 ช่อง · สาย + 🔍 (ช่องค้นซ่อนจนแตะ) · การ์ด · ชื่อวอร์ด consult (Chief) — casev.html
-      A.box = U.el('div', {}, [ArchiveX.build(), search, A.list, ArchiveX.prefs()].filter(Boolean));
+      A.box = U.el('div', {}, [ArchiveX.build(), search, A.list]);       // 1.13.2: ชื่อวอร์ดใน consult ย้ายไปการ์ด "ตั้งค่าวอร์ด"
       sec.appendChild(A.box);
     }
     A.paint();
@@ -8232,7 +8124,7 @@ var ArchiveView = {
   paint: function () {
     var A = ArchiveView, S = STR.ARCH, list = A.list;
     if (!list) return;
-    ArchiveX.paint();                                                  // 1.10.0: summary + สาย counts follow the list (casev.html)
+    ArchiveX.paint();                                                  // summary + list heading follow the list (casev.html)
     list.textContent = '';
     if (A.err) return list.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: S.LOAD_FAIL, onclick: function () { A.load(); App.render(); } }));
     if (!A.rows) return list.appendChild(U.el('p', { cls: 'note center', text: S.LOADING }));
@@ -8437,7 +8329,7 @@ var WardInfo = {
    Every change = Ops 'api_updateService' (queue, reqId, Guess.service); every chip through Svc (core.html).
    ===================================================================== */
 STR.SVCV = {
-  TITLE: 'หน่วย consult', HINT: '{n} หน่วย · ซ่อนอยู่ {h}', HINT0: 'ซ่อน · แก้ชื่อ · เปลี่ยนสี',
+  TITLE: 'หน่วย consult', HINT: '{n} หน่วย · ซ่อนอยู่ {h}',
   MAIN: 'หน่วยหลัก · สีตายตัวทุกวอร์ด', OTHER: 'หน่วยอื่น · แตะเพื่อแก้', HIDDEN: 'ซ่อนอยู่ ({n})', NO_HIDDEN: 'ไม่มีหน่วยที่ซ่อน',
   BEDS: '{n} เตียง', SHEET: 'ในชีต: {k}', DUP: 'ชื่อซ้ำกับหน่วยหลัก → แนะนำซ่อน', HIDE: 'ซ่อน', SHOW: 'แสดง',
   NOTE: 'ซ่อน = ไม่ขึ้นในรายการเลือก consult · ประวัติไม่หาย · พิมพ์ชื่อเดิมในช่องเพิ่มหน่วย = แสดงอีกครั้ง',
@@ -8824,22 +8716,22 @@ var ConsultMsg = {
 <div id="casev" class="casev" role="dialog" aria-modal="true" aria-label="ประวัติเคส" hidden></div>
 <script>
 STR.CASEV = {
-  SUM: 'สรุปจำหน่าย', RANGE: 'ถึงวันนี้ · {n} วัน', RANGE_DEF: 'ถึงวันนี้ · {n} วัน (ยังไม่ได้ตั้ง)', FROM: 'ตั้งแต่ {d}',
+  SUM: 'สรุปจำหน่าย', FROM: 'ตั้งแต่ {d}',
   SET_L: 'นับตั้งแต่ (วันแรกของโรเตท)', P_MONTH: '1 {m}', P_28: '28 วันก่อน', P_TODAY: 'วันนี้', SET_SAVE: 'บันทึก',
   SET_NOTE: 'ทุกคนในวอร์ดเห็นช่วงเดียวกัน · R1 ดูได้ เปลี่ยนไม่ได้', LOADING: 'กำลังนับ…', FAIL: 'นับไม่สำเร็จ แตะเพื่อลองใหม่',
   T_ALL: 'D/C ทั้งหมด', T_A: 'สาย A', T_B: 'สาย B', T_X: 'ย้ายวอร์ด',   // 1.12.0: + T_DEAD (5 ช่อง)
-  ALL: 'ทั้งหมด', TEAM: 'สาย {t}', FILTER: 'สาย', SEARCH: 'ค้นชื่อหรือ HN', NONE_TEAM: 'ไม่มีเคสของสายนี้ในคลัง',
+  SEARCH: 'ค้นชื่อหรือ HN', NONE_TEAM: 'ไม่มีการ์ดของช่องนี้ในคลัง (ประวัติถูกลบแล้ว)', LIST_N: 'การ์ดในคลัง {n} คน',   // 1.13.2: ไม่มีแถบสายแล้ว — กรองที่ช่องสรุป
   CW: 'ชื่อวอร์ดในข้อความ consult', CW_PH: 'เช่น NVM 21S', CW_NOTE: 'ว่าง = ใช้ชื่อวอร์ด "{w}" · Chief เท่านั้น', CW_SAVE: 'บันทึก', CW_SAVED: 'บันทึกชื่อวอร์ดแล้ว',
   CW_BAD: 'ไม่เกิน 30 ตัว และไม่มีเครื่องหมาย < >',
-  OPEN: 'ดูประวัติ', CARD_META: 'HN {hn} · เตียง {b}', CARD_DC: 'D/C {d} · {r}', CARD_DC_D: '· D/C {d}',
+  OPEN: 'ดูประวัติ', CARD_META: 'HN {hn} · เตียง {b}', CARD_DC_D: '· D/C {d}',
   T_DEAD: 'เสียชีวิต', PRINT: 'พิมพ์เคสในคลัง',
   // 1.13.1 (owner 22/11 "งงว่านับยังไง · เปลี่ยนวันช้า · เสียชีวิต 1 แต่ขึ้น 0")
   RANGE2: 'คนที่ D/C {a} – วันนี้ ({n} วัน)', HOW: 'แตะช่องเพื่อดูว่านับใครบ้าง · นับรวมคนที่ประวัติถูกลบแล้ว (คลังเก็บ {k} วัน)',
   PREVIEW: 'ดูตัวเลขก่อน — กด "บันทึก" ให้ทุกคนเห็นช่วงนี้', COUNTING: 'กำลังนับ…',
   OUTSIDE: 'ในคลังมีอีก {n} คนที่ D/C ก่อน {d} — ไม่ได้นับ (เลื่อนวันเริ่มนับถ้าต้องการรวม)',
-  SHOWING: 'แสดงเฉพาะ: {t} · {n} คน', CLEAR: 'ดูทั้งหมด', GONE_N: 'อีก {n} คนในช่องนี้ ประวัติถูกลบแล้ว (เกิน {k} วัน) จึงไม่มีการ์ด',
+  SHOWING: '{t} · {n} คน', CLEAR: 'ดูทั้งหมด', GONE_N: 'อีก {n} คนในช่องนี้ ประวัติถูกลบแล้ว (เกิน {k} วัน) จึงไม่มีการ์ด',
   NOT_COUNTED: 'ไม่ได้นับ: D/C ก่อน {d}',
-  TITLE: 'ประวัติเคส', BACK: '‹ คลัง', DC: 'D/C แล้ว', DC_HOME: 'กลับบ้าน', DC_XFER: 'ย้ายไป {d}',
+  TITLE: 'ประวัติเคส', BACK: '‹ คลัง', DC: 'D/C แล้ว',
   INFO: 'เตียงเดิม {b} · สาย {t}', ADMIT: 'Admit {d}', LOSV: 'LOS {n} วัน', META: '{sex}{age} · HN {hn}',
   LOAD: 'กำลังเปิดเคส…', LOAD_FAIL: 'เปิดเคสไม่สำเร็จ', GONE: 'เคสนี้ไม่อยู่ในคลังแล้ว (กู้คืนหรือลบไปแล้ว)', RETRY: 'ลองใหม่',
   TASKS: 'งาน', CONSULT: 'Consult', EMPTY: 'ไม่มีข้อมูลที่บันทึกไว้',
@@ -8852,7 +8744,7 @@ STR.CASEV = {
    under the new date. While a new answer comes, the last numbers stay (dimmed if they are for another day) — no blank box.
    The boxes are buttons: tap → the list shows exactly the people that box counted (refs from the server · ids only). */
 var ArchiveX = {
-  team: 'all', tile: '', cache: {}, shown: null, asked: {}, seq: 0, err: false, setting: false, pick: '', box: null,
+  tile: '', cache: {}, shown: null, asked: {}, seq: 0, err: false, setting: false, pick: '', box: null,
 
   /** the start day the boxes are for: the day being picked (Chief, setter open) or the saved one ('' = server default) */
   from: function () { var X = ArchiveX, s = App.state.snap, w = (s && s.ward) || {}; return X.setting && X.pick ? X.pick : (w.stats_from || ''); },
@@ -8889,8 +8781,8 @@ var ArchiveX = {
     var print = U.el('button', { type: 'button', cls: 'asearch', id: 'arch-print', 'aria-label': C.PRINT, title: C.PRINT, onclick: function () { ArchPrint.open(); } },   // 1.12.0
       [U.icon(['M7 9V4h10v5', 'M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2', 'M7 14h10v6H7z'], 'aico')]);
     X.box = U.el('div', { cls: 'arch-x' }, [U.el('section', { cls: 'card asum', id: 'arch-sum', 'aria-label': C.SUM }),
-      U.el('div', { cls: 'afilter' }, [U.el('div', { cls: 'seg afseg', id: 'arch-team', role: 'group', 'aria-label': C.FILTER }), search, print]),
-      U.el('div', { id: 'arch-showing' })]);
+      U.el('div', { cls: 'alisthead' }, [U.el('div', { cls: 'alh-t', id: 'arch-showing', 'aria-live': 'polite' }), search, print]),   // 1.13.2: one row
+      U.el('div', { id: 'arch-gone' })]);
     X.paint();
     return X.box;
   },
@@ -8905,11 +8797,12 @@ var ArchiveX = {
     return out;
   },
 
-  /** list rows → a tapped box (exactly who it counted) or else this สาย */
+  /** list rows → a tapped box: exactly who it counted (1.13.2: the boxes are the only filter) */
   filter: function (rows) {
-    var X = ArchiveX, d = X.cur() || X.shown, t = X.team;
-    if (X.tile && d) { var refs = X.refsOf(d, X.tile); return rows.filter(function (r) { return refs[r.patient_id]; }); }
-    return t === 'all' ? rows : rows.filter(function (r) { return String(r.team).toUpperCase() === t; });
+    var X = ArchiveX, d = X.cur() || X.shown;
+    if (!X.tile || !d) return rows;
+    var refs = X.refsOf(d, X.tile);
+    return rows.filter(function (r) { return refs[r.patient_id]; });
   },
 
   /** a card that the boxes do not count (D/C before the start day) — says so on the card */
@@ -8919,7 +8812,7 @@ var ArchiveX = {
     return day && day < d.from ? U.el('span', { cls: 'anot', text: U.fill(STR.CASEV.NOT_COUNTED, { d: X.day(d.from) }) }) : null;
   },
 
-  pickTile: function (k) { var X = ArchiveX; X.tile = X.tile === k ? '' : k; if (X.tile) X.team = 'all'; ArchiveView.paint(); },
+  pickTile: function (k) { var X = ArchiveX; X.tile = X.tile === k ? '' : k; ArchiveView.paint(); },
 
   paint: function () {
     var X = ArchiveX, C = STR.CASEV, box = U.$('arch-sum'); if (!box) return;
@@ -8927,16 +8820,6 @@ var ArchiveX = {
     if (!d && !X.err) X.load(from);
     if (d) X.shown = d;
     var show = d || X.shown, stale = !d && !(show && (!from || show.from === from));   // the last numbers stay while the new ones come (dim = another day)
-    // สาย: counts from the archive list
-    var seg = U.$('arch-team');
-    if (seg) {
-      seg.textContent = '';
-      [['all', C.ALL], ['A', U.fill(C.TEAM, { t: 'A' })], ['B', U.fill(C.TEAM, { t: 'B' })]].forEach(function (x) {
-        var n = x[0] === 'all' ? rows.length : rows.filter(function (r) { return String(r.team).toUpperCase() === x[0]; }).length, on = !X.tile && X.team === x[0];
-        seg.appendChild(U.el('button', { type: 'button', cls: on ? 'on' : '', 'data-v': x[0], 'aria-pressed': String(on), text: x[1] + (ArchiveView.rows ? ' ' + n : ''),
-          onclick: function () { X.team = x[0]; X.tile = ''; ArchiveView.paint(); } }));
-      });
-    }
     box.textContent = '';
     var shownFrom = (d && d.from) || from || (show && show.from) || '';
     var head = U.el('div', { cls: 'asum-h' }, [U.el('div', { cls: 'asum-t' }, [U.el('b', { text: C.SUM }),
@@ -8955,7 +8838,7 @@ var ArchiveX = {
       return U.el('button', { type: 'button', cls: 'atile ' + cls + (on ? ' on' : ''), 'data-k': k, 'aria-pressed': String(on), disabled: stale ? 'disabled' : null,
         onclick: function () { X.pickTile(k); } }, [U.el('b', { text: String(n) }), U.el('span', { text: label })]);
     };
-    var by = show.by || { transfer_ward: show.transfer, death: 0 };     // 1.12.0: 5 ช่อง — ทั้งหมด (รวมเสียชีวิต) · A · B · ย้ายวอร์ด · เสียชีวิต
+    var by = show.by || {};                                            // 5 ช่อง — ทั้งหมด (รวมเสียชีวิต) · A · B · ย้ายวอร์ด · เสียชีวิต
     box.appendChild(U.el('div', { cls: 'atiles a5' + (stale ? ' stale' : ''), id: 'asum-tiles', 'aria-busy': String(stale) }, [
       tile('all', show.total, C.T_ALL, 't0'), tile('A', show.team.A, C.T_A, 'tA'), tile('B', show.team.B, C.T_B, 'tB'),
       tile('transfer_ward', by.transfer_ward || 0, C.T_X, 't0 tX'), tile('death', by.death || 0, C.T_DEAD, 't0 tD')]));
@@ -8969,18 +8852,18 @@ var ArchiveX = {
     X.showing();
   },
 
-  /** the line above the list when a box is tapped: what it shows · ดูทั้งหมด · people counted whose card is gone */
+  /** the list heading: "การ์ดในคลัง n คน", or what a tapped box shows · ดูทั้งหมด · people counted whose card is gone */
   showing: function () {
-    var X = ArchiveX, C = STR.CASEV, el = U.$('arch-showing'), d = X.cur() || X.shown; if (!el) return;
-    el.textContent = '';
-    if (!X.tile || !d) return;
+    var X = ArchiveX, C = STR.CASEV, el = U.$('arch-showing'), goneEl = U.$('arch-gone'), d = X.cur() || X.shown; if (!el) return;
+    el.textContent = ''; if (goneEl) goneEl.textContent = '';
+    if (!X.tile || !d) { if (ArchiveView.rows) el.appendChild(U.el('b', { text: U.fill(C.LIST_N, { n: ArchiveView.rows.length }) })); return; }
     var refs = X.refsOf(d, X.tile), ids = {}, n = Object.keys(refs).length;
     (ArchiveView.rows || []).forEach(function (r) { ids[r.patient_id] = true; });
     var gone = Object.keys(refs).filter(function (k) { return !ids[k]; }).length;
     var label = { all: C.T_ALL, A: C.T_A, B: C.T_B, transfer_ward: C.T_X, death: C.T_DEAD }[X.tile];
-    el.appendChild(U.el('div', { cls: 'ashowing' }, [U.el('span', { text: U.fill(C.SHOWING, { t: label, n: n }) }),
-      U.el('button', { type: 'button', cls: 'btn sec sm', id: 'arch-clear', text: C.CLEAR, onclick: function () { X.tile = ''; ArchiveView.paint(); } })]));
-    if (gone) el.appendChild(U.el('p', { cls: 'note ahow', text: U.fill(C.GONE_N, { n: gone, k: ((App.state.snap || {}).ward || {}).keep_days || 10 }) }));
+    el.appendChild(U.el('button', { type: 'button', cls: 'achip', id: 'arch-clear', 'aria-label': U.fill(C.SHOWING, { t: label, n: n }) + ' · ' + C.CLEAR,   // a filter chip: tap = ดูทั้งหมด
+      onclick: function () { X.tile = ''; ArchiveView.paint(); } }, [U.el('span', { text: U.fill(C.SHOWING, { t: label, n: n }) }), U.el('span', { cls: 'ax', 'aria-hidden': 'true', text: '✕' })]));
+    if (gone && goneEl) goneEl.appendChild(U.el('p', { cls: 'note ahow', text: U.fill(C.GONE_N, { n: gone, k: ((App.state.snap || {}).ward || {}).keep_days || 10 }) }));
   },
 
   /** Chief: shortcuts + calendar + บันทึก — every pick shows its numbers at once (a preview), บันทึก makes it the ward's */
@@ -9012,7 +8895,7 @@ var ArchiveX = {
     X.paint();
   },
 
-  /** Chief: the ward name in the consult message (below the list). */
+  /** Chief: the ward name in the consult message — 1.13.2: a row of the "ตั้งค่าวอร์ด" card (more.html), not under the archive list. */
   prefs: function () {
     if (App.role() !== 'owner') return null;
     var C = STR.CASEV, s = App.state.snap, w = (s && s.ward) || {};
@@ -9028,7 +8911,7 @@ var ArchiveX = {
       Ops.run('api_setArchivePrefs', { consult_ward: v }, { apply: function (snap) { snap.ward = snap.ward || {}; snap.ward.consult_ward = v; } })
         .then(function (res) { if (res.ok) Toast.show(C.CW_SAVED); });
     });
-    return U.el('div', { cls: 'card cwcard' }, [U.el('span', { cls: 'flabel', text: C.CW }), f, err,
+    return U.el('div', { cls: 'cwset' }, [U.el('span', { cls: 'flabel', text: C.CW }), f, err,
       U.el('p', { cls: 'note fhint', text: U.fill(C.CW_NOTE, { w: w.ward_name || '' }) })]);
   },
 
@@ -9370,13 +9253,13 @@ STR.TEAM = {
   STU_K: [['', 'ดูอย่างเดียว'], ['tick', 'ติ๊กเสร็จ'], ['add', 'ติ๊ก + เพิ่ม/แก้']],
   STU_NOTE: 'นศพ. ไม่เห็น HN ชื่อเต็ม อายุ สิทธิ์ และแผนกลับเสมอ · แก้ประวัติไม่ได้ · "ติ๊ก + เพิ่ม/แก้" = ทำกับงานได้เหมือน R1 (ลบได้เฉพาะงานที่ตัวเองเพิ่ม) · ชื่อน้องขึ้นที่งาน', STU_RO: 'Chief เป็นคนตั้ง',
   PEND: 'คำขอเข้าทีม (QR)', QR_WAIT: 'รอน้องสแกน… คำขอจะขึ้นตรงนี้ (ไม่ต้องออกจากหน้านี้)', PEND_NOTE: 'รับเมื่อรหัส 4 หลักตรงกับจอของน้อง · รับแล้ว = นศพ. ดูอย่างเดียว', NEW_PHONE: 'เครื่องใหม่', OK: 'รับ', NO: 'ไม่รับ',
-  CHIEFS: 'Chief', ADMIN: 'ผู้ดูแลระบบ', R1: 'R1 (แก้ได้ทุกเตียง)', SLOT: 'สาย {t}', EMPTY_SLOT: 'ว่าง', PUT: 'ใส่ R1', REPLACE: 'แทนที่',
+  CHIEFS: 'Chief', ADMIN: 'ผู้ดูแลระบบ', R1: 'R1 (แก้ได้ทุกเตียง)', EMPTY_SLOT: 'ว่าง', PUT: 'ใส่ R1',
   STUDENTS: 'นศพ. · ดูอย่างเดียว', NONE: 'ยังไม่มี', QR_K: 'QR', EMAIL_K: 'อีเมล', ME: '(ฉัน)', UNTIL: 'ถึง {d}',
   INVITE: 'เชิญเข้าทีม', SHOW_QR: 'แสดง QR', MAKE_QR: 'สร้าง QR', NEW_QR: 'สร้าง QR ใหม่ (อันเดิมใช้ไม่ได้)', QR_NOTE: 'ให้น้องสแกนด้วยกล้อง · ใช้แล้ว {u}/{m} · หมดอายุ {d}',
   QR_LINK: 'หรือส่งลิงก์นี้', COPY: 'คัดลอกลิงก์', COPIED: 'คัดลอกลิงก์แล้ว',
   ADD: '+ เพิ่มด้วยอีเมล', ADD_TITLE: 'เพิ่มคนด้วยอีเมล', EMAIL: 'อีเมล', NICK: 'ชื่อเล่น', ROLE: 'สิทธิ์', TITLE_L: 'ตำแหน่ง',
   R_CHIEF: 'Co-chief', R_R1: 'R1 สาย {t}', R_STU: 'นศพ.', SAVE: 'บันทึก', CANCEL: 'ยกเลิก', SAVING: 'กำลังบันทึก…',
-  REMOVE: 'เอาออก', REMOVE_Q: 'แตะอีกครั้งเพื่อเอาออก', DONE: 'บันทึกแล้ว',
+  REMOVE_Q: 'แตะอีกครั้งเพื่อเอาออก', DONE: 'บันทึกแล้ว',
   REP_TITLE: 'R1 สาย {t}', REP_WHO: 'คนใหม่', REP_NEW: 'คนใหม่ (อีเมล)', REP_OLD: 'คนเดิม ({n})', OLD_VIEW: 'เป็น นศพ.', OLD_OUT: 'ออกจากทีม',
   TERM_TITLE: 'วันจบรอบ', TERM_PICK: 'วันสุดท้ายของรอบ (พรุ่งนี้ – อีก 62 วัน)',
   HO_TITLE: 'ส่งต่อ Chief', HO_NOTE: 'Chief คนใหม่ใช้ได้ทันที · เลือกว่าทีมเดิมแต่ละคน (รวมถึงคุณ) จะใช้ได้ถึงเมื่อไร · QR เดิมใช้ไม่ได้', HO_END: 'วันจบรอบใหม่',
@@ -9655,7 +9538,7 @@ var TeamView = {
   mrow: function (m, sub) {
     var S = STR.TEAM, T = TeamView;
     if (m.saving) return Acct.row(m.nick, S.SAVING);                   // 1.7.0: just approved, the server is still writing
-    return Acct.row(m.nick + (m.me ? ' ' + S.ME : ''), [sub, m.user_id, m.email_hint, m.until ? U.fill(S.UNTIL, { d: Acct.day(m.until) }) : ''].filter(Boolean).join(' · '),
+    return Acct.row(m.nick + (m.me ? ' ' + S.ME : ''), [sub, m.email_hint, m.until ? U.fill(S.UNTIL, { d: Acct.day(m.until) }) : ''].filter(Boolean).join(' · '),   // 1.13.2: รหัสผู้ใช้ย้ายไปแผ่นจัดการ
       T.manageBtn(m), T.badges(m));
   },
 
@@ -9689,7 +9572,7 @@ var TeamView = {
         : U.el('button', { type: 'button', cls: 'btn sec sm', 'data-slot': t, text: S.PUT, onclick: function () { T.repSheet(t, null); } });
       card.appendChild(U.el('div', { cls: 'mrow r1slot' }, [U.el('span', { cls: 'sltag s' + t.toLowerCase(), text: t }),
         U.el('div', { cls: 'mmain' }, [U.el('b', {}, [m ? m.nick + (m.me ? ' ' + S.ME : '') : S.EMPTY_SLOT].concat(m ? T.badges(m) : [])),
-          m ? U.el('small', { text: [m.user_id, m.email_hint, m.until ? U.fill(S.UNTIL, { d: Acct.day(m.until) }) : ''].filter(Boolean).join(' · ') }) : null]), btn]));
+          m ? U.el('small', { text: [m.email_hint, m.until ? U.fill(S.UNTIL, { d: Acct.day(m.until) }) : ''].filter(Boolean).join(' · ') }) : null]), btn]));
     });
     d.members.filter(function (x) { return x.role === 'editor' && d.ward.teams.indexOf(x.team) < 0; }).forEach(function (m) { card.appendChild(T.mrow(m, 'R1')); });   // before 1.6.0: no slot yet
     return card;
@@ -9804,6 +9687,7 @@ var TeamView = {
     var cur = m.role === 'editor' ? 'editor:' + (m.team || '') : m.role, fields = [];
     if (m.role === 'editor' && m.team) fields.push(U.el('button', { type: 'button', cls: 'btn sec', id: 'm-replace', text: U.fill(S.REP_GO, { t: m.team }),
       onclick: function () { T.repSheet(m.team, m); } }));
+    fields.push(U.el('p', { cls: 'note mid', text: [m.user_id, m.email_hint, m.kind === 'device' ? 'QR' : ''].filter(Boolean).join(' · ') }));   // 1.13.2: the id lives here
     if (dev) fields.push(U.el('p', { cls: 'note', text: S.DEVICE_NOTE }));
     else {
       var opts = [['owner', S.R_CHIEF]];
@@ -10073,9 +9957,9 @@ var BindEmail = {
 </div>
 <script>
 STR.JOIN = {
-  LOADING: 'กำลังเปิด…', BAD: 'ลิงก์นี้ใช้ไม่ได้แล้ว ขอ QR ใหม่จาก Chief', TITLE: 'เข้าทีมวอร์ด {w}', NOTE: 'สำหรับ นศพ. · ดูได้อย่างเดียว · ไม่ต้องใช้อีเมล',
+  LOADING: 'กำลังเปิด…', TITLE: 'เข้าทีมวอร์ด {w}', NOTE: 'สำหรับ นศพ. · ดูได้อย่างเดียว · ไม่ต้องใช้อีเมล',
   NICK: 'ชื่อเล่น (ให้ Chief จำได้)', TITLE_L: 'ชั้นปี', SEND: 'ขอเข้า', SENDING: 'กำลังส่ง…',
-  WAIT_T: 'บอกรหัสนี้กับ Chief หรือ R1', WAIT_N: 'Chief กด "รับ" ในกล่อง QR หรือ เพิ่มเติม → ทีม · หน้านี้จะเข้าแอปเองเมื่อได้รับ', CHECK: 'เช็กอีกครั้ง',
+  WAIT_N: 'Chief กด "รับ" ในกล่อง QR หรือ เพิ่มเติม → ทีม · หน้านี้จะเข้าแอปเองเมื่อได้รับ', CHECK: 'เช็กอีกครั้ง',
   SLOW: 'คิวยาว กำลังลองใหม่…', S1: 'ส่งคำขอแล้ว', S2: 'บอกรหัสนี้กับ Chief หรือ R1', S3: 'รอ Chief กดรับ', S3_OK: 'Chief รับแล้ว', S4: 'เข้าแอป', S4_NOW: 'กำลังเปิดผังเตียง…',
   GO_FAIL: 'ยังเปิดไม่ได้ (ระบบไม่ว่าง)', GO_AGAIN: 'ลองอีกครั้ง',
   DENIED: 'Chief ไม่ได้รับคำขอนี้', EXPIRED: 'คำขอหมดอายุแล้ว (24 ชม.)', USED: 'เครื่องนี้เข้าแอปแล้ว — เปิด MedJad จากไอคอน', AGAIN: 'ขอใหม่'
