@@ -1850,6 +1850,32 @@ details.done summary { min-height: 44px; display: flex; align-items: center; fon
 .keeplist { display: flex; flex-direction: column; gap: 2px; max-height: 38vh; overflow: auto; border: 1px solid var(--line); border-radius: var(--r-ctl); padding: 4px 10px; }
 .keeplist .keep { display: flex; align-items: center; gap: 10px; min-height: 40px; }
 .keeplist .keep input { width: 20px; height: 20px; accent-color: var(--primary); }
+/* 1.13.0 เปลี่ยนรอบ: ป้ายสถานะคน · ข้อความเชิญ · ส่งต่อ Chief รายคน */
+.mbadge { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11.5px; font-weight: 600; vertical-align: 1px;
+  background: var(--seg); color: var(--muted); white-space: nowrap; }
+.mbadge.warn { background: var(--warn-bg); color: var(--warn-text); }
+.ivcard .ivlink .label:first-child { margin-top: 4px; }
+.ivcard .ivlink .btn { margin-top: 8px; }
+.ivmsg { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 14.5px; line-height: 1.55; background: var(--surface2); border-radius: 10px;
+  padding: 10px 12px; margin-bottom: 12px; user-select: all; -webkit-user-select: all; }
+#iv-copy.ok { background: var(--primary-soft); color: var(--primary); }
+#iv-share, #m-resend, #m-remove { margin-top: 8px; }
+#m-replace { margin-bottom: 14px; }
+.aform .uout { margin: -4px 0 12px; }
+.aform [data-name="until"] button { font-size: 13px; padding: 0 4px; }
+#m-remove { color: var(--danger); }
+#m-remove.dng { color: #fff; }
+.holist { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r-ctl); padding: 2px 10px; max-height: 44vh; overflow: auto; }
+.horow { padding: 8px 0; border-top: 1px solid var(--line); }
+.horow:first-child { border-top: 0; }
+.horow .honame { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; min-width: 0; }
+.horow .honame b { font-weight: 650; overflow-wrap: anywhere; }
+.horow .honame small { color: var(--muted); font-size: 12.5px; }
+.horow .rseg button { min-height: 36px; font-size: 13px; padding: 0 4px; }
+.hosum { background: var(--surface2); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; line-height: 1.5; margin-bottom: 12px; }
+.hosum .hoitem { padding: 2px 0 2px 14px; position: relative; overflow-wrap: anywhere; }
+.hosum .hoitem::before { content: '•'; position: absolute; left: 2px; color: var(--muted); }
+.hosum .hoitem:first-child { font-weight: 650; }
 .paircode { margin: 14px auto 6px; text-align: center; font: 800 54px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 10px; color: var(--primary); }
 #scr-join .spinner { margin: 14px auto; }
 /* 1.11.0: the phone's steps (✓ done · ● now · ○ later) */
@@ -2258,7 +2284,7 @@ html.casev-on body { overflow: hidden; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.12.2", pages: true,
+  return { app_version: "1.13.0", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -2720,6 +2746,7 @@ var App = {
   switchWard: function (id) {
     if (id === App.state.wardId) return;
     App.pickWard(id); App.state.tab = 'map'; BedMap.st.moving = ''; BedMap.st.picking = false; BedMap.favFrozen = null; Detail.close(true); App.render(); App.load(false);
+    if (window.RoundNotice) RoundNotice.check();
   },
 
   ward: function () {
@@ -2754,6 +2781,7 @@ var App = {
     if (!App.state.openMs && window.performance) App.state.openMs = Math.round(performance.now());
     App.render();
     if (!App.state.snap) App.load(false);
+    if (window.RoundNotice) RoundNotice.check();                       // 1.13.0: the round / my access ends soon (once a day)
   },
 
   /** Load the ward snapshot. manual = ⟳ button (10 s lock); force = ignore the lock (error bar). */
@@ -9237,12 +9265,16 @@ var QR = (function () {
      Writes go straight to the server and the answer carries the new team / ward list.
      1.7.0 (24): approve · deny · remove · term show at once (guess; a failure reloads the truth) · while ทีม or the QR sheet is
      on screen the waiting requests are asked every 3 s (api_teamPending, cache only) and appear inside the QR sheet ·
-     a busy button keeps its spinner (App.hold stops re-drawing the เพิ่มเติม tab under it). -->
+     a busy button keeps its spinner (App.hold stops re-drawing the เพิ่มเติม tab under it).
+     1.13.0 (เปลี่ยนรอบให้ลื่น): Invite = ข้อความเชิญพร้อมลิงก์แอป หลังเพิ่ม / แทนที่ / ส่งต่อ (ระบบไม่ส่งอีเมลเอง) · การ์ด "ลิงก์เข้าแอป" ·
+     ทุกแถวมีปุ่ม "จัดการ" (สิทธิ์ · ใช้ได้ถึง · ส่งข้อความเชิญ · เอาออก = op set/remove) · ป้าย "ยังไม่เคยเข้าแอป" / "หมดใน n วัน" ·
+     แทนที่ R1 แบบทับซ้อน (คนเดิมแก้ได้ต่อ 3 วัน) · ส่งต่อ Chief เลือกรายคน (รอบใหม่ / +7 วัน / จบรอบเดิม · ตัวเองด้วย) + สรุปก่อนยืนยัน ·
+     RoundNotice = แจ้งครั้งเดียวต่อวันเมื่อรอบ (Chief ≤ 7 วัน) หรือสิทธิ์ของตัวเอง (≤ 3 วัน) ใกล้หมด. -->
 <script>
 STR.TEAM = {
   TITLE: 'ทีม', HINT: 'สมาชิก · QR เชิญ · คำขอ', HINT_N: 'มีคำขอรอ {n}', LOADING: 'กำลังโหลดทีม…', FAIL: 'โหลดทีมไม่สำเร็จ แตะเพื่อลองใหม่',
   TERM: 'รอบนี้', TERM_END: 'จบรอบ {d}', TERM_LEFT: 'อีก {n} วัน', TERM_NONE: 'ยังไม่ตั้งวันจบรอบ (ทุกคนใช้ได้จนกว่าจะเอาออก)', TERM_SET: 'ตั้ง/เลื่อนวัน', HANDOVER: 'ส่งต่อ Chief',
-  TERM_NOTE: 'วันจบรอบเดียวกันทั้งทีม · หลังวันนี้ทุกคนหมดสิทธิ์เอง (ยกเว้นที่ติ๊ก "ต่อ" ตอนส่งต่อ Chief)',
+  TERM_NOTE: 'วันจบรอบเดียวกันทั้งทีม · หลังวันนี้ทุกคนหมดสิทธิ์เอง ยกเว้นคนที่ตั้งวันของตัวเองไว้ (ปุ่ม "จัดการ")',
   ST: { approving: 'กำลังรับ…', denying: 'กำลังปฏิเสธ…', approved: 'รับแล้ว · รอเครื่องน้อง', used: 'เข้าแอปแล้ว', denied: 'ไม่รับ', failed: 'ไม่สำเร็จ' },
   RETRY: 'ลองอีกครั้ง', ALL: 'รับทั้งหมด {n} คน', ALL_Q: 'เช็กรหัสครบแล้ว? แตะอีกครั้ง', RECENT: 'เพิ่งรับ', QR_COUNT: 'รอรับ {p} · รับแล้ว {a}',
   STU_T: 'นศพ. ทำอะไรได้', STU_HIST: 'ประวัติคนไข้', STU_TASKS: 'งานค้าง', STU_H: [['', 'ไม่เห็น'], ['1', 'ดูได้']],
@@ -9251,15 +9283,32 @@ STR.TEAM = {
   PEND: 'คำขอเข้าทีม (QR)', QR_WAIT: 'รอน้องสแกน… คำขอจะขึ้นตรงนี้ (ไม่ต้องออกจากหน้านี้)', PEND_NOTE: 'รับเมื่อรหัส 4 หลักตรงกับจอของน้อง · รับแล้ว = นศพ. ดูอย่างเดียว', NEW_PHONE: 'เครื่องใหม่', OK: 'รับ', NO: 'ไม่รับ',
   CHIEFS: 'Chief', ADMIN: 'ผู้ดูแลระบบ', R1: 'R1 (แก้ได้ทุกเตียง)', SLOT: 'สาย {t}', EMPTY_SLOT: 'ว่าง', PUT: 'ใส่ R1', REPLACE: 'แทนที่',
   STUDENTS: 'นศพ. · ดูอย่างเดียว', NONE: 'ยังไม่มี', QR_K: 'QR', EMAIL_K: 'อีเมล', ME: '(ฉัน)', UNTIL: 'ถึง {d}',
-  INVITE: 'เชิญ นศพ.', SHOW_QR: 'แสดง QR', MAKE_QR: 'สร้าง QR', NEW_QR: 'สร้าง QR ใหม่ (อันเดิมใช้ไม่ได้)', QR_NOTE: 'ให้น้องสแกนด้วยกล้อง · ใช้แล้ว {u}/{m} · หมดอายุ {d}',
+  INVITE: 'เชิญเข้าทีม', SHOW_QR: 'แสดง QR', MAKE_QR: 'สร้าง QR', NEW_QR: 'สร้าง QR ใหม่ (อันเดิมใช้ไม่ได้)', QR_NOTE: 'ให้น้องสแกนด้วยกล้อง · ใช้แล้ว {u}/{m} · หมดอายุ {d}',
   QR_LINK: 'หรือส่งลิงก์นี้', COPY: 'คัดลอกลิงก์', COPIED: 'คัดลอกลิงก์แล้ว',
   ADD: '+ เพิ่มด้วยอีเมล', ADD_TITLE: 'เพิ่มคนด้วยอีเมล', EMAIL: 'อีเมล', NICK: 'ชื่อเล่น', ROLE: 'สิทธิ์', TITLE_L: 'ตำแหน่ง',
   R_CHIEF: 'Co-chief', R_R1: 'R1 สาย {t}', R_STU: 'นศพ.', SAVE: 'บันทึก', CANCEL: 'ยกเลิก', SAVING: 'กำลังบันทึก…',
   REMOVE: 'เอาออก', REMOVE_Q: 'แตะอีกครั้งเพื่อเอาออก', DONE: 'บันทึกแล้ว',
   REP_TITLE: 'R1 สาย {t}', REP_WHO: 'คนใหม่', REP_NEW: 'คนใหม่ (อีเมล)', REP_OLD: 'คนเดิม ({n})', OLD_VIEW: 'เป็น นศพ.', OLD_OUT: 'ออกจากทีม',
   TERM_TITLE: 'วันจบรอบ', TERM_PICK: 'วันสุดท้ายของรอบ (พรุ่งนี้ – อีก 62 วัน)',
-  HO_TITLE: 'ส่งต่อ Chief', HO_NOTE: 'Chief คนใหม่ใช้ได้ทันที · คนที่ไม่ได้ติ๊กใช้ได้ถึงวันจบรอบเดิม · QR เดิมใช้ไม่ได้', HO_KEEP: 'ต่อรอบใหม่ (ติ๊ก)', HO_END: 'วันจบรอบใหม่',
-  WARN: 'จบรอบใน {n} วัน — ส่งต่อ Chief หรือเลื่อนวัน'
+  HO_TITLE: 'ส่งต่อ Chief', HO_NOTE: 'Chief คนใหม่ใช้ได้ทันที · เลือกว่าทีมเดิมแต่ละคน (รวมถึงคุณ) จะใช้ได้ถึงเมื่อไร · QR เดิมใช้ไม่ได้', HO_END: 'วันจบรอบใหม่',
+  WARN: 'จบรอบใน {n} วัน — ส่งต่อ Chief หรือเลื่อนวัน',
+  // 1.13.0
+  APP_LINK: 'ลิงก์เข้าแอป (Chief / R1 ที่เพิ่มด้วยอีเมลแล้ว)', APP_LINK_NOTE: 'เปิดลิงก์นี้แล้วล็อกอินด้วยอีเมลที่ Chief เพิ่มไว้ · อย่าก๊อปลิงก์จากแถบที่อยู่ของ Safari (อาจมีกุญแจเครื่องของคุณติดไป)',
+  QR_FOR: 'นศพ. (ไม่ต้องใช้อีเมล) — ให้สแกน QR', MANAGE: 'จัดการ', NEVER: 'ยังไม่เคยเข้าแอป', ENDS_IN: 'หมดใน {n} วัน', ENDS_TODAY: 'หมดวันนี้',
+  M_ROLE: 'สิทธิ์', M_UNTIL: 'ใช้ได้ถึง', U_ROUND: 'ตามรอบ', U_P7: '+7 วัน', U_P14: '+14 วัน', U_PICK: 'เลือกวัน', U_OUT: 'ใช้ได้ถึง {d}', U_OUT_ROUND: 'ใช้ได้ถึง {d} (วันจบรอบ)', U_OUT_NONE: 'ใช้ได้จนกว่าจะเอาออก (ยังไม่ตั้งวันจบรอบ)',
+  U_PICK_L: 'วันสุดท้ายที่ใช้ได้ (วันนี้ – อีก 62 วัน)', R_R1_FREE: 'R1 (ไม่มีสาย)', DEVICE_NOTE: 'เข้าด้วย QR — เป็น Chief / R1 ได้หลังน้องผูกอีเมล (เพิ่มเติม → ผูกอีเมล)',
+  REP_GO: 'แทนที่ R1 สาย {t} ด้วยคนใหม่', RESEND: 'ส่งข้อความเชิญอีกครั้ง', REMOVE_OUT: 'เอาออกจากทีม', NO_CHANGE: 'ไม่มีอะไรเปลี่ยน',
+  IV_TITLE: 'ส่งข้อความเชิญ', IV_NOTE: 'ระบบไม่ส่งอีเมลแจ้งเอง — คัดลอกข้อความนี้ส่งทางไลน์ให้คนที่เพิ่งเพิ่ม', IV_COPY: 'คัดลอกข้อความ', IV_SHARE: 'แชร์…',
+  IV_COPIED: 'คัดลอกแล้ว ✓', IV_FAIL: 'คัดลอกไม่ได้ — กดค้างที่ข้อความแล้วเลือกคัดลอก',
+  IV_HI: '{nick} — เพิ่มคุณเข้า MedJad วอร์ด {w} แล้ว ({r})', IV_1: '1) เปิด {url}', IV_2: '2) ล็อกอินด้วยอีเมล {e}', IV_3: '3) ใส่รหัส 6 หลักที่ส่งไปทางอีเมล แล้วเพิ่มลงหน้าจอโฮม',
+  IV_END: 'ใช้ได้ถึง {d}', IV_HINT: 'ที่ Chief เพิ่มไว้ ({h})',
+  REP_OVER: 'แก้ได้ต่อถึง {d}', REP_OVER_NOTE: '"แก้ได้ต่อ" = คนเดิมยังแก้ได้ถึงวันนั้น (ไว้ส่งเวรกัน) แล้วหมดสิทธิ์เอง',
+  HO_TEAM: 'ทีมเดิมหลังส่งต่อ', HO_NEW: 'รอบใหม่', HO_STAY: 'ถึง {d}', HO_OLD: 'จบรอบเดิม', HO_ME: '(คุณ)',
+  HO_SUM: 'หลังกดส่งต่อ', HO_S_CHIEF: '{n} เป็น Chief ทันที · รอบใหม่จบ {d}', HO_S_NEW: 'ตามรอบใหม่: {list}', HO_S_STAY: 'ใช้ได้ถึง {d}: {list}',
+  HO_S_OLD: 'หมดสิทธิ์หลัง {d}: {list}', HO_S_QR: 'QR เดิมใช้ไม่ได้ (สร้างใหม่ได้ที่ "เชิญเข้าทีม")', HO_NEW_CHIEF: 'Chief ใหม่', HO_NEED: 'ใส่อีเมลและชื่อเล่นของ Chief ใหม่ก่อน',
+  HO_GO: 'ส่งต่อ Chief', HO_Q: 'ตรวจสรุปแล้ว? แตะอีกครั้งเพื่อยืนยัน',
+  RN_ROUND: 'อีก {n} วันจบรอบ ({d}) — แตะเพื่อส่งต่อ Chief หรือเลื่อนวัน', RN_ROUND0: 'วันนี้วันสุดท้ายของรอบ — แตะเพื่อส่งต่อ Chief หรือเลื่อนวัน',
+  RN_ME: 'สิทธิ์ของคุณในวอร์ด {w} ใช้ได้ถึง {d} — ถ้ายังต้องใช้ บอก Chief ให้ต่อ'
 };
 STR.ADMIN = {
   TITLE: 'วอร์ดทั้งหมด', HINT: 'เปิดวอร์ด · อนุมัติ Chief (ผู้ดูแลระบบ)', HINT_N: 'คำขอ Chief รอ {n}', LOADING: 'กำลังโหลด…', FAIL: 'โหลดไม่สำเร็จ แตะเพื่อลองใหม่',
@@ -9280,7 +9329,11 @@ var Acct = {
   /** "2026-11-30" → "30 พ.ย. 69" */
   day: function (k) { return k ? U.dateTh(k + 'T12:00:00+07:00') : ''; },
   daysLeft: function (k) { if (!k) return null; var a = Date.parse(k + 'T00:00:00+07:00'), b = Date.parse(Dc.today() + 'T00:00:00+07:00'); return Math.round((a - b) / 86400000); },
-  plus: function (n) { var d = new Date(Date.parse(Dc.today() + 'T12:00:00+07:00') + n * 86400000); return d.toISOString().slice(0, 10); },
+  plus: function (n) { return Acct.add(Dc.today(), n); },
+  /** 1.13.0: "2026-11-30" + n days · the last day anyone may be given (server: TERM_MAX_DAYS) */
+  MAX_DAYS: 62,
+  add: function (k, n) { var d = new Date(Date.parse(k + 'T12:00:00+07:00') + n * 86400000); return d.toISOString().slice(0, 10); },
+  clamp: function (k) { var mx = Acct.plus(Acct.MAX_DAYS); return k > mx ? mx : k; },
   /** One server write; ok → onOk(data). Errors → toast with the server's Thai message. */
   call: function (name, args, btn, onOk, opts) {
     if (btn) { btn.disabled = true; btn.classList.add('busy'); btn.dataset.t = btn.textContent; btn.textContent = STR.TEAM.SAVING; }
@@ -9294,8 +9347,8 @@ var Acct = {
       onOk(res.data); App.flush(); return res;
     });
   },
-  row: function (main, sub, right) {
-    return U.el('div', { cls: 'mrow' }, [U.el('div', { cls: 'mmain' }, [U.el('b', { text: main }), sub ? U.el('small', { text: sub }) : null]), right || null]);
+  row: function (main, sub, right, badges) {
+    return U.el('div', { cls: 'mrow' }, [U.el('div', { cls: 'mmain' }, [U.el('b', {}, [main].concat(badges || [])), sub ? U.el('small', { text: sub }) : null]), right || null]);
   }
 };
 
@@ -9509,13 +9562,26 @@ var TeamView = {
     T.pendRows(T.data, box);
   },
 
-  /** A member row; the chief can take people out (second tap confirms). */
+  /** A member row. 1.13.0: the chief manages a person in one sheet (สิทธิ์ · ใช้ได้ถึง · ข้อความเชิญ · เอาออก). */
   mrow: function (m, sub) {
-    var S = STR.TEAM, T = TeamView, arm = T.arm === m.user_id;
+    var S = STR.TEAM, T = TeamView;
     if (m.saving) return Acct.row(m.nick, S.SAVING);                   // 1.7.0: just approved, the server is still writing
-    var right = T.owner() ? U.el('button', { type: 'button', cls: 'btn sm ' + (arm ? 'dng' : 'sec'), text: arm ? S.REMOVE_Q : S.REMOVE,
-      onclick: function (e) { if (!arm) { T.arm = m.user_id; App.render(); return; } T.op('remove', { user_id: m.user_id }, e.currentTarget); } }) : null;
-    return Acct.row(m.nick + (m.me ? ' ' + S.ME : ''), [sub, m.user_id, m.email_hint, m.until ? U.fill(S.UNTIL, { d: Acct.day(m.until) }) : ''].filter(Boolean).join(' · '), right);
+    return Acct.row(m.nick + (m.me ? ' ' + S.ME : ''), [sub, m.user_id, m.email_hint, m.until ? U.fill(S.UNTIL, { d: Acct.day(m.until) }) : ''].filter(Boolean).join(' · '),
+      T.manageBtn(m), T.badges(m));
+  },
+
+  /** 1.13.0: "จัดการ" (Chief only) — data-uid lets tests and people find the row. */
+  manageBtn: function (m, slot) {
+    if (!TeamView.owner()) return null;
+    return U.el('button', { type: 'button', cls: 'btn sec sm', 'data-uid': m.user_id, 'data-slot': slot || null, text: STR.TEAM.MANAGE, onclick: function () { TeamView.memberSheet(m); } });
+  },
+
+  /** 1.13.0: what needs a look — added by e-mail but never opened the app · a personal end date ≤ 3 days away. */
+  badges: function (m) {
+    var S = STR.TEAM, out = [], left = m.until ? Acct.daysLeft(m.until) : null;
+    if (m.kind === 'email' && !m.seen_at && !m.me) out.push(U.el('span', { cls: 'mbadge', text: S.NEVER }));
+    if (left != null && left <= 3) out.push(U.el('span', { cls: 'mbadge warn', text: left <= 0 ? S.ENDS_TODAY : U.fill(S.ENDS_IN, { n: left }) }));
+    return out;
   },
 
   chiefCard: function (d) {
@@ -9530,9 +9596,11 @@ var TeamView = {
     var S = STR.TEAM, T = TeamView, card = U.el('div', { cls: 'card' }, [U.el('h2', { text: S.R1 })]);
     d.ward.teams.forEach(function (t) {
       var m = d.members.filter(function (x) { return x.role === 'editor' && x.team === t; })[0];
-      var btn = T.owner() ? U.el('button', { type: 'button', cls: 'btn sec sm', 'data-slot': t, text: m ? S.REPLACE : S.PUT, onclick: function () { T.repSheet(t, m); } }) : null;
+      var btn = !T.owner() ? null : m ? T.manageBtn(m, t)
+        : U.el('button', { type: 'button', cls: 'btn sec sm', 'data-slot': t, text: S.PUT, onclick: function () { T.repSheet(t, null); } });
       card.appendChild(U.el('div', { cls: 'mrow r1slot' }, [U.el('span', { cls: 'sltag s' + t.toLowerCase(), text: t }),
-        U.el('div', { cls: 'mmain' }, [U.el('b', { text: m ? m.nick + (m.me ? ' ' + S.ME : '') : S.EMPTY_SLOT }), m ? U.el('small', { text: [m.user_id, m.email_hint].filter(Boolean).join(' · ') }) : null]), btn]));
+        U.el('div', { cls: 'mmain' }, [U.el('b', {}, [m ? m.nick + (m.me ? ' ' + S.ME : '') : S.EMPTY_SLOT].concat(m ? T.badges(m) : [])),
+          m ? U.el('small', { text: [m.user_id, m.email_hint, m.until ? U.fill(S.UNTIL, { d: Acct.day(m.until) }) : ''].filter(Boolean).join(' · ') }) : null]), btn]));
     });
     d.members.filter(function (x) { return x.role === 'editor' && d.ward.teams.indexOf(x.team) < 0; }).forEach(function (m) { card.appendChild(T.mrow(m, 'R1')); });   // before 1.6.0: no slot yet
     return card;
@@ -9565,7 +9633,10 @@ var TeamView = {
   },
 
   inviteCard: function (d) {
-    var S = STR.TEAM, T = TeamView, inv = d.invite, card = U.el('div', { cls: 'card' }, [U.el('h2', { text: S.INVITE })]);
+    var S = STR.TEAM, T = TeamView, inv = d.invite, url = Invite.url(), card = U.el('div', { cls: 'card ivcard' }, [U.el('h2', { text: S.INVITE })]);
+    if (url) card.appendChild(U.el('div', { cls: 'ivlink' }, [U.el('p', { cls: 'label', text: S.APP_LINK }), U.el('div', { cls: 'qrlink', id: 't-applink', text: url }),
+      U.el('button', { type: 'button', cls: 'btn sec', id: 't-copyapp', text: S.COPY, onclick: function () { T.copy(url); } }), U.el('p', { cls: 'note', text: S.APP_LINK_NOTE })]));
+    card.appendChild(U.el('p', { cls: 'label', text: S.QR_FOR }));
     if (inv) card.appendChild(U.el('button', { type: 'button', cls: 'btn', id: 't-qr', text: S.SHOW_QR, onclick: T.qrSheet }));
     else if (T.owner()) card.appendChild(U.el('button', { type: 'button', cls: 'btn', id: 't-qr', text: S.MAKE_QR, onclick: function (e) { T.op('invite', {}, e.currentTarget, T.qrSheet); } }));
     return card;
@@ -9589,10 +9660,10 @@ var TeamView = {
   copy: function (text) { Detail.copy(text).then(function (ok) { if (ok) App.note(STR.TEAM.COPIED); }); },
 
   /** Form helper: fields + a save button that sends op(input()). */
-  form: function (title, fields, op, input, kind) {
+  form: function (title, fields, op, input, kind, then) {
     var S = STR.TEAM, btn = U.el('button', { type: 'submit', cls: 'btn', text: S.SAVE });
     var f = U.el('form', { cls: 'aform', novalidate: 'novalidate' }, fields.concat([btn]));
-    f.addEventListener('submit', function (e) { e.preventDefault(); var i = input(f); if (i) TeamView.op(op, i, btn); });
+    f.addEventListener('submit', function (e) { e.preventDefault(); var i = input(f, btn); if (i) TeamView.op(op, i, btn, then ? function (d) { then(d, i); } : null); });
     Sheet.open(title, [f], { kind: kind, closeText: S.CANCEL, focus: 'input' });
     return f;
   },
@@ -9612,43 +9683,178 @@ var TeamView = {
       Form.field(S.ROLE, Form.toggles('role', opts, 'viewer'))], 'add', function (f) {
       var r = T.val(f, 'role').split(':');
       return { email: T.val(f, 'email'), nick: T.val(f, 'nick'), role: r[0], team: r[1] || '', title: r[0] === 'owner' ? 'R3' : r[0] === 'editor' ? 'R1' : '' };
-    }, 'teamadd');
+    }, 'teamadd', function (d, i) { Invite.sheet({ nick: i.nick, role: i.role, team: i.team, email: i.email, end: d.team.ward.term_end }); });
   },
 
-  /** R1 slot: someone in the team with an e-mail, or a new e-mail. The one before → นศพ. or out. */
+  /** R1 slot: someone in the team with an e-mail, or a new e-mail. The one before → แก้ได้ต่อ 3 วัน (1.13.0 default) · นศพ. · out. */
   repSheet: function (t, cur) {
-    var S = STR.TEAM, T = TeamView, d = T.data;
+    var S = STR.TEAM, T = TeamView, d = T.data, over = Acct.clamp(Acct.plus(3));
     var cand = d.members.filter(function (m) { return m.kind === 'email' && m.role === 'viewer'; }).map(function (m) { return [m.user_id, m.nick]; });
     var fields = [];
     if (cand.length) fields.push(Form.field(S.REP_WHO, Form.toggles('who', cand.concat([['new', S.REP_NEW]]), 'new', function (v) { emailBox.hidden = v !== 'new'; })));
     var emailBox = U.el('div', {}, [Form.field(S.EMAIL, Form.input('email', { type: 'email', inputmode: 'email', autocapitalize: 'off' })), Form.field(S.NICK, Form.input('nick', { maxlength: '20' }))]);
     fields.push(emailBox);
-    if (cur) fields.push(Form.field(U.fill(S.REP_OLD, { n: cur.nick }), Form.toggles('old_to', [['viewer', S.OLD_VIEW], ['remove', S.OLD_OUT]], 'viewer')));
+    if (cur) {
+      fields.push(Form.field(U.fill(S.REP_OLD, { n: cur.nick }), Form.toggles('old_to', [['overlap', U.fill(S.REP_OVER, { d: Acct.day(over) })], ['viewer', S.OLD_VIEW], ['remove', S.OLD_OUT]], 'overlap')));
+      fields.push(U.el('p', { cls: 'note', text: S.REP_OVER_NOTE }));
+    }
     T.form(U.fill(S.REP_TITLE, { t: t }), fields, 'replace', function (f) {
       var who = T.val(f, 'who') || 'new', i = { team: t, old_to: T.val(f, 'old_to') || 'viewer' };
+      if (i.old_to === 'overlap') i.old_until = over;
       if (who === 'new') { i.email = T.val(f, 'email'); i.nick = T.val(f, 'nick'); } else i.user_id = who;
       return i;
-    }, 'teamrep');
+    }, 'teamrep', function (dd, i) {
+      var m = i.user_id ? (dd.team.members.filter(function (x) { return x.user_id === i.user_id; })[0] || {}) : null;
+      Invite.sheet({ nick: m ? m.nick : i.nick, role: 'editor', team: t, email: i.email, hint: m ? m.email_hint : '', end: dd.team.ward.term_end });
+    });
+  },
+
+  /** 1.13.0: one person — สิทธิ์ · ใช้ได้ถึง (op set) · ส่งข้อความเชิญอีกครั้ง · เอาออก (two taps). Only what changed is sent. */
+  memberSheet: function (m) {
+    var S = STR.TEAM, T = TeamView, d = T.data, dev = m.kind === 'device', today = Dc.today(), end = d.ward.term_end;
+    var cur = m.role === 'editor' ? 'editor:' + (m.team || '') : m.role, fields = [];
+    if (m.role === 'editor' && m.team) fields.push(U.el('button', { type: 'button', cls: 'btn sec', id: 'm-replace', text: U.fill(S.REP_GO, { t: m.team }),
+      onclick: function () { T.repSheet(m.team, m); } }));
+    if (dev) fields.push(U.el('p', { cls: 'note', text: S.DEVICE_NOTE }));
+    else {
+      var opts = [['owner', S.R_CHIEF]];
+      d.ward.teams.forEach(function (t) {
+        var holder = d.members.filter(function (x) { return x.role === 'editor' && x.team === t; })[0];
+        if (!holder || holder.user_id === m.user_id) opts.push(['editor:' + t, U.fill(S.R_R1, { t: t })]);
+      });
+      if (cur === 'editor:') opts.push(['editor:', S.R_R1_FREE]);
+      opts.push(['viewer', S.R_STU]);
+      fields.push(Form.field(S.M_ROLE, Form.toggles('role', opts, cur)));
+    }
+    var from = m.end && m.end > today ? m.end : today, p7 = Acct.clamp(Acct.add(from, 7)), p14 = Acct.clamp(Acct.add(from, 14));
+    var pick = Form.input('until_d', { type: 'date', min: today, max: Acct.plus(Acct.MAX_DAYS) });
+    pick.value = m.until || '';
+    var pickBox = U.el('div', { hidden: m.until ? null : 'hidden' }, [Form.field(S.U_PICK_L, pick)]), out = U.el('p', { cls: 'note uout', id: 'm-uout' });
+    var says = function (v) {                                            // the day it really comes to, under the short buttons
+      var k = v === 'p7' ? p7 : v === 'p14' ? p14 : v === 'pick' ? pick.value : '';
+      out.textContent = k ? U.fill(S.U_OUT, { d: Acct.day(k) }) : end ? U.fill(S.U_OUT_ROUND, { d: Acct.day(end) }) : S.U_OUT_NONE;
+    };
+    var ut = Form.toggles('until', [['', S.U_ROUND], ['p7', S.U_P7], ['p14', S.U_P14], ['pick', S.U_PICK]], m.until ? 'pick' : '',
+      function (v) { pickBox.hidden = v !== 'pick'; says(v); });
+    pick.addEventListener('change', function () { says('pick'); });
+    says(m.until ? 'pick' : '');
+    fields.push(Form.field(S.M_UNTIL, ut), out, pickBox);
+    T.form(m.nick + (m.me ? ' ' + S.ME : ''), fields, 'set', function (f) {
+      var i = { user_id: m.user_id }, ch = false, r = T.val(f, 'role'), u = T.val(f, 'until');
+      if (!dev && r && r !== cur) {
+        var p = r.split(':'); i.role = p[0]; ch = true;
+        if (p[0] === 'editor') { i.team = p[1] || ''; i.title = 'R1'; } else if (p[0] === 'owner') i.title = 'R3';
+      }
+      var target = u === 'p7' ? p7 : u === 'p14' ? p14 : u === 'pick' ? T.val(f, 'until_d') : '';
+      if (target !== (m.until || '')) { i.until = target; ch = true; }
+      if (!ch) { Sheet.close(); App.note(S.NO_CHANGE); return null; }
+      return i;
+    }, 'teammember');
+    var box = U.$('sheet');
+    if (m.kind === 'email') box.appendChild(U.el('button', { type: 'button', cls: 'btn ghost', id: 'm-resend', text: S.RESEND,
+      onclick: function () { Invite.sheet({ nick: m.nick, role: m.role, team: m.team, hint: m.email_hint, end: m.end }); } }));
+    var rm = U.el('button', { type: 'button', cls: 'btn ghost mdel', id: 'm-remove', text: S.REMOVE_OUT, onclick: function () {
+      if (!rm.classList.contains('dng')) { rm.classList.add('dng'); rm.textContent = S.REMOVE_Q; setTimeout(function () { rm.classList.remove('dng'); rm.textContent = S.REMOVE_OUT; }, 5000); return; }
+      T.op('remove', { user_id: m.user_id }, rm);
+    } });
+    box.appendChild(rm);
   },
 
   termSheet: function () {
-    var S = STR.TEAM, T = TeamView, inp = Form.input('term_end', { type: 'date', min: Acct.plus(1), max: Acct.plus(62) });
+    var S = STR.TEAM, T = TeamView, inp = Form.input('term_end', { type: 'date', min: Acct.plus(1), max: Acct.plus(Acct.MAX_DAYS) });
     inp.value = T.data.ward.term_end || Acct.plus(30);
     T.form(S.TERM_TITLE, [Form.field(S.TERM_PICK, inp)], 'term', function (f) { return { term_end: T.val(f, 'term_end') }; }, 'teamterm');
   },
 
+  /** 1.13.0: every member (the chief too) picks a fate — รอบใหม่ (keep) · ถึง old end + 7 (stay) · จบรอบเดิม — with a live summary;
+      the button asks twice (nothing can be taken back). */
   handSheet: function () {
-    var S = STR.TEAM, T = TeamView, d = T.data, end = Form.input('term_end', { type: 'date', min: Acct.plus(1), max: Acct.plus(62) });
+    var S = STR.TEAM, T = TeamView, d = T.data, today = Dc.today();
+    var oldEnd = d.ward.term_end && d.ward.term_end >= today ? d.ward.term_end : today, stayD = Acct.clamp(Acct.add(oldEnd, 7));
+    var end = Form.input('term_end', { type: 'date', min: Acct.plus(1), max: Acct.plus(Acct.MAX_DAYS) });
     end.value = Acct.plus(30);
-    var keep = U.el('div', { cls: 'keeplist' });
-    d.members.filter(function (m) { return !m.me; }).forEach(function (m) {
-      keep.appendChild(U.el('label', { cls: 'keep' }, [U.el('input', { type: 'checkbox', name: 'keep', value: m.user_id }), U.el('span', { text: m.nick + ' · ' + (STR.ROLE[m.role] || m.role) })]));
+    var em = Form.input('email', { type: 'email', inputmode: 'email', autocapitalize: 'off' }), nk = Form.input('nick', { maxlength: '20' });
+    var sum = U.el('div', { cls: 'hosum', id: 'ho-sum', 'aria-live': 'polite' }), list = U.el('div', { cls: 'holist' }), armed = false, f = null;
+    var fate = function (m) { var x = f && f.querySelector('input[name="fate-' + m.user_id + '"]'); return x ? x.value : ''; };
+    /** the day each person's access really ends after the handover (what Team.gs handover does): '' = with the new round */
+    var endOf = function (m, k) {
+      if (k === 'new') return m.until || '';
+      if (k === 'stay') return stayD;
+      return m.until && m.until < oldEnd ? m.until : oldEnd;
+    };
+    var paint = function () {
+      var by = {}, nick = nk.value.trim() || S.HO_NEW_CHIEF;
+      d.members.forEach(function (m) { var k = fate(m); if (!k) return; var e = endOf(m, k); (by[e] = by[e] || []).push(m.me ? m.nick + ' ' + S.HO_ME : m.nick); });
+      sum.textContent = '';
+      var lines = [U.fill(S.HO_S_CHIEF, { n: nick, d: end.value ? Acct.day(end.value) : '—' })];
+      if (by['']) lines.push(U.fill(S.HO_S_NEW, { list: by[''].join(', ') }));
+      Object.keys(by).filter(Boolean).sort().forEach(function (e) {
+        lines.push(U.fill(e === oldEnd ? S.HO_S_OLD : S.HO_S_STAY, { d: Acct.day(e), list: by[e].join(', ') }));
+      });
+      lines.concat([S.HO_S_QR]).forEach(function (t) { sum.appendChild(U.el('div', { cls: 'hoitem', text: t })); });
+    };
+    d.members.forEach(function (m) {
+      var def = m.me ? 'stay' : m.role === 'editor' && m.team && !m.until ? 'new' : 'old';   // R1 in a slot goes on · the rest end with the old round
+      list.appendChild(U.el('div', { cls: 'horow', 'data-uid': m.user_id }, [
+        U.el('div', { cls: 'honame' }, [U.el('b', { text: m.nick + (m.me ? ' ' + S.HO_ME : '') }), U.el('small', { text: Auth.roleText({}, m.role) + (m.role === 'editor' && m.team ? ' สาย ' + m.team : '') })]),
+        Form.toggles('fate-' + m.user_id, [['new', S.HO_NEW], ['stay', U.fill(S.HO_STAY, { d: Acct.day(stayD) })], ['old', S.HO_OLD]], def, paint)]));
     });
-    T.form(S.HO_TITLE, [U.el('p', { cls: 'note', text: S.HO_NOTE }), Form.field(S.EMAIL, Form.input('email', { type: 'email', inputmode: 'email', autocapitalize: 'off' })),
-      Form.field(S.NICK, Form.input('nick', { maxlength: '20' })), Form.field(S.HO_END, end), U.el('p', { cls: 'label', text: S.HO_KEEP }), keep], 'handover', function (f) {
-      var k = Array.prototype.filter.call(f.querySelectorAll('input[name="keep"]'), function (x) { return x.checked; }).map(function (x) { return x.value; });
-      return { email: T.val(f, 'email'), nick: T.val(f, 'nick'), term_end: T.val(f, 'term_end'), keep: k };
-    }, 'teamho');
+    [em, nk, end].forEach(function (x) { x.addEventListener('input', paint); x.addEventListener('change', paint); });
+    f = T.form(S.HO_TITLE, [U.el('p', { cls: 'note', text: S.HO_NOTE }), Form.field(S.EMAIL, em), Form.field(S.NICK, nk), Form.field(S.HO_END, end),
+      U.el('p', { cls: 'label', text: S.HO_TEAM }), list, U.el('p', { cls: 'label', text: S.HO_SUM }), sum], 'handover', function (form, btn) {
+      if (!em.value.trim() || !nk.value.trim()) { Toast.show(S.HO_NEED, 'err'); return null; }
+      if (!armed) {
+        armed = true; btn.textContent = S.HO_Q; btn.classList.add('dng'); paint(); sum.scrollIntoView({ block: 'nearest' });
+        setTimeout(function () { armed = false; btn.classList.remove('dng'); btn.textContent = S.HO_GO; }, 6000);
+        return null;
+      }
+      var keep = [], stay = {};
+      d.members.forEach(function (m) { var k = fate(m); if (k === 'new') keep.push(m.user_id); else if (k === 'stay') stay[m.user_id] = stayD; });
+      return { email: em.value.trim(), nick: nk.value.trim(), term_end: end.value, keep: keep, stay: stay };
+    }, 'teamho', function (dd, i) { Invite.sheet({ nick: i.nick, role: 'owner', email: i.email, end: i.term_end }); });
+    f.querySelector('button[type="submit"]').textContent = S.HO_GO;
+    paint();
+  }
+};
+
+/* ======================= Invite (1.13.0): what a person added by e-mail needs — the app itself sends no e-mail (#60) ======================= */
+var Invite = {
+  /** The plain app link (GitHub page or /exec) — never the address bar, which may carry this phone's ?k= key. */
+  url: function () { return App.link(''); },
+  role: function (role, team) { return role === 'owner' ? STR.ROLE.owner : role === 'editor' ? 'R1' + (team ? ' สาย ' + team : '') : 'นศพ.'; },
+  /** p = {nick, role, team, email | hint, end} → the message, one step per line */
+  text: function (p) {
+    var S = STR.TEAM, w = App.ward();
+    return [U.fill(S.IV_HI, { nick: p.nick || '', w: w ? w.ward_name : '', r: Invite.role(p.role, p.team) }), U.fill(S.IV_1, { url: Invite.url() }),
+      U.fill(S.IV_2, { e: p.email || U.fill(S.IV_HINT, { h: p.hint || '…' }) }), S.IV_3, p.end ? U.fill(S.IV_END, { d: Acct.day(p.end) }) : ''].filter(Boolean).join('\n');
+  },
+  sheet: function (p) {
+    var S = STR.TEAM, text = Invite.text(p), copy = U.el('button', { type: 'button', cls: 'btn', id: 'iv-copy', text: S.IV_COPY });
+    copy.addEventListener('click', function () {
+      Detail.copy(text).then(function (ok) { copy.textContent = ok ? S.IV_COPIED : S.IV_FAIL; copy.classList.toggle('ok', ok); });
+    });
+    var share = navigator.share ? U.el('button', { type: 'button', cls: 'btn sec', id: 'iv-share', text: S.IV_SHARE,
+      onclick: function () { try { navigator.share({ text: text }).catch(function () { /* closed */ }); } catch (e) { /* not allowed here */ } } }) : null;
+    Sheet.open(S.IV_TITLE, [U.el('p', { cls: 'note', text: S.IV_NOTE }), U.el('div', { cls: 'ivmsg', id: 'iv-msg', text: text }), copy, share], { kind: 'invite' });
+  }
+};
+
+/* ======================= RoundNotice (1.13.0): once a day per ward — the round (Chief, ≤ 7 days) or my own access (≤ 3 days) ends soon ======================= */
+var RoundNotice = {
+  check: function () {
+    var w = App.ward(), S = STR.TEAM, today = Dc.today();
+    if (!w || w.via === 'admin') return;
+    var seen = Store.get('roundNote') || {}, key = w.ward_id + ':' + today;
+    if (seen[key]) return;
+    var mine = w.end ? Acct.daysLeft(w.end) : null, round = w.term_end ? Acct.daysLeft(w.term_end) : null, msg = '', tap = null;
+    if (mine != null && mine >= 0 && mine <= 3 && (w.role !== 'owner' || w.end !== w.term_end)) msg = U.fill(S.RN_ME, { w: w.ward_name, d: Acct.day(w.end) });
+    else if (w.role === 'owner' && round != null && round >= 0 && round <= 7) {
+      msg = round === 0 ? S.RN_ROUND0 : U.fill(S.RN_ROUND, { n: round, d: Acct.day(w.term_end) });
+      tap = function () { App.setTab('more'); More.go('team'); };
+    }
+    if (!msg) return;
+    var keep = {}; keep[key] = 1; Store.set('roundNote', keep);       // only today's mark is kept
+    setTimeout(function () { if (App.ward() === w) Toast.show(msg, '', tap || function () { /* tap = close */ }); }, 2500);
   }
 };
 
