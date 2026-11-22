@@ -2188,6 +2188,17 @@ html.casev-on body { overflow: hidden; }
 .atiles.a5 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
 .atiles.a5 .atile b { font-size: 23px; }
 .atiles.a5 .atile span { font-size: 11.5px; }
+/* 1.13.1: the boxes are buttons (tap = who is counted) · dim while another day is counted · notes under the boxes */
+button.atile { border: 0; font: inherit; color: inherit; cursor: pointer; width: 100%; min-width: 0; outline-offset: 2px; padding: 8px 2px; -webkit-appearance: none; appearance: none; }
+button.atile span { line-height: 1.25; overflow-wrap: anywhere; }
+button.atile.on { box-shadow: inset 0 0 0 2px var(--primary); }
+button.atile:disabled { cursor: default; }
+.atiles.stale .atile { opacity: .45; }
+.asum .ahow, .asum .apv { margin: -2px 0 0; font-size: 12.5px; }
+.asum .apv { color: var(--primary); font-weight: 700; }
+.ashowing { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 2px 2px 8px; font-size: 14px; font-weight: 700; }
+#arch-showing .ahow { margin: -4px 2px 8px; font-size: 12.5px; }
+.acard .anot { display: block; font-size: 12px; color: var(--muted); font-style: italic; }
 .atile.tD b { color: var(--dc-dead); }
 .dcform .dcseg { margin: 4px 0 10px; }
 .dcform .dcseg .dct-death.on { background: var(--dc-dead); color: var(--surface); }
@@ -2284,7 +2295,7 @@ html.casev-on body { overflow: hidden; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.13.0", pages: true,
+  return { app_version: "1.13.1", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -8243,7 +8254,8 @@ var ArchiveView = {
         U.el('span', { cls: 'atext' }, [
           U.el('span', { cls: 'pname sm', text: r.name }),
           U.el('span', { cls: 'pmeta', text: U.fill(STR.CASEV.CARD_META, { hn: r.hn, b: r.last_bed_no || '—' }) }),
-          U.el('span', { cls: 'pmeta adc' }, [U.el('span', { cls: 'dcpill ' + DcType.cls(r.discharge_type), text: DcType.label(r) }), ' ' + U.fill(STR.CASEV.CARD_DC_D, { d: dm })])]),   // 1.12.0: colour = type
+          U.el('span', { cls: 'pmeta adc' }, [U.el('span', { cls: 'dcpill ' + DcType.cls(r.discharge_type), text: DcType.label(r) }), ' ' + U.fill(STR.CASEV.CARD_DC_D, { d: dm })]),   // 1.12.0: colour = type
+          ArchiveX.cardNote(r)]),                                           // 1.13.1: "ไม่ได้นับ: D/C ก่อน …"
         U.el('span', { cls: 'achev', 'aria-hidden': 'true', text: '›' })])
     ]);
     if (A.confirmDel === r.patient_id) {
@@ -8804,6 +8816,8 @@ var ConsultMsg = {
                · สรุปจำหน่าย = 4 ช่อง: D/C ทั้งหมด · สาย A · สาย B · ย้ายวอร์ด (1.12.0: + เสียชีวิต = 5 ช่อง · ปุ่ม 🖨 = ArchPrint, print.html) — นับตั้งแต่วันที่ Chief เลือก (Meta.stats_from) ถึงวันนี้, from
                  DischargeStats (no names, kept for good: also the patients whose history is gone after 10 days) · R1 เห็น เปลี่ยนไม่ได้
                · ปุ่มวันที่มุมขวา (Chief) → ทางลัด (วันที่ 1 เดือนนี้ · 28 วันก่อน · วันนี้) + ปฏิทิน + บันทึก
+               · 1.13.1: แตะวันที่ = เห็นตัวเลขของวันนั้นทันที (ก่อนบันทึก) · แตะช่อง = รายการด้านล่างเหลือเฉพาะคนที่ช่องนั้นนับ ·
+                 การ์ดที่ D/C ก่อนวันเริ่มนับมีป้าย "ไม่ได้นับ" · server นับตามเหตุผลบนการ์ดในคลัง (Case.gs summary_)
                · สาย ทั้งหมด n / A n / B n + 🔍 (ช่องค้นซ่อนจนแตะ) · Chief: ชื่อวอร์ดในข้อความ consult (Meta.consult_ward)
      CaseView  one discharged patient, read-only, like on the ward: grey D/C banner (date · reason · old bed · สาย · Admit · LOS · ลบเมื่อไร) ·
                head facts · Problem list · U/D · Plan · Long-term · งาน. No buttons (owner: กู้คืน อยู่ที่การ์ดในคลังแล้ว · ไม่เอา PDF / คัดลอก). -->
@@ -8819,6 +8833,12 @@ STR.CASEV = {
   CW_BAD: 'ไม่เกิน 30 ตัว และไม่มีเครื่องหมาย < >',
   OPEN: 'ดูประวัติ', CARD_META: 'HN {hn} · เตียง {b}', CARD_DC: 'D/C {d} · {r}', CARD_DC_D: '· D/C {d}',
   T_DEAD: 'เสียชีวิต', PRINT: 'พิมพ์เคสในคลัง',
+  // 1.13.1 (owner 22/11 "งงว่านับยังไง · เปลี่ยนวันช้า · เสียชีวิต 1 แต่ขึ้น 0")
+  RANGE2: 'คนที่ D/C {a} – วันนี้ ({n} วัน)', HOW: 'แตะช่องเพื่อดูว่านับใครบ้าง · นับรวมคนที่ประวัติถูกลบแล้ว (คลังเก็บ {k} วัน)',
+  PREVIEW: 'ดูตัวเลขก่อน — กด "บันทึก" ให้ทุกคนเห็นช่วงนี้', COUNTING: 'กำลังนับ…',
+  OUTSIDE: 'ในคลังมีอีก {n} คนที่ D/C ก่อน {d} — ไม่ได้นับ (เลื่อนวันเริ่มนับถ้าต้องการรวม)',
+  SHOWING: 'แสดงเฉพาะ: {t} · {n} คน', CLEAR: 'ดูทั้งหมด', GONE_N: 'อีก {n} คนในช่องนี้ ประวัติถูกลบแล้ว (เกิน {k} วัน) จึงไม่มีการ์ด',
+  NOT_COUNTED: 'ไม่ได้นับ: D/C ก่อน {d}',
   TITLE: 'ประวัติเคส', BACK: '‹ คลัง', DC: 'D/C แล้ว', DC_HOME: 'กลับบ้าน', DC_XFER: 'ย้ายไป {d}',
   INFO: 'เตียงเดิม {b} · สาย {t}', ADMIT: 'Admit {d}', LOSV: 'LOS {n} วัน', META: '{sex}{age} · HN {hn}',
   LOAD: 'กำลังเปิดเคส…', LOAD_FAIL: 'เปิดเคสไม่สำเร็จ', GONE: 'เคสนี้ไม่อยู่ในคลังแล้ว (กู้คืนหรือลบไปแล้ว)', RETRY: 'ลองใหม่',
@@ -8827,27 +8847,41 @@ STR.CASEV = {
 };
 
 /* ======================= ArchiveX — summary · สาย filter · Chief prefs (more.html ArchiveView calls these) ======================= */
+/* 1.13.1: one source of numbers — cache[ward|from|stamp] = server answer for that start day. The day asked for is explicit
+   (the saved day, or the day being picked = a preview before บันทึก), so a slow save can no longer leave numbers of the old day
+   under the new date. While a new answer comes, the last numbers stay (dimmed if they are for another day) — no blank box.
+   The boxes are buttons: tap → the list shows exactly the people that box counted (refs from the server · ids only). */
 var ArchiveX = {
-  team: 'all', sum: null, sumKey: '', busy: false, err: false, setting: false, pick: '', box: null,
+  team: 'all', tile: '', cache: {}, shown: null, asked: {}, seq: 0, err: false, setting: false, pick: '', box: null,
 
-  /** 1.12.1: + the ward's stamp — any D/C · แก้เหตุผล · กู้คืน · ลบ changes it → the 5 boxes are counted again (1.10.0–1.12.0 kept the
-      first numbers for the whole session: a death recorded later did not show until the app was opened again) */
-  key: function () { var s = App.state.snap, w = (s && s.ward) || {}; return App.state.wardId + '|' + (w.stats_from || '') + '|' + ((s && s.stamp) || ''); },
-  load: function () {
-    var X = ArchiveX, k = X.key(), ward = App.state.wardId;
-    X.busy = true; X.err = false; X.sumKey = k;
-    Api.call('api_getDcSummary', [Token.get(), ward, ''], { retries: 1 }).then(function (res) {
-      if (ward !== App.state.wardId || X.sumKey !== k) return;
-      X.busy = false;
-      if (res.ok) X.sum = res.data; else X.err = true;
-      X.paint();
+  /** the start day the boxes are for: the day being picked (Chief, setter open) or the saved one ('' = server default) */
+  from: function () { var X = ArchiveX, s = App.state.snap, w = (s && s.ward) || {}; return X.setting && X.pick ? X.pick : (w.stats_from || ''); },
+  key: function (from) { var s = App.state.snap; return App.state.wardId + '|' + from + '|' + ((s && s.stamp) || ''); },
+  /** the answer for what is on screen now, or null while it is being counted */
+  cur: function () { return ArchiveX.cache[ArchiveX.key(ArchiveX.from())] || null; },
+
+  load: function (from) {
+    var X = ArchiveX, k = X.key(from), ward = App.state.wardId, my = ++X.seq;
+    if (X.asked[k]) return;
+    X.asked[k] = true; X.err = false;
+    Api.call('api_getDcSummary', [Token.get(), ward, from], { retries: 1 }).then(function (res) {
+      delete X.asked[k];
+      if (ward !== App.state.wardId) return;
+      if (res.ok) { X.cache[k] = res.data; X.trim(); }
+      else if (my === X.seq) X.err = true;
+      if (X.key(X.from()) === k || !res.ok) ArchiveView.paint();
     });
+  },
+  /** keep the cache small: this ward, the newest stamp only */
+  trim: function () {
+    var X = ArchiveX, s = App.state.snap, tail = '|' + ((s && s.stamp) || ''), pre = App.state.wardId + '|';
+    Object.keys(X.cache).forEach(function (k) { if (k.indexOf(pre) !== 0 || k.slice(-tail.length) !== tail) delete X.cache[k]; });
   },
 
   /** The block above the list (built once per visit by ArchiveView.render). */
   build: function () {
     var X = ArchiveX, C = STR.CASEV;
-    X.setting = false;
+    X.setting = false; X.tile = '';
     var search = U.el('button', { type: 'button', cls: 'asearch', id: 'arch-find', 'aria-label': C.SEARCH, title: C.SEARCH, onclick: function () {
       var q = U.$('arch-q'); if (!q) return;
       if (q.hidden) { q.hidden = false; q.focus(); } else if (!q.value) q.hidden = true; else q.focus();
@@ -8855,73 +8889,127 @@ var ArchiveX = {
     var print = U.el('button', { type: 'button', cls: 'asearch', id: 'arch-print', 'aria-label': C.PRINT, title: C.PRINT, onclick: function () { ArchPrint.open(); } },   // 1.12.0
       [U.icon(['M7 9V4h10v5', 'M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2', 'M7 14h10v6H7z'], 'aico')]);
     X.box = U.el('div', { cls: 'arch-x' }, [U.el('section', { cls: 'card asum', id: 'arch-sum', 'aria-label': C.SUM }),
-      U.el('div', { cls: 'afilter' }, [U.el('div', { cls: 'seg afseg', id: 'arch-team', role: 'group', 'aria-label': C.FILTER }), search, print])]);
-    if (X.sumKey !== X.key() || !X.sum) X.load();
+      U.el('div', { cls: 'afilter' }, [U.el('div', { cls: 'seg afseg', id: 'arch-team', role: 'group', 'aria-label': C.FILTER }), search, print]),
+      U.el('div', { id: 'arch-showing' })]);
     X.paint();
     return X.box;
   },
 
-  /** list rows → only this สาย */
-  filter: function (rows) { var t = ArchiveX.team; return t === 'all' ? rows : rows.filter(function (r) { return String(r.team).toUpperCase() === t; }); },
+  /** the refs a box counted: 'all' | 'A' | 'B' | a discharge type */
+  refsOf: function (d, k) {
+    var out = {};
+    ((d && d.rows) || []).forEach(function (r) {
+      var tm = String(r.team || '').toUpperCase();
+      if (k === 'all' || k === r.type || k === tm) out[r.ref || ('?' + Math.random())] = true;
+    });
+    return out;
+  },
+
+  /** list rows → a tapped box (exactly who it counted) or else this สาย */
+  filter: function (rows) {
+    var X = ArchiveX, d = X.cur() || X.shown, t = X.team;
+    if (X.tile && d) { var refs = X.refsOf(d, X.tile); return rows.filter(function (r) { return refs[r.patient_id]; }); }
+    return t === 'all' ? rows : rows.filter(function (r) { return String(r.team).toUpperCase() === t; });
+  },
+
+  /** a card that the boxes do not count (D/C before the start day) — says so on the card */
+  cardNote: function (r) {
+    var X = ArchiveX, d = X.cur(); if (!d || !d.rows) return null;
+    var day = String(r.discharged_at || '').slice(0, 10);
+    return day && day < d.from ? U.el('span', { cls: 'anot', text: U.fill(STR.CASEV.NOT_COUNTED, { d: X.day(d.from) }) }) : null;
+  },
+
+  pickTile: function (k) { var X = ArchiveX; X.tile = X.tile === k ? '' : k; if (X.tile) X.team = 'all'; ArchiveView.paint(); },
 
   paint: function () {
     var X = ArchiveX, C = STR.CASEV, box = U.$('arch-sum'); if (!box) return;
-    if (X.sumKey !== X.key()) X.load();                                 // 1.12.1: the ward changed since these numbers → count again (old numbers stay until then)
+    var from = X.from(), d = X.cur(), s = App.state.snap, w = (s && s.ward) || {}, owner = App.role() === 'owner', rows = ArchiveView.rows || [];
+    if (!d && !X.err) X.load(from);
+    if (d) X.shown = d;
+    var show = d || X.shown, stale = !d && !(show && (!from || show.from === from));   // the last numbers stay while the new ones come (dim = another day)
     // สาย: counts from the archive list
-    var seg = U.$('arch-team'), rows = ArchiveView.rows || [];
+    var seg = U.$('arch-team');
     if (seg) {
       seg.textContent = '';
       [['all', C.ALL], ['A', U.fill(C.TEAM, { t: 'A' })], ['B', U.fill(C.TEAM, { t: 'B' })]].forEach(function (x) {
-        var n = x[0] === 'all' ? rows.length : rows.filter(function (r) { return String(r.team).toUpperCase() === x[0]; }).length, on = X.team === x[0];
+        var n = x[0] === 'all' ? rows.length : rows.filter(function (r) { return String(r.team).toUpperCase() === x[0]; }).length, on = !X.tile && X.team === x[0];
         seg.appendChild(U.el('button', { type: 'button', cls: on ? 'on' : '', 'data-v': x[0], 'aria-pressed': String(on), text: x[1] + (ArchiveView.rows ? ' ' + n : ''),
-          onclick: function () { X.team = x[0]; ArchiveView.paint(); } }));
+          onclick: function () { X.team = x[0]; X.tile = ''; ArchiveView.paint(); } }));
       });
     }
-    if (X.sumKey !== X.key() && !X.busy) X.load();
     box.textContent = '';
-    var s = App.state.snap, w = (s && s.ward) || {}, owner = App.role() === 'owner', d = X.sum;
-    var from = (d && d.from) || w.stats_from || '';
+    var shownFrom = (d && d.from) || from || (show && show.from) || '';
     var head = U.el('div', { cls: 'asum-h' }, [U.el('div', { cls: 'asum-t' }, [U.el('b', { text: C.SUM }),
-      U.el('span', { text: d ? U.fill(w.stats_from ? C.RANGE : C.RANGE_DEF, { n: X.days(d.from, d.to) }) : '' })])]);
-    var fromTxt = from ? U.fill(C.FROM, { d: X.day(from) }) : '';
+      U.el('span', { id: 'asum-range', text: d ? U.fill(C.RANGE2, { a: X.dayShort(d.from), n: X.days(d.from, d.to) }) : C.COUNTING })])]);
+    var fromTxt = (X.setting ? w.stats_from || shownFrom : shownFrom) ? U.fill(C.FROM, { d: X.day(X.setting ? w.stats_from || shownFrom : shownFrom) }) : '';
     head.appendChild(owner
-      ? U.el('button', { type: 'button', cls: 'adate', id: 'asum-set', 'aria-expanded': String(X.setting), onclick: function () { X.setting = !X.setting; X.pick = w.stats_from || from; X.paint(); } },
+      ? U.el('button', { type: 'button', cls: 'adate', id: 'asum-set', 'aria-expanded': String(X.setting), onclick: function () { X.setting = !X.setting; X.pick = w.stats_from || shownFrom; X.paint(); } },
           [U.icon(['M5 6h14v14H5z', 'M5 10h14', 'M9 4v4', 'M15 4v4'], 'aico'), fromTxt])
       : U.el('span', { cls: 'adate ro' }, [U.icon(['M5 6h14v14H5z', 'M5 10h14', 'M9 4v4', 'M15 4v4'], 'aico'), fromTxt]));
     box.appendChild(head);
     if (owner && X.setting) box.appendChild(X.setter());
-    if (X.err) return box.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: C.FAIL, onclick: function () { X.load(); X.paint(); } }));
-    if (!d) return box.appendChild(U.el('p', { cls: 'note', text: C.LOADING }));
-    var tile = function (n, label, cls) { return U.el('div', { cls: 'atile ' + cls }, [U.el('b', { text: String(n) }), U.el('span', { text: label })]); };
-    var by = d.by || { transfer_ward: d.transfer, death: 0 };          // 1.12.0: 5 ช่อง — ทั้งหมด (รวมเสียชีวิต) · A · B · ย้ายวอร์ด · เสียชีวิต
-    box.appendChild(U.el('div', { cls: 'atiles a5', id: 'asum-tiles' }, [tile(d.total, C.T_ALL, 't0'), tile(d.team.A, C.T_A, 'tA'), tile(d.team.B, C.T_B, 'tB'),
-      tile(by.transfer_ward || 0, C.T_X, 't0 tX'), tile(by.death || 0, C.T_DEAD, 't0 tD')]));
+    if (X.err && !show) { X.showing(); return box.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: C.FAIL, onclick: function () { X.err = false; X.paint(); } })); }
+    if (!show) return box.appendChild(U.el('p', { cls: 'note', text: C.LOADING }));
+    var tile = function (k, n, label, cls) {
+      var on = X.tile === k;
+      return U.el('button', { type: 'button', cls: 'atile ' + cls + (on ? ' on' : ''), 'data-k': k, 'aria-pressed': String(on), disabled: stale ? 'disabled' : null,
+        onclick: function () { X.pickTile(k); } }, [U.el('b', { text: String(n) }), U.el('span', { text: label })]);
+    };
+    var by = show.by || { transfer_ward: show.transfer, death: 0 };     // 1.12.0: 5 ช่อง — ทั้งหมด (รวมเสียชีวิต) · A · B · ย้ายวอร์ด · เสียชีวิต
+    box.appendChild(U.el('div', { cls: 'atiles a5' + (stale ? ' stale' : ''), id: 'asum-tiles', 'aria-busy': String(stale) }, [
+      tile('all', show.total, C.T_ALL, 't0'), tile('A', show.team.A, C.T_A, 'tA'), tile('B', show.team.B, C.T_B, 'tB'),
+      tile('transfer_ward', by.transfer_ward || 0, C.T_X, 't0 tX'), tile('death', by.death || 0, C.T_DEAD, 't0 tD')]));
+    if (X.err) box.appendChild(U.el('button', { type: 'button', cls: 'loadbar', text: C.FAIL, onclick: function () { X.err = false; X.paint(); } }));
+    if (owner && X.setting && X.pick && X.pick !== (w.stats_from || '')) box.appendChild(U.el('p', { cls: 'note apv', text: C.PREVIEW }));
+    else if (d) {
+      var outside = rows.filter(function (r) { var k = String(r.discharged_at || '').slice(0, 10); return k && k < d.from; }).length;
+      box.appendChild(U.el('p', { cls: 'note ahow', text: U.fill(C.HOW, { k: w.keep_days || 10 }) }));
+      if (outside) box.appendChild(U.el('p', { cls: 'note ahow', id: 'asum-out', text: U.fill(C.OUTSIDE, { n: outside, d: X.day(d.from) }) }));
+    }
+    X.showing();
   },
 
-  /** Chief: shortcuts + calendar + บันทึก */
+  /** the line above the list when a box is tapped: what it shows · ดูทั้งหมด · people counted whose card is gone */
+  showing: function () {
+    var X = ArchiveX, C = STR.CASEV, el = U.$('arch-showing'), d = X.cur() || X.shown; if (!el) return;
+    el.textContent = '';
+    if (!X.tile || !d) return;
+    var refs = X.refsOf(d, X.tile), ids = {}, n = Object.keys(refs).length;
+    (ArchiveView.rows || []).forEach(function (r) { ids[r.patient_id] = true; });
+    var gone = Object.keys(refs).filter(function (k) { return !ids[k]; }).length;
+    var label = { all: C.T_ALL, A: C.T_A, B: C.T_B, transfer_ward: C.T_X, death: C.T_DEAD }[X.tile];
+    el.appendChild(U.el('div', { cls: 'ashowing' }, [U.el('span', { text: U.fill(C.SHOWING, { t: label, n: n }) }),
+      U.el('button', { type: 'button', cls: 'btn sec sm', id: 'arch-clear', text: C.CLEAR, onclick: function () { X.tile = ''; ArchiveView.paint(); } })]));
+    if (gone) el.appendChild(U.el('p', { cls: 'note ahow', text: U.fill(C.GONE_N, { n: gone, k: ((App.state.snap || {}).ward || {}).keep_days || 10 }) }));
+  },
+
+  /** Chief: shortcuts + calendar + บันทึก — every pick shows its numbers at once (a preview), บันทึก makes it the ward's */
   setter: function () {
     var X = ArchiveX, C = STR.CASEV, today = X.today(), t = new Date();
     var month = today.slice(0, 8) + '01', ago = X.addDays(today, -27);
     var mName = t.toLocaleDateString('th-TH', { month: 'short' });
     var inp = U.el('input', { cls: 'in', type: 'date', id: 'asum-date', max: today, 'aria-label': C.SET_L });
     inp.value = X.pick || '';
-    inp.addEventListener('change', function () { X.pick = inp.value; X.paint(); });
+    inp.addEventListener('change', function () { if (/^\d{4}-\d{2}-\d{2}$/.test(inp.value)) { X.pick = inp.value > today ? today : inp.value; X.tile = ''; X.paint(); } });
     var chips = U.el('div', { cls: 'apresets' }, [[month, U.fill(C.P_MONTH, { m: mName })], [ago, C.P_28], [today, C.P_TODAY]].map(function (p) {
       var on = X.pick === p[0];
-      return U.el('button', { type: 'button', cls: 'apreset' + (on ? ' on' : ''), 'aria-pressed': String(on), text: p[1], onclick: function () { X.pick = p[0]; X.paint(); } });
+      return U.el('button', { type: 'button', cls: 'apreset' + (on ? ' on' : ''), 'aria-pressed': String(on), text: p[1], onclick: function () { X.pick = p[0]; X.tile = ''; X.paint(); } });
     }));
     return U.el('div', { cls: 'aset' }, [U.el('label', { cls: 'cm-lab', 'for': 'asum-date', text: C.SET_L }), chips, inp,
       U.el('p', { cls: 'cm-hint', text: C.SET_NOTE }),
       U.el('button', { type: 'button', cls: 'btn', id: 'asum-save', text: C.SET_SAVE, onclick: function () { X.setFrom(inp.value); } })]);
   },
 
+  /** บันทึก: the numbers of the picked day are already on screen — keep them, save in the background */
   setFrom: function (day) {
     var X = ArchiveX;
     if (day && !/^\d{4}-\d{2}-\d{2}$/.test(day)) return;
     if (day > X.today()) day = X.today();
-    X.setting = false; X.sum = null; X.paint();
-    Ops.run('api_setArchivePrefs', { stats_from: day }, { apply: function (snap) { snap.ward = snap.ward || {}; snap.ward.stats_from = day; } })
-      .then(function () { X.sumKey = ''; X.load(); });
+    var had = X.cache[X.key(day)];
+    X.setting = false;
+    Ops.run('api_setArchivePrefs', { stats_from: day }, { apply: function (snap) { snap.ward = snap.ward || {}; snap.ward.stats_from = day; } });
+    if (had && !X.cache[X.key(day)]) X.shown = had;                     // the stamp moved: same numbers until re-counted
+    X.paint();
   },
 
   /** Chief: the ward name in the consult message (below the list). */
@@ -8947,6 +9035,7 @@ var ArchiveX = {
   today: function () { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); },
   addDays: function (k, n) { var d = new Date(Date.parse(k + 'T12:00:00') + n * 86400000); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); },
   day: function (k) { return k ? U.dateTh(k + 'T12:00:00') : ''; },
+  dayShort: function (k) { return k ? U.dateTh(k + 'T12:00:00').replace(/\s*\d+$/, '') : ''; },
   days: function (a, b) { return Math.round((Date.parse(b + 'T12:00:00') - Date.parse(a + 'T12:00:00')) / 86400000) + 1; }
 };
 
