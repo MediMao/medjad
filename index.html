@@ -2120,6 +2120,16 @@ button.atile:disabled { cursor: default; }
 .apn .apb { flex: none; min-width: 28px; text-align: center; border: 1.2px dashed var(--line2); border-radius: 6px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .apn .apnm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cwset { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }   /* 1.13.2: inside ตั้งค่าวอร์ด */
+/* 1.13.3 (feedback 23/11): HN = barcode + large digits · above the watermark (z 6) on white so the scanner reads clean bars */
+#printview .pv-hn { position: relative; z-index: 7; align-self: flex-start; background: #fff; display: flex; flex-direction: column; align-items: center; margin: .3mm 0 .2mm -2mm; }
+#printview .pv-bcs { display: block; }
+#printview .pv-hnt { font-size: 9pt; font-weight: 800; color: var(--pv-ink); letter-spacing: .04em; line-height: 1.1; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#printview .pv-strip .pv-hn { flex: none; margin: 0 0 0 -1mm; }
+#printview .pv-strip .pv-hnt { font-size: 8.4pt; }
+/* คนละหน้า: the person's row fills the page → the columns (Notes) become room to write on */
+#printview .pv-one .pv-fbody > :last-child { flex: 1 1 auto; }
+#printview .pv-one .pv-fbody > .pv-prow:last-child { display: flex; flex-direction: column; }
+#printview .pv-one .pv-fbody > .pv-prow:last-child > .pv-frow { flex: 1 1 auto; }
 </style>
 
 </head>
@@ -2193,7 +2203,7 @@ button.atile:disabled { cursor: default; }
   var q = {}; (location.search || '').replace(/^\?/, '').split('&').forEach(function (kv) { if (!kv) return; var i = kv.indexOf('=');
     try { q[decodeURIComponent(i < 0 ? kv : kv.slice(0, i))] = i < 0 ? '' : decodeURIComponent(kv.slice(i + 1).replace(/\+/g, ' ')); } catch (e) { /* bad escape */ } });
   var exec = String(window.MEDJAD_EXEC || '');
-  return { app_version: "1.13.2", pages: true,
+  return { app_version: "1.13.3", pages: true,
     exec_url: /^https:\/\/script\.google\.com\/[^\s"'<>]+\/exec$/.test(exec) || /^http:\/\/127\.0\.0\.1:\d+\//.test(exec) ? exec : '',
     public_url: location.origin + location.pathname,
     k: /^[0-9a-f]{64}$/.test(q.k || '') ? q.k : '', join: /^[0-9a-f]{12}$/.test(q.j || '') ? q.j : '',
@@ -7263,8 +7273,46 @@ STR.PRINT = {
   FN_FULL: 'ฉบับเต็ม', FN_BRIEF: 'แบบย่อ', FN_TEAM: 'สาย {t}',   // 1.8.3: PDF file name
   // 1.12.0 (45 · r27): archive PDF
   ARCH_T: 'เคสจำหน่าย {r}', LOS: 'LOS {n}', DC_ON_DAY: '{r} · D/C {d}', FN_ARCH: 'เคสจำหน่าย',
-  MAX_PER_PAGE: 8, MIN_ROOM: 22, MIN_ROOM_B: 14
+  MAX_PER_PAGE: 8, MIN_ROOM: 22, MIN_ROOM_B: 14,
+  // 1.13.3 (feedback 23/11): จัดหน้า ต่อกัน / คนละหน้า
+  PER: 'จัดหน้า', PER_FLOW: 'ต่อกัน', PER_ONE: 'คนละหน้า'
 };
+
+/* ======================= 1.13.3 (feedback 23/11): Barcode — Code 128 of the HN, drawn as SVG (no library) =======================
+   The ward's scanner = a keyboard: scan → the 8 digits are typed where the cursor is (HIS HN box). Digits only, even length
+   (HN = 8 digits) → set C (2 digits per symbol, short); anything else → set B. Black bars on white, quiet zone 10 modules each side. */
+var Barcode = {
+  P: ['212222','222122','222221','121223','121322','131222','122213','122312','132212','221213','221312','231212','112232','122132','122231',
+      '113222','123122','123221','223211','221132','221231','213212','223112','312131','311222','321122','321221','312212','322112','322211',
+      '212123','212321','232121','111323','131123','131321','112313','132113','132311','211313','231113','231311','112133','112331','132131',
+      '113123','113321','133121','313121','211331','231131','213113','213311','213131','311123','311321','331121','312113','312311','332111',
+      '314111','221411','431111','111224','111422','121124','121421','141122','141221','112214','112412','122114','122411','142112','142211',
+      '241211','221114','413111','241112','134111','111242','121142','121241','114212','124112','124211','411212','421112','421211','212141',
+      '214121','412121','111143','111341','131141','114113','114311','411113','411311','113141','114131','311141','411131','211412','211214',
+      '211232','2331112'],
+  /** text → symbol values (start · data · checksum · stop) */
+  codes: function (txt) {
+    var s = String(txt), out = [], i;
+    if (/^(\d\d)+$/.test(s)) { out.push(105); for (i = 0; i < s.length; i += 2) out.push(+s.substr(i, 2)); }
+    else { out.push(104); for (i = 0; i < s.length; i++) { var c = s.charCodeAt(i); if (c < 32 || c > 126) return null; out.push(c - 32); } }
+    var sum = out[0]; for (i = 1; i < out.length; i++) sum += out[i] * i;
+    out.push(sum % 103); out.push(106);
+    return out;
+  },
+  /** → <svg> sized in mm (module mm wide, h mm tall) · null if it can't be encoded */
+  svg: function (txt, mod, h) {
+    var c = txt ? Barcode.codes(txt) : null; if (!c) return null;
+    var q = 10, x = q, d = '';
+    c.forEach(function (v) { var w = Barcode.P[v]; for (var k = 0; k < w.length; k++) { var n = +w.charAt(k); if (k % 2 === 0) d += 'M' + x + ' 0h' + n + 'v1h-' + n + 'z'; x += n; } });
+    var W = x + q, NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg'), pa = document.createElementNS(NS, 'path');
+    sv.setAttribute('viewBox', '0 0 ' + W + ' 1'); sv.setAttribute('preserveAspectRatio', 'none'); sv.setAttribute('shape-rendering', 'crispEdges');
+    sv.setAttribute('class', 'pv-bcs'); sv.setAttribute('aria-hidden', 'true');
+    sv.style.width = (W * mod) + 'mm'; sv.style.height = h + 'mm';
+    pa.setAttribute('d', d); pa.setAttribute('fill', '#000'); sv.appendChild(pa);
+    return sv;
+  }
+};
+
 
 /* ======================= 1.12.0 (45 · r27): PrintSource — what the paginator prints, so it is not tied to App.state.snap =======================
    {list, ix (consult chips), tasks, title, team, archive} · ward(scope) = the bed map as before · archive(cases, meta) = discharged cases
@@ -7290,7 +7338,7 @@ var PrintSheet = {
   // r18 (owner 20:19 "กล่องนี้รกมาก"): 2 cards for แบบ · 3 one-line rows (ขอบเขต · แนว · Problem ที่จบแล้ว เทา/ซ่อน) ·
   // หัวกระดาษ = one row with what is set + a clear ตั้งค่า button · one button "ดูตัวอย่าง · n คน". No paragraphs.
   st: { kind: Store.get('printKind') === 'hand' ? 'hand' : 'full', scope: 'all', o: Store.get('printO') === 'port' ? 'port' : 'land',
-        solved: Store.get('printSolved') === 'hide' ? 'hide' : 'gray' },
+        solved: Store.get('printSolved') === 'hide' ? 'hide' : 'gray', per: Store.get('printPer') === 'one' ? 'one' : 'flow' },
   ICON: {
     full: '<rect x="3" y="4" width="34" height="26" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 9.5h34" stroke="currentColor" stroke-width="3"/><path d="M11 9.5v20.5M21 9.5v20.5M29 9.5v20.5M3 20h34" stroke="currentColor" stroke-width="1"/><path d="M13 13h6M13 15.5h5M13 18h6M23 13h4M23 15.5h3M13 23h6M13 25.5h4M23 23h4" stroke="currentColor" stroke-width="1" opacity=".55"/>',
     hand: '<rect x="3" y="4" width="34" height="26" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h34" stroke="currentColor" stroke-width="1.6"/><path d="M3 14.3h34M3 19.6h34M3 24.9h34" stroke="currentColor" stroke-width="1"/><path d="M7 11.7h8M18 11.7h12M7 17h7M18 17h10M7 22.3h8M18 22.3h11M7 27.6h6M18 27.6h9" stroke="currentColor" stroke-width="1" opacity=".55"/>'
@@ -7314,27 +7362,28 @@ var PrintSheet = {
     var who = seg([['all', R.ALL], ['A', U.fill(R.TEAM, { t: 'A' })], ['B', U.fill(R.TEAM, { t: 'B' })]], 'scope');
     var ori = seg([['land', R.LAND], ['port', R.PORT]], 'o');
     var sol = seg([['gray', R.SOLVED_GRAY], ['hide', R.SOLVED_HIDE]], 'solved');
+    var per = seg([['flow', R.PER_FLOW], ['one', R.PER_ONE]], 'per');   // 1.13.3
     var row = function (label, ctl) { return U.el('div', { cls: 'porow' }, [U.el('span', { cls: 'plbl', text: label }), ctl]); };
     var w = s.ward || {}, sum = [w.print_left, w.print_right].map(function (x) { return String(x || '').split('\n')[0].replace(/[#*_=]+\s?/g, '').trim(); }).filter(Boolean).join(' · ');
     var hdr = U.el('div', { cls: 'porow phdr' }, [U.el('span', { cls: 'plbl', text: R.HDR }),
       U.el('span', { cls: 'phsum' + (sum ? '' : ' none'), text: sum || R.HDR_NONE }),
       U.el('button', { type: 'button', cls: 'btn ghost phbtn', id: 'pv-hdr', text: R.HEADER_EDIT, onclick: function () { Sheet.close(); WardInfo.open(true); } })]);
     var paint = function () {
-      [[who, st.scope], [ori, st.o], [sol, st.solved], [kinds, st.kind]].forEach(function (x) {
+      [[who, st.scope], [ori, st.o], [per, st.per], [sol, st.solved], [kinds, st.kind]].forEach(function (x) {
         Array.prototype.forEach.call(x[0].querySelectorAll('button'), function (b) { var on = b.getAttribute('data-v') === x[1]; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }); });
       var n = PrintView.patients(App.state.snap, st.scope).length;
       go.disabled = !n; go.textContent = n ? U.fill(R.PREVIEW_N, { n: n }) : R.NONE;
     };
     go.addEventListener('click', function () {
-      Store.set('printKind', st.kind); Store.set('printO', st.o); Store.set('printSolved', st.solved);
+      Store.set('printKind', st.kind); Store.set('printO', st.o); Store.set('printSolved', st.solved); Store.set('printPer', st.per);
       Sheet.close();
       U.fontsReady(function () {                                        // 1.8.3: measure pages with Sarabun loaded (or the device font if it can't)
-        if (st.kind === 'full') PrintFull.show(st.scope, st.o, { hideSolved: st.solved === 'hide', memo: true });
-        else PrintView.show(st.scope, st.o, { hideSolved: st.solved === 'hide' });
+        if (st.kind === 'full') PrintFull.show(st.scope, st.o, { hideSolved: st.solved === 'hide', memo: true, onePer: st.per === 'one' });
+        else PrintView.show(st.scope, st.o, { hideSolved: st.solved === 'hide', onePer: st.per === 'one' });
       });
     });
     paint();
-    Sheet.open(R.TITLE, [kinds, U.el('div', { cls: 'popts' }, [row(R.WHO, who), row(R.ORIENT, ori), row(R.SOLVED, sol), hdr]), go], { kind: 'print', onRefresh: paint });
+    Sheet.open(R.TITLE, [kinds, U.el('div', { cls: 'popts' }, [row(R.WHO, who), row(R.ORIENT, ori), row(R.PER, per), row(R.SOLVED, sol), hdr]), go], { kind: 'print', onRefresh: paint });
   }
 };
 
@@ -7349,7 +7398,8 @@ var PrintView = {
   scopeName: function (snap, scope) { var R = STR.PRINT; return scope === 'all' ? R.WARD_ALL : U.fill(R.SCOPE_TEAM, { t: scope }); },
   /** Text → element safely (all user text goes through textContent). */
   t: function (tag, cls, text) { return U.el(tag, { cls: cls, text: text == null ? '' : String(text) }); },
-  cons: function (p, ix) { return (ix.cons[p.patient_id] || []).map(function (k) { return Svc.chip(ix.snap, k, 'pv-tag'); }); },   // 1.8.1: Svc (core.html)
+  // 1.13.3 (feedback 23/11): paper has room → the unit's name (Cardio · Neuro · Nephro …), not the chip label (Card · Neu · Neph)
+  cons: function (p, ix) { return (ix.cons[p.patient_id] || []).map(function (k) { var s = Svc.get(ix.snap, k); return Svc.tint(U.el('span', { cls: 'pv-tag', text: s.name || s.short_label }), s); }); },
   /** D-P6 แบบย่อ: first word + first letter of the last word + "." (skip เ แ โ ใ ไ · English upper case) · one word = as is. */
   shortName: function (name) {
     var w = String(name || '').trim().split(/\s+/);
@@ -7379,22 +7429,28 @@ var PrintView = {
   tags: function (p, ix) { var c = PrintView.cons(p, ix); return c.length ? U.el('div', { cls: 'pv-tags' }, c) : null; },
   metaBits: function (p) {
     var R = STR.PRINT;
-    return { hn: U.fill(R.HN, { hn: p.hn || '' }) + (p.coverage ? ' · ' + U.fill(R.COV, { c: p.coverage }) : ''),
+    return { cov: p.coverage ? U.fill(R.COV, { c: p.coverage }) : '',
              adm: p.admit_date ? U.fill(R.ADMIT, { d: Dc.dm(p.admit_date) }) : '' };
+  },
+  /** 1.13.3: HN block = barcode (scan → HN typed into the HIS) + "HN 12345678" large under it (feedback: HN ตัวใหญ่ · บาร์โค้ด). */
+  hnBox: function (p) {
+    var hn = String(p.hn || '').trim(); if (!hn) return null;
+    var port = PrintView.o === 'port', bc = Barcode.svg(hn, port ? .28 : .3, port ? 4.6 : 5.6);
+    return U.el('div', { cls: 'pv-hn' }, [bc, PrintView.t('div', 'pv-hnt', U.fill(STR.PRINT.HN, { hn: hn }))]);
   },
   /** D-P3 Patient cell (แนวนอน): [n] name / F58 · D4 · HN · สิทธิ์ · Admit (own line) · ⚠ ALLERGY · ACP · consult chips (wrap). */
   who: function (p, ix) {
     var t = PrintView.t, m = PrintView.metaBits(p);
     return U.el('div', { cls: 'pv-c1 pv-keep' }, [
       U.el('div', { cls: 'pv-who' }, [PrintView.no(p), U.el('div', { cls: 'pv-nmw' }, [t('div', 'pv-nm', PrintView.name(p)), PrintView.sd(p)])]),
-      PrintView.dcb(p), t('div', 'pv-meta', m.hn), m.adm ? t('div', 'pv-meta', m.adm) : null, PrintView.alg(p), PrintView.acp(p), PrintView.base(p), PrintView.tags(p, ix)]);
+      PrintView.dcb(p), PrintView.hnBox(p), m.cov || m.adm ? t('div', 'pv-meta', [m.cov, m.adm].filter(Boolean).join(' · ')) : null, PrintView.alg(p), PrintView.acp(p), PrintView.base(p), PrintView.tags(p, ix)]);
   },
   /** D-P7 แนวตั้ง: one strip, 3 zones — [n] name F58 · D4 / HN · สิทธิ์ · Admit | ⚠ ALLERGY / ACP | consult chips (right). */
   strip: function (p, ix) {
     var t = PrintView.t, m = PrintView.metaBits(p);
     return U.el('div', { cls: 'pv-strip' }, [
       U.el('div', { cls: 'pv-sl' }, [PrintView.no(p), U.el('div', { cls: 'pv-nmw' }, [U.el('div', { cls: 'pv-nml' }, [t('span', 'pv-nm', PrintView.name(p)), PrintView.sd(p)]),
-        t('div', 'pv-meta', [m.hn, m.adm].filter(Boolean).join(' · ')), PrintView.dcb(p)])]),
+        m.cov || m.adm ? t('div', 'pv-meta', [m.cov, m.adm].filter(Boolean).join(' · ')) : null, PrintView.dcb(p)]), PrintView.hnBox(p)]),
       U.el('div', { cls: 'pv-sm' }, [PrintView.alg(p), PrintView.acp(p), PrintView.base(p)]),
       U.el('div', { cls: 'pv-sr' }, [PrintView.tags(p, ix)])]);
   },
@@ -7598,7 +7654,7 @@ var ArchPrint = {
     var A = STR.APRINT, today = ArchiveX.today(), rows0 = ArchiveView.rows || [], oldest = ArchPrint.oldest(rows0);
     if (!ArchiveView.rows) return Toast.show(A.WAIT_LIST);
     var st = ArchPrint.st = ArchPrint.st || { range: 'today', from: today, to: today, type: 'all', team: ArchiveX.team || 'all',
-      kind: Store.get('aprintKind') === 'hand' ? 'hand' : 'full', o: Store.get('printO') === 'port' ? 'port' : 'land' };
+      kind: Store.get('aprintKind') === 'hand' ? 'hand' : 'full', o: Store.get('printO') === 'port' ? 'port' : 'land', per: Store.get('printPer') === 'one' ? 'one' : 'flow' };
     if (st.range === 'today') { st.from = st.to = today; } else if (st.range === 'all') { st.from = oldest; st.to = today; }
     if (st.from < oldest) st.from = oldest; if (st.to > today) st.to = today;
     var go = U.el('button', { type: 'button', cls: 'btn', id: 'ap-go' }), names = U.el('div', { cls: 'apnames', id: 'ap-names' }), err = U.el('p', { cls: 'ferr', role: 'alert', hidden: 'hidden' });
@@ -7623,9 +7679,10 @@ var ArchPrint = {
     var tm = seg('team', [['all', A.ALL], ['A', 'A'], ['B', 'B']], 'ap-team');
     var knd = seg('kind', [['hand', A.BRIEF], ['full', A.FULL]], 'ap-kind');
     var ori = seg('o', [['land', A.LAND], ['port', A.PORT]], 'ap-o');
+    var per = seg('per', [['flow', STR.PRINT.PER_FLOW], ['one', STR.PRINT.PER_ONE]], 'ap-per');   // 1.13.3
     var row = function (label, ctl) { return U.el('div', { cls: 'porow' }, [U.el('span', { cls: 'plbl', text: label }), ctl]); };
     var paint = function () {
-      [[rng, st.range], [typ, st.type], [tm, st.team], [knd, st.kind], [ori, st.o]].forEach(function (x) {
+      [[rng, st.range], [typ, st.type], [tm, st.team], [knd, st.kind], [ori, st.o], [per, st.per]].forEach(function (x) {
         Array.prototype.forEach.call(x[0].querySelectorAll('button'), function (b) { var on = b.getAttribute('data-v') === x[1]; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
       });
       fromI.value = st.from; toI.value = st.to;
@@ -7644,7 +7701,7 @@ var ArchPrint = {
       var ward = App.state.wardId, meta = { from: st.from, to: st.to, team: st.team }, input = { from: st.from, to: st.to };
       if (st.type !== 'all') input.type = st.type;
       if (st.team !== 'all') input.team = st.team;
-      Store.set('aprintKind', st.kind); Store.set('printO', st.o);
+      Store.set('aprintKind', st.kind); Store.set('printO', st.o); Store.set('printPer', st.per);
       go.disabled = true; go.textContent = A.LOADING;
       Api.call('api_getArchivedCases', [Token.get(), ward, input], { retries: 1, timeout: 40000 }).then(function (res) {
         if (ward !== App.state.wardId || Sheet.kind !== 'aprint') return;
@@ -7652,13 +7709,13 @@ var ArchPrint = {
         if (!res.data.cases.length) { paint(); err.textContent = A.NONE; err.hidden = false; return; }
         Sheet.close();
         U.fontsReady(function () {
-          PrintFull.show(meta.team, st.o, { brief: st.kind === 'hand', hideSolved: PrintSheet.st.solved === 'hide', memo: st.kind === 'full', src: PrintSource.archive(res.data.cases, meta) });
+          PrintFull.show(meta.team, st.o, { brief: st.kind === 'hand', hideSolved: PrintSheet.st.solved === 'hide', memo: st.kind === 'full', onePer: st.per === 'one', src: PrintSource.archive(res.data.cases, meta) });
         });
       });
     });
     paint();
     Sheet.open(A.TITLE, [U.el('div', { cls: 'popts apopts' }, [row(A.RANGE, rng), U.el('div', { cls: 'porow apdates' }, [U.el('span', { cls: 'plbl', text: A.FROM }), fromI, U.el('span', { cls: 'plbl', text: A.TO }), toI]),
-      row(A.TYPE, typ), row(A.TEAM, tm), row(A.KIND, knd), row(A.ORIENT, ori)]), names, err, go], { kind: 'aprint', closeText: STR.SHEET.CANCEL, onRefresh: paint });
+      row(A.TYPE, typ), row(A.TEAM, tm), row(A.KIND, knd), row(A.ORIENT, ori), row(STR.PRINT.PER, per)]), names, err, go], { kind: 'aprint', closeText: STR.SHEET.CANCEL, onRefresh: paint });
   }
 };
 
@@ -7724,6 +7781,7 @@ var PrintFull = {
     var hgt = function (el) { pb.appendChild(el); var h = el.getBoundingClientRect().height; pb.removeChild(el); return h; };
     newPage();
     list.forEach(function (p) {
+      if (opt.onePer && !fresh()) newPage();                            // 1.13.3: คนละหน้า — each person starts a new page
       var B = PrintFull.build(p, ix, src, opt);
       pb.appendChild(B.row);
       var rowH = B.row.getBoundingClientRect().height, gridH = B.grid.getBoundingClientRect().height;
@@ -7798,7 +7856,7 @@ var PrintFull = {
     });
     probe.remove();
     if (fresh() && out.length > 1) { pg.parentNode.remove(); out.pop(); }
-    out.forEach(function (x, i) { x.replaceChild(PrintView.foot(i, out.length), x.querySelector('.pv-foot')); x.appendChild(PrintView.wm()); });
+    out.forEach(function (x, i) { x.replaceChild(PrintView.foot(i, out.length), x.querySelector('.pv-foot')); x.appendChild(PrintView.wm()); if (opt.onePer) x.classList.add('pv-one'); });
     PrintView.pages = out.map(function (x) { return x.querySelectorAll('.pv-fbody > :not(.pv-fhead)').length; });
     F.info.textContent = U.fill(R.INFO, { k: brief ? R.HAND : R.FULLK, n: list.length, p: out.length, o: o === 'land' ? R.LAND : R.PORT });
     PrintView.fit();
